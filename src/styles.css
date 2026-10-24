@@ -229,6 +229,8 @@ h1, h2, h3 { font-family: var(--font-title); letter-spacing: .02em; }
 .act[data-act="item2"] { right: 212px; bottom: 68px; }
 .act.vazio { opacity: .5; filter: grayscale(1); }
 .act[data-act="mount"] { right: 160px; bottom: 50px; }
+.act[data-act="botija"] { right: 96px; bottom: 140px; }
+.act[data-act="botija"]::after { content: attr(data-n); position: absolute; right: -6px; bottom: -4px; background: var(--wood-0); color: #9FE6F0; font-size: 10.5px; border-radius: 4px; padding: 0 4px; font-weight: 800; box-shadow: 0 0 0 1.5px var(--gold-deep); }
 .act[data-act="lock"] { right: 40px; bottom: 156px; width: 42px; height: 42px; font-size: 17px; }
 .act[data-act="lock"].on { border-color: var(--gold-hi); box-shadow: 0 0 0 2px var(--wood-0), 0 0 12px rgba(251,222,147,.7); }
 .act[data-act="mount"].on { border-color: var(--gold-hi); background: radial-gradient(circle at 35% 30%, #9A6E3A, #5A3E22 70%); }
@@ -306,7 +308,7 @@ body.touch #chat { left: auto; right: 260px; bottom: calc(var(--safe-b) + 8px); 
 .feedback.no { color: #FF9A86; }
 .verse .lie { color: #FF9A86; font-size: 20px; margin-bottom: 6px; }
 .dead h2 { color: #FF9A86; font-size: 28px; text-align: center; text-shadow: 0 2px 0 #000; }
-.dead p { text-align: center; line-height: 1.5; margin-top: 8px; font-family: var(--font-text); font-size: 15.5px; font-weight: 500; }
+.dead p { white-space: pre-line; text-align: center; line-height: 1.5; margin-top: 8px; font-family: var(--font-text); font-size: 15.5px; font-weight: 500; }
 .victory { text-align: center; }
 .victory h2 { font-size: 28px; color: var(--gold-hi); text-shadow: 0 2px 0 #000; }
 blockquote { margin: 10px 0; padding: 10px 16px; border-radius: 4px; font-family: var(--font-text); font-style: italic; font-weight: 600; line-height: 1.45; text-align: left; color: var(--ink);

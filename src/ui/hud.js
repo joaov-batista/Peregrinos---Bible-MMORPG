@@ -67,6 +67,7 @@ export function createHud(onExit) {
     $('hpWrap').classList.toggle('low', s.hp / s.maxHp < 0.3);
     const sk = $('aSkill'); sk.style.setProperty('--cd', (s.skillCd * 100) + '%'); sk.classList.toggle('nofe', !s.skillOk);
     $('aLock').classList.toggle('on', !!s.lock);
+    const bb = $('aBotija'), nb = s.botija.n + '/' + s.botija.max; if (bb.dataset.n !== nb) { bb.dataset.n = nb; bb.classList.toggle('vazio', s.botija.n <= 0); }
     const bDef = document.querySelector('[data-act="defend"]'); if (bDef._e !== s.escudo) { bDef._e = s.escudo; bDef.classList.toggle('vazio', !s.escudo); bDef.title = s.escudo ? 'Defender (Shift)' : 'Sem escudo: equipe um no menu › Personagem'; }
     s.atalhos.forEach((a, i) => {
       const b = $('aItem' + (i + 1)), key = a ? a.icon + a.n : '';

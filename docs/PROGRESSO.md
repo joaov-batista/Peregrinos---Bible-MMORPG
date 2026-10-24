@@ -47,11 +47,13 @@ No ar em: https://peregrinos-pi.vercel.app
 - Chefes mais difíceis; a Mentira não entrega mais qual é a verdadeira; Golias mais duro.
 - Menu › Ajustes: câmera centralizada, esconder a barra de missão, tremor e som.
 - **Mundo compartilhado**: todos veem os mesmos vícios e chefes (anfitrião via Supabase Realtime).
+- **Pedras de Ebenézer** (9 pelo mundo): descansar cura, enche a botija, vira o ponto de volta e libera viagem rápida.
+- **Botija da Viúva** (tecla H / 🫙): 3 cargas que curam 42%, mas leva quase 1 s parado para beber.
+- **Sacola de talentos**: ao cair no mundo, todos os denários ficam onde você caiu; cair de novo antes de buscar perde a sacola.
 
 ## ⏳ Falta (pela ordem sugerida no roadmap)
 
 ### Próximos passos (Top 10)
-- [ ] **Pedras de Ebenézer** (pontos de descanso e viagem rápida), **Botija da Viúva** (cura com cargas) e **sacola de talentos** deixada ao morrer.
 - [ ] **Quiz melhor**: explicação depois de cada resposta e um banco maior de perguntas, sorteadas.
 - [ ] **Casa do jogador**: tenda → casa, parede de versículos, horta, cozinha, visitas e casa do clã.
 - [ ] **Validação no servidor** das recompensas (Edge Functions), contra trapaça no ranking.

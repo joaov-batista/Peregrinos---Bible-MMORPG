@@ -13,6 +13,7 @@ import { SEMANAS, SEMANA_ATUAL } from '../content/index.js';
 import { TS, T, generateWorld, buildFase, buildSalao, buildSemanaSala, zoneAt, ZONES, GATE_XS, GATE_Y, makeMinimap } from './world.js';
 import { MOVES, MOVIMENTOS, REGRAS, faseAtual, modDano, aoDefender } from './bossMoves.js';
 import { instalarMundoNet } from './mundoNet.js';
+import { instalarDescanso } from './descanso.js';
 import { drawPerson, drawWeapon, drawEnemy, drawBoss, drawChest, drawPortal, drawSheep, drawProjectile, drawAnimal, shade } from './draw.js';
 import { computeStats, xpNeed, addItem, removeItem, count, faseProg, arrumarArmas, MAX_LEVEL } from './player.js';
 
@@ -100,6 +101,7 @@ export class Game {
     this.scene = 'world'; this.cur = { map: this.world.map, lights: this.world.lights };
     this.projs = []; this.tele = []; this.hazards = []; this.pickups = []; this.chests = [];
     this.npcs = WORLD_NPCS.map(n => ({ ...n, x: n.tx * TS + 16, y: n.ty * TS + 16, talkT: 0 }));
+    if (!this.altares) this.criarAltares();
     this.enemies = [];
     this.spawns = this.world.spawns.map((s, i) => ({ ...s, i, alive: false, at: 0 }));
     this.worldSince = Date.now(); this._host = undefined;
@@ -313,7 +315,8 @@ export class Game {
     if (p.mounted && (input.isHeld('attack') || input.pressed.has('attack') || input.pressed.has('skill') || input.isHeld('defend'))) this.dismount();
     // esquiva
     const dodgeCost = 26 * st.esquiva;
-    if (input.consume('dodge') && p.dodgeCd <= 0 && p.sta >= dodgeCost && p.stun <= 0) {
+    if (input.consume('botija')) this.beberBotija();
+    if (input.consume('dodge') && p.dodgeCd <= 0 && p.sta >= dodgeCost && p.stun <= 0 && !(p.drink > 0)) {
       let dx = mv.x, dy = mv.y; if (!dx && !dy) { dx = -p.fx; dy = -p.fy; }
       const l = Math.hypot(dx, dy) || 1; p.dvx = dx / l; p.dvy = dy / l;
       p.dodgeT = 0.34; p.dodgeCd = 0.5; p.sta -= dodgeCost; p.staT = 0.6; sfx('dodge');
@@ -326,7 +329,7 @@ export class Game {
     if (wantGuard && !p.guard) p.guardT = 0;
     p.guard = wantGuard; if (p.guard) { p.guardT += dt; p.staT = 0.4; }
     // movimento
-    let sp = st.spd * (p.buffs.spd?.mul || 1) * p.slow * (p.guard ? 0.6 : 1) * (p.charging ? 0.45 : 1) * (p.mounted ? st.montaria : 1);
+    let sp = st.spd * (p.buffs.spd?.mul || 1) * p.slow * (p.guard ? 0.6 : 1) * (p.charging ? 0.45 : 1) * (p.drink > 0 ? 0.3 : 1) * (p.mounted ? st.montaria : 1);
     const tile = m.get(Math.floor(p.x / TS), Math.floor(p.y / TS));
     if (tile === T.SHALLOW) sp *= 0.6;
     let vx, vy;
@@ -347,6 +350,7 @@ export class Game {
     if ((this.scene === 'salao' || (this.scene === 'world' && z?.seguro)) && p.hp < st.maxHp) p.hp = Math.min(st.maxHp, p.hp + st.maxHp * 0.04 * dt);
     // ações
     if (p.stun > 0 || p.dodgeT > 0) { p.holdT = 0; p.charging = false; return; }
+    if (this.tickBotija(dt)) { input.pressed.delete('attack'); return; }
     // ataque: cada toque é um golpe (toques seguidos fazem o combo); segurar carrega um golpe forte
     if (input.consume('attack')) p.atkBuf = 0.3;
     p.atkBuf -= dt;
@@ -788,10 +792,18 @@ export class Game {
           { label: 'Voltar para a sala da semana', fn: () => { p.dead = false; p.hp = this.st.maxHp; this.enterSemana(this.fase.sem, this.fase.n); } }]
       });
     } else {
-      const lost = Math.floor(c.data.gold * 0.1); c.data.gold -= lost;
+      const { deixou, perdeu } = this.scene === 'world' ? this.deixarSacola() : { deixou: 0, perdeu: 0 };
+      const volta = this.pontoDeVolta(), pedra = this.altares?.find(o => o.id === c.data.descanso);
       this.ui.dead({
-        titulo: 'Você caiu…', texto: 'Você perdeu ' + lost + ' denários. "Ainda que eu ande pelo vale da sombra da morte, não temerei mal nenhum" (Sl 23:4).',
-        acoes: [{ label: 'Levantar na Cidade de Refúgio', fn: () => { p.dead = false; p.hp = this.st.maxHp; p.fe = this.st.maxFe; p.x = SPAWN.x; p.y = SPAWN.y; } }]
+        titulo: 'Você caiu…',
+        texto: (deixou ? '💰 Seus ' + deixou + ' denários ficaram numa sacola onde você caiu. Volte para buscá-la antes de cair de novo! (Mt 25)\n\n' : '') +
+          (perdeu ? '⚠️ A sacola anterior (' + perdeu + ' denários) se perdeu.\n\n' : '') +
+          '"Ainda que eu ande pelo vale da sombra da morte, não temerei mal nenhum" (Sl 23:4).',
+        acoes: [{ label: 'Levantar na Pedra de Ebenézer' + (pedra ? ' · ' + pedra.nome : ''), fn: () => {
+          p.dead = false; p.hp = this.st.maxHp; p.fe = this.st.maxFe; p.drink = 0; this.botija().n = this.botija().max;
+          if (this.scene !== 'world') this.enterWorld(false);
+          const pt = volta || SPAWN; p.x = pt.x; p.y = pt.y; this.lock = null;
+        } }]
       });
     }
     this.save();
@@ -1048,6 +1060,7 @@ export class Game {
 
   /* ================= Mundo ================= */
   updateWorld(dt) {
+    this.pegarSacola();
     this.updateFugidas(dt);
     const p = this.p;
     const tx = Math.floor(p.x / TS), ty = Math.floor(p.y / TS), z = zoneAt(tx, ty);
@@ -1271,6 +1284,7 @@ export class Game {
       const agua = this.waterNear();
       if (agua) consider(agua, 60, '🎣 Pescar', () => this.playMini('pescaria', { zona: agua.zona, nome: agua.zona === 'costa' ? 'Costa de Jope' : agua.zona === 'lago' ? 'Lago de Genesaré' : 'Águas tranquilas' }));
       const fx = 90 * TS + 16, fy = 75 * TS + 16; consider({ x: fx, y: fy }, Math.hypot(fx - p.x, fy - p.y) - 40, 'Beber da Fonte de Betesda', () => this.fountain());
+      for (const a of this.altares) consider(a, Math.hypot(a.x - p.x, a.y - p.y) - 10, (this.acesas().includes(a.id) ? '🔥 Descansar na' : '🪨 Acender a') + ' Pedra de Ebenézer', () => this.descansar(a));
     } else if (this.scene === 'salao') {
       for (const pt of this.portais) consider(pt, Math.hypot(pt.x - p.x, pt.y + 20 - p.y) * 0.8, (pt.state === 'fechado' ? '🔒 ' : '') + pt.tag + ': ' + pt.label, pt.fn);
       if (this.saida) consider(this.saida, Math.hypot(this.saida.x - p.x, this.saida.y - p.y), this.hub.tipo === 'semana' ? 'Voltar ao Salão das Dungeons' : 'Sair para o mundo', () => { sfx('gate'); this.exitHub(); });
@@ -1475,7 +1489,7 @@ export class Game {
 
   updateHud(dt) {
     const p = this.p, c = this.char;
-    this.ui.hud({ hp: p.hp, maxHp: this.st.maxHp, fe: p.fe, maxFe: this.st.maxFe, sta: p.sta, xp: c.data.xp, xpNeed: xpNeed(c.level), level: c.level, gold: c.data.gold, score: c.score, skillCd: Math.max(0, p.skillCd) / CLASSES[c.cls].skill.cd, skillOk: p.fe >= CLASSES[c.cls].skill.custo, escudo: !!c.data.eq.escudo, lock: !!this.lock, atalhos: this.atalhos().map(id => id && ITEMS[id] ? { icon: ITEMS[id].icon, nome: ITEMS[id].nome, n: count(c, id) } : null) });
+    this.ui.hud({ hp: p.hp, maxHp: this.st.maxHp, fe: p.fe, maxFe: this.st.maxFe, sta: p.sta, xp: c.data.xp, xpNeed: xpNeed(c.level), level: c.level, gold: c.data.gold, score: c.score, skillCd: Math.max(0, p.skillCd) / CLASSES[c.cls].skill.cd, skillOk: p.fe >= CLASSES[c.cls].skill.custo, escudo: !!c.data.eq.escudo, lock: !!this.lock, botija: this.botija(), atalhos: this.atalhos().map(id => id && ITEMS[id] ? { icon: ITEMS[id].icon, nome: ITEMS[id].nome, n: count(c, id) } : null) });
     this.mmT -= dt;
     if (this.mmT <= 0) {
       this.mmT = 0.25;
@@ -1586,6 +1600,8 @@ export class Game {
     }
     out.push({ x: GATE_XS[0] * TS + 16, y: (GATE_Y + 1) * TS, icon: '⛩️', nome: 'Portão das Dungeons', tipo: 'Portões', desc: 'Leva ao Salão das Dungeons: lá ficam as salas das semanas de estudo (a nova e as passadas), cada uma com 5 fases e um guia.' });
     out.push({ x: 90 * TS + 16, y: 77 * TS, icon: '💧', nome: 'Fonte de Betesda', tipo: 'Cura', desc: 'Recupera toda a vida e a Fé (Jo 5). Na cidade a vida também volta sozinha.' });
+    for (const a of this.altares || []) { const on = this.acesas().includes(a.id); out.push({ x: a.x, y: a.y, icon: on ? '🔥' : '🪨', nome: 'Ebenézer · ' + a.nome, tipo: 'Pedras de Ebenézer', desc: on ? 'Acesa. Descanse para curar, encher a botija e viajar entre as pedras acesas.' : 'Apagada. Chegue perto e acenda para poder voltar aqui e viajar.' }); }
+    const sac = this.char.data.sacola; if (sac) out.push({ x: sac.x, y: sac.y, icon: '💰', nome: 'Sua sacola (' + sac.v + ' denários)', tipo: 'Importante', desc: 'Os denários que ficaram quando você caiu. Busque antes de cair de novo!' });
     for (const wb of this.worldBosses) { const d = BOSSES[wb.id]; out.push({ x: wb.home.x, y: wb.home.y, icon: '💀', nome: d.nome + ' (nv ' + d.lv + ')', tipo: 'Chefes', desc: d.titulo + '. ' + d.ref + (wb.alive ? '' : ' · volta em breve') + '. Prêmio raro: ' + ITEMS[d.drop].nome + '.' }); }
     return out;
   }
@@ -1681,6 +1697,10 @@ export class Game {
     // entidades ordenadas por Y
     const list = [];
     for (const n of this.npcs) list.push({ y: n.y, d: () => this.drawNpc(g, n) });
+    if (this.scene === 'world') {
+      for (const a of this.altares) list.push({ y: a.y, d: () => this.drawAltar(g, a, T0) });
+      if (this.char.data.sacola) list.push({ y: this.char.data.sacola.y, d: () => this.drawSacola(g, T0) });
+    }
     for (const c of this.chests) list.push({ y: c.y, d: () => drawChest(g, c, T0) });
     for (const e of this.enemies) list.push({ y: e.y, d: () => this.drawEnt(g, e) });
     for (const o of this.others.values()) if (this.scene === 'world') list.push({ y: o.y, d: () => this.drawOther(g, o) });
@@ -1709,6 +1729,13 @@ export class Game {
       g.save(); g.translate(e.x, e.y); g.rotate(T0 * 1.5); g.strokeStyle = '#FFD23F'; g.lineWidth = 3; g.shadowColor = '#FFD23F'; g.shadowBlur = 8;
       for (let i = 0; i < 4; i++) { g.rotate(Math.PI / 2); g.beginPath(); g.arc(0, 0, R, -0.35, 0.35); g.stroke(); }
       g.restore();
+    }
+    // bebendo da Botija da Viúva: a botija sobe e a barra enche
+    if (this.p.drink > 0 && !this.p.dead) {
+      const p = this.p, k2 = 1 - p.drink / 0.9, bx = p.x + 10, by = p.y - 40 - k2 * 6;
+      g.lineWidth = 1.4; g.strokeStyle = '#2A1A10'; rr(g, bx - 5, by - 7, 10, 12, 4); g.fillStyle = '#C9A060'; g.fill(); g.stroke();
+      g.fillStyle = '#6FC3E8'; g.fillRect(bx - 3, by - 2, 6, 5); g.fillStyle = '#8A5A35'; g.fillRect(bx - 2.5, by - 10, 5, 3);
+      g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(p.x - 15, p.y + 16, 30, 4); g.fillStyle = '#9FE6F0'; g.fillRect(p.x - 15, p.y + 16, 30 * k2, 4);
     }
     // golpe carregando: anel que enche em volta do jogador
     if (this.p.charging && !this.p.dead) {
@@ -1874,3 +1901,4 @@ function wrap(g, text, max) {
 }
 
 instalarMundoNet(Game);
+instalarDescanso(Game);
