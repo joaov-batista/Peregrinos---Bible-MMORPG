@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#120E1C">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Peregrinos — um RPG bíblico online. Toda semana, 5 fases novas baseadas num estudo da Bíblia.">
+  <title>Peregrinos</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23221A38'/><path d='M28 10h8v14h12v8H36v22h-8V32H16v-8h12z' fill='%23F2C14E'/></svg>">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Peregrinos">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@500;700;800;900&family=Alegreya:ital,wght@0,500;0,600;0,700;1,600&family=Cinzel:wght@700;900&family=Nunito:wght@600;700;800;900&display=swap">
+</head>
+<body>
+  <canvas id="cv"></canvas>
+  <div id="vignette"></div>
+
+  <div id="hud" hidden>
+    <div class="hud-l">
+      <div class="pf">
+        <div class="lvl" id="hLvl">1</div>
+        <div class="bars">
+          <div class="bar hp" id="hpWrap"><i id="bHp"></i><span id="tHp"></span></div>
+          <div class="bar fe"><i id="bFe"></i><span id="tFe"></span></div>
+          <div class="bar sta"><i id="bSta"></i></div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">🪙 <b id="hGold">0</b></span>
+        <span class="chip">⭐ <b id="hScore">0</b></span>
+        <span class="chip" id="hOnline"></span>
+      </div>
+      <div id="faseHud" class="side-card" hidden></div>
+      <button id="questHud" class="side-card" hidden></button>
+      <div id="sheepHud" class="side-card" hidden></div>
+    </div>
+    <div class="hud-r">
+      <canvas id="minimap" width="150" height="104"></canvas>
+      <div class="hud-btns">
+        <button id="bMap" aria-label="Mapa" title="Mapa (M)">🗺</button>
+        <button id="bMenu" aria-label="Menu" title="Menu (I)">☰</button>
+        <button id="bMute" aria-label="Som">🔊</button>
+        <button id="bFull" aria-label="Tela cheia">⛶</button>
+      </div>
+    </div>
+    <div id="zoneName"></div>
+    <div id="bossBar" hidden><div class="bn"></div><div class="bb"><i></i></div></div>
+    <div id="xpBar"><i id="bXp"></i></div>
+  </div>
+
+  <div id="actions" hidden>
+    <button class="act" id="aInteract" data-act="interact" hidden><span></span></button>
+    <button class="act sm" data-act="mount" id="aMount" aria-label="Montar" data-key="R" data-name="Montar" hidden>🐎</button>
+    <button class="act sm" data-act="item1" id="aItem1" aria-label="Atalho 1" data-key="1 / Q" data-name="Atalho 1">🍞</button>
+    <button class="act sm" data-act="item2" id="aItem2" aria-label="Atalho 2" data-key="2" data-name="Atalho 2">✨</button>
+    <button class="act sm" data-act="defend" aria-label="Defender" data-key="Shift" data-name="Defender">🛡</button>
+    <button class="act sm" data-act="dodge" aria-label="Esquivar" data-key="Espaço" data-name="Esquiva">💨</button>
+    <button class="act md" data-act="skill" id="aSkill" aria-label="Especial" data-key="K / Dir." data-name="Especial">✦</button>
+    <button class="act lg" data-act="attack" aria-label="Atacar" data-key="J / Clique" data-name="Atacar">⚔</button>
+  </div>
+  <div id="stick"><div id="knob"></div></div>
+
+  <div id="chat" hidden>
+    <div id="chatLog"></div>
+    <div class="chat-row">
+      <button id="chatToggle" aria-label="Chat">💬</button>
+      <input id="chatIn" maxlength="120" placeholder="Enter para conversar…" autocomplete="off">
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+  <div id="banner"></div>
+  <div id="overlay"></div>
+  <div id="screens"></div>
+  <div id="rotate"><div><span>📱↻</span><b>Gire o celular</b><small>Peregrinos é jogado com o celular deitado.</small></div></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
