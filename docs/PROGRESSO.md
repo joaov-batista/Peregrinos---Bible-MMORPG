@@ -49,12 +49,12 @@ No ar em: https://peregrinos-pi.vercel.app
 - **Mundo compartilhado**: todos veem os mesmos vícios e chefes (anfitrião via Supabase Realtime).
 - **Pedras de Ebenézer** (9 pelo mundo): descansar cura, enche a botija, vira o ponto de volta e libera viagem rápida.
 - **Botija da Viúva** (tecla H / 🫙): 3 cargas que curam 42%, mas leva quase 1 s parado para beber.
+- **Quiz que ensina**: explicação depois de cada resposta, 12 perguntas por fase (60 na semana) e lista "Para revisar" com as erradas.
 - **Sacola de talentos**: ao cair no mundo, todos os denários ficam onde você caiu; cair de novo antes de buscar perde a sacola.
 
 ## ⏳ Falta (pela ordem sugerida no roadmap)
 
 ### Próximos passos (Top 10)
-- [ ] **Quiz melhor**: explicação depois de cada resposta e um banco maior de perguntas, sorteadas.
 - [ ] **Casa do jogador**: tenda → casa, parede de versículos, horta, cozinha, visitas e casa do clã.
 - [ ] **Validação no servidor** das recompensas (Edge Functions), contra trapaça no ranking.
 - [ ] Mais **ajustes** (volume separado, dificuldade, tamanho do texto) e suporte a **controle (gamepad)**.

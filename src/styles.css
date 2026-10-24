@@ -303,6 +303,10 @@ body.touch #chat { left: auto; right: 260px; bottom: calc(var(--safe-b) + 8px); 
 .answer { justify-content: flex-start; text-align: left; min-height: 46px; }
 .answer.right { background: linear-gradient(180deg, #6DBA5E, #3E7F36); border-color: #A8E09A; }
 .answer.wrong { background: linear-gradient(180deg, #D45A40, #932A1A); border-color: #FFA08A; }
+.porque { margin-top: 10px; padding: 10px 14px; border-radius: 4px; text-align: left; color: var(--ink); background: radial-gradient(ellipse at 50% 50%, var(--parch) 60%, var(--parch-2)); box-shadow: 0 0 0 1.5px #8A6A3A, 0 0 0 3px var(--wood-0); }
+.porque b { display: block; font-family: var(--font-title); color: #6B4412; font-size: 13px; margin-bottom: 3px; }
+.porque p { font-family: var(--font-text); font-size: 15px; line-height: 1.45; font-weight: 600; }
+.fase-row small.certa { color: #9BD98A; }
 .feedback { margin-top: 10px; font-size: 15px; text-align: center; font-family: var(--font-text); }
 .feedback.ok { color: #9BD98A; }
 .feedback.no { color: #FF9A86; }

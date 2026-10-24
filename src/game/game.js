@@ -1205,6 +1205,7 @@ export class Game {
     if (!f.quiz.length) f.quiz = shuffle(f.def.quiz.slice());
     const q = f.quiz.pop();
     const ok = await this.ui.quiz(q, 'Baú da Fase ' + f.n);
+    this.revisao(q, ok);
     if (ok && f.keys >= 3) return this.bonusChest(c);
     if (ok) {
       c.open = true; f.keys++; f.ok++; this.char.data.stats.quizOk++; this.addScore(60); sfx('key');
@@ -1216,6 +1217,12 @@ export class Game {
       c.locked = 8; f.err++; this.char.data.stats.quizErr++; sfx('wrong');
       this.p.inv = 0; this.damagePlayer(Math.round(this.st.maxHp * 0.08), c, { unblockable: true, noKnock: true });
     }
+  }
+  // Perguntas erradas vão para a lista "Para revisar" (menu › Bíblia); acertar depois tira da lista
+  revisao(q, ok) {
+    const r = (this.char.data.revisar = this.char.data.revisar || []), i = r.findIndex(x => x.q === q.q);
+    if (ok) { if (i >= 0) { r.splice(i, 1); this.ui.toast('Pergunta revisada e aprendida! ✔'); } return; }
+    if (i < 0) { r.push({ q: q.q, certa: q.a[0], porque: q.porque || '' }); if (r.length > 40) r.shift(); }
   }
   // Baús que sobram depois das 3 chaves: tesouro de verdade para quem continua respondendo
   bonusChest(c) {

@@ -44,6 +44,7 @@ Abra http://localhost:5180
 
 1. Copie `src/content/semana-01.js` para `src/content/semana-02.js`.
 2. Troque `id`, `titulo`, `estudo`, `versiculo` e as 5 `fases` (nome, referência, lição, quiz, personagens, mapa, chefe e recompensa).
+   - Quiz: 10 a 15 perguntas por fase; a resposta certa é sempre a **primeira** (o jogo embaralha) e `porque` explica a resposta depois que o jogador responde. Perguntas erradas vão para "Para revisar" (menu › Bíblia).
 3. Registre em `src/content/index.js`:
    ```js
    import semana02 from './semana-02.js';

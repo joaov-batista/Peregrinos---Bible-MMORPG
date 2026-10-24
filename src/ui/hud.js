@@ -295,8 +295,13 @@ export function createHud(onExit) {
         const ok = a === right; box.querySelectorAll('button').forEach(b => { b.disabled = true; if (b.textContent === right) b.classList.add('right'); });
         if (!ok) e.currentTarget.classList.add('wrong');
         sfx(ok ? 'right' : 'wrong');
-        p.append(h('p', { class: 'feedback ' + (ok ? 'ok' : 'no') }, ok ? 'Certo! Você ganhou uma chave.' : 'Não foi dessa vez. O baú vai trancar por alguns segundos.'));
-        setTimeout(() => close(ok), ok ? 900 : 1500);
+        p.append(h('p', { class: 'feedback ' + (ok ? 'ok' : 'no') }, ok ? 'Certo! Você ganhou uma chave.' : 'Não foi dessa vez. A resposta certa era: ' + right + '. O baú vai trancar por alguns segundos.'));
+        // explicação: por que a resposta certa é a certa (fica até o jogador continuar)
+        if (q.porque) {
+          p.append(h('div', { class: 'porque' }, h('b', {}, '📖 Por quê?'), h('p', {}, q.porque)),
+            h('div', { class: 'btn-row' }, h('button', { class: 'btn gold', onclick: () => close(ok) }, 'Continuar')));
+          p.querySelector('.porque + .btn-row button')?.focus();
+        } else setTimeout(() => close(ok), ok ? 900 : 1500);
       }
     }, a)));
     p.append(box);
@@ -665,6 +670,13 @@ export function createHud(onExit) {
   function tabBible(body) {
     const c = game.char;
     body.append(h('h4', {}, 'Versículo da semana'), h('blockquote', {}, '“' + SEMANA_ATUAL.versiculo.texto + '”', h('cite', {}, SEMANA_ATUAL.versiculo.ref)));
+    const rev = c.data.revisar || [];
+    if (rev.length) {
+      body.append(h('h4', {}, '📌 Para revisar (' + rev.length + ')'), h('p', { class: 'muted' }, 'Perguntas que você errou. Quando acertar de novo num baú, ela sai daqui.'));
+      const rl = h('div', { class: 'fase-list' });
+      for (const r of rev.slice().reverse()) rl.append(h('div', { class: 'fase-row' }, h('span', { class: 'num' }, '?'), h('div', {}, h('b', {}, r.q), h('small', { class: 'certa' }, '✔ ' + r.certa), r.porque ? h('small', {}, r.porque) : '')));
+      body.append(rl);
+    }
     body.append(h('h4', {}, 'Versículos conquistados (' + c.data.verses.length + ')'));
     body.append(h('div', { class: 'tags' }, c.data.verses.length ? c.data.verses.map(v => h('span', { class: 'tag' }, v)) : h('p', { class: 'empty' }, 'Complete fases e vença o Acusador para colecionar versículos.')));
     body.append(h('h4', {}, 'Bestiário: o que aprendemos vencendo cada vício'));
