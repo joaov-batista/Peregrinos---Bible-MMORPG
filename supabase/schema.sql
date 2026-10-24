@@ -7,7 +7,7 @@ create table if not exists public.characters (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references auth.users(id) on delete cascade,
   name        text not null check (char_length(name) between 3 and 16),
-  class       text not null check (class in ('guerreiro','pastor','profeta','levita')),
+  class       text not null,
   look        jsonb not null default '{}',
   data        jsonb not null default '{}',   -- inventário, equipamentos, progresso das fases, missões
   level       int  not null default 1,
@@ -17,6 +17,10 @@ create table if not exists public.characters (
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
+
+-- classes jogáveis (rode de novo ao criar classes novas)
+alter table public.characters drop constraint if exists characters_class_check;
+alter table public.characters add constraint characters_class_check check (class in ('guerreiro','pastor','profeta','levita','zelote','valente','juiz'));
 
 create unique index if not exists characters_name_unique on public.characters (lower(name));
 create index if not exists characters_score_idx on public.characters (score desc);

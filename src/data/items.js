@@ -44,6 +44,24 @@ export const ITEMS = {
   arco_jonatas: { nome: 'Arco de Jônatas', icon: '🏹', slot: 'arma', classe: 'pastor', atk: 36, preco: 3200, nivel: 15, raridade: 'epico', desc: '"O arco de Jônatas nunca voltou atrás" (2Sm 1:22).' },
   vara_arao: { nome: 'Vara de Arão', icon: '🌿', slot: 'arma', classe: 'profeta', atk: 38, preco: 3200, nivel: 15, raridade: 'epico', desc: 'Brotou, floresceu e deu amêndoas (Nm 17:8).' },
   cimbalos_asafe: { nome: 'Címbalos de Asafe', icon: '🥁', slot: 'arma', classe: 'levita', atk: 35, preco: 3200, nivel: 15, raridade: 'epico', desc: 'Asafe tocava os címbalos diante da arca (1Cr 16:5).' },
+  // Zelote (adaga): menos dano por golpe, mas golpes bem mais rápidos
+  adaga_ferro_velho: { nome: 'Adaga de Ferro Velho', icon: '🔪', slot: 'arma', classe: 'zelote', atk: 2, preco: 10, desc: 'Curta e escondida debaixo do manto.' },
+  adaga_bronze: { nome: 'Adaga de Bronze', icon: '🔪', slot: 'arma', classe: 'zelote', atk: 7, preco: 160, nivel: 3, desc: 'Leve e rápida.' },
+  adaga_eude: { nome: 'Punhal de Eúde', icon: '🗡️', slot: 'arma', classe: 'zelote', atk: 14, preco: 520, nivel: 7, raridade: 'raro', desc: 'De dois gumes, um côvado de comprimento (Jz 3:16).' },
+  adaga_zelote: { nome: 'Sica do Zelote', icon: '🗡️', slot: 'arma', classe: 'zelote', atk: 23, preco: 1500, nivel: 11, raridade: 'epico', desc: 'A lâmina curva dos zelotes da Galileia. Simão deixou a revolta para seguir a Jesus (Lc 6:15).' },
+  adaga_pedro: { nome: 'Espada Curta de Pedro', icon: '🗡️', slot: 'arma', classe: 'zelote', atk: 31, preco: 3200, nivel: 15, raridade: 'epico', desc: 'Pedro cortou a orelha de Malco, e Jesus o curou (Jo 18:10; Lc 22:51). Coragem com mansidão.' },
+  // Valente de Davi (lança): alcance longo em linha reta
+  lanca_pastor: { nome: 'Lança de Pastor', icon: '🔱', slot: 'arma', classe: 'valente', atk: 3, preco: 10, desc: 'Uma vara com ponta de ferro.' },
+  lanca_bronze: { nome: 'Lança de Bronze', icon: '🔱', slot: 'arma', classe: 'valente', atk: 9, preco: 160, nivel: 3, desc: 'Ponta firme de bronze.' },
+  lanca_benaia: { nome: 'Lança de Benaia', icon: '🔱', slot: 'arma', classe: 'valente', atk: 17, preco: 520, nivel: 7, raridade: 'raro', desc: 'Benaia tomou a lança da mão do egípcio e o venceu com ela (2Sm 23:21).' },
+  lanca_abisai: { nome: 'Lança de Abisai', icon: '🔱', slot: 'arma', classe: 'valente', atk: 27, preco: 1500, nivel: 11, raridade: 'epico', desc: 'Brandiu a lança contra trezentos (2Sm 23:18).' },
+  lanca_saul: { nome: 'Lança do Rei', icon: '🔱', slot: 'arma', classe: 'valente', atk: 36, preco: 3200, nivel: 15, raridade: 'epico', desc: 'Davi a tomou junto à cabeceira de Saul e não lhe fez mal (1Sm 26:12). Força com misericórdia.' },
+  // Juiz (chicote): alcance médio-longo e puxa os inimigos
+  chicote_couro: { nome: 'Chicote de Couro', icon: '〰️', slot: 'arma', classe: 'juiz', atk: 3, preco: 10, desc: 'Chicote simples de boieiro.' },
+  chicote_trancado: { nome: 'Chicote Trançado', icon: '〰️', slot: 'arma', classe: 'juiz', atk: 9, preco: 160, nivel: 3, desc: 'Couro trançado, estala longe.' },
+  aguilhada_sangar: { nome: 'Aguilhada de Sangar', icon: '🦯', slot: 'arma', classe: 'juiz', atk: 17, preco: 520, nivel: 7, raridade: 'raro', desc: 'Com uma aguilhada de bois, Sangar livrou Israel (Jz 3:31).' },
+  chicote_gideao: { nome: 'Chicote dos Espinhos', icon: '〰️', slot: 'arma', classe: 'juiz', atk: 27, preco: 1500, nivel: 11, raridade: 'epico', desc: 'Gideão ensinou os homens de Sucote com espinhos do deserto (Jz 8:16).' },
+  chicote_juiz: { nome: 'Chicote do Juiz de Israel', icon: '〰️', slot: 'arma', classe: 'juiz', atk: 35, preco: 3200, nivel: 15, raridade: 'epico', desc: '"Levantou o Senhor juízes, que os livraram" (Jz 2:16).' },
   harpa_davi: { nome: 'Harpa de Davi', icon: '🪕', slot: 'arma', classe: 'levita', atk: 26, preco: 1500, nivel: 11, raridade: 'epico', desc: 'Ao tocar, o espírito mau se retirava (1Sm 16:23).' },
 
   // ---------- Armaduras comuns ----------

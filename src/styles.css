@@ -206,6 +206,8 @@ h1, h2, h3 { font-family: var(--font-title); letter-spacing: .02em; }
   background: linear-gradient(90deg, transparent, rgba(26,17,10,.8) 20%, rgba(26,17,10,.8) 80%, transparent); }
 #bossBar .bb { height: 14px; border-radius: 3px; background: var(--wood-0); overflow: hidden; padding: 2px; box-shadow: 0 0 0 2px var(--wood-0), 0 0 0 4px var(--gold-deep), 0 0 0 5px var(--wood-0); }
 #bossBar i { display: block; height: 100%; border-radius: 2px; background: linear-gradient(180deg, #FF8A5C, #C2301E 55%, #7A1410); box-shadow: inset 0 1px 0 rgba(255,255,255,.3); transition: width .2s; }
+#bossBar .bp { width: 70%; height: 6px; margin: 6px auto 0; border-radius: 2px; background: var(--wood-0); overflow: hidden; box-shadow: 0 0 0 1.5px var(--gold-deep); }
+#bossBar .bp i { display: block; height: 100%; width: 0; background: linear-gradient(180deg, #FFF0A0, #E8B54F); transition: width .15s; }
 #xpBar { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--wood-0); box-shadow: 0 -1px 0 var(--gold-deep); }
 #xpBar i { display: block; height: 100%; background: linear-gradient(180deg, var(--gold-hi), var(--gold) 60%, #A86E22); transition: width .3s; }
 #vignette { position: fixed; inset: 0; pointer-events: none; z-index: 7; box-shadow: inset 0 0 120px rgba(224,72,58,0); }
@@ -227,6 +229,8 @@ h1, h2, h3 { font-family: var(--font-title); letter-spacing: .02em; }
 .act[data-act="item2"] { right: 212px; bottom: 68px; }
 .act.vazio { opacity: .5; filter: grayscale(1); }
 .act[data-act="mount"] { right: 160px; bottom: 50px; }
+.act[data-act="lock"] { right: 40px; bottom: 156px; width: 42px; height: 42px; font-size: 17px; }
+.act[data-act="lock"].on { border-color: var(--gold-hi); box-shadow: 0 0 0 2px var(--wood-0), 0 0 12px rgba(251,222,147,.7); }
 .act[data-act="mount"].on { border-color: var(--gold-hi); background: radial-gradient(circle at 35% 30%, #9A6E3A, #5A3E22 70%); }
 .act[data-act^="item"]::after { content: attr(data-n); position: absolute; right: -4px; bottom: -4px; background: var(--wood-0); color: var(--paper); font-size: 11px; border-radius: 4px; padding: 0 4px; font-weight: 800; box-shadow: 0 0 0 1.5px var(--gold-deep); }
 #aInteract { right: 0; bottom: 210px; width: auto; height: 40px; padding: 0 16px; border-radius: 8px; font-size: 14px; font-weight: 800; white-space: nowrap; background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #C48A2C); color: #2E1B08; border-color: #6B4412; animation: pop .3s; }

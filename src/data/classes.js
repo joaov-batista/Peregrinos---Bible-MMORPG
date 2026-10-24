@@ -31,6 +31,30 @@ export const CLASSES = {
     grow: { hp: 12, fe: 5, atk: 1.9, def: 1.4 },
     skill: { nome: 'Cântico de Louvor', custo: 22, cd: 7, desc: 'Cura você e os peregrinos próximos e afasta os inimigos (2Cr 20:22).' },
     armaInicial: 'trombeta_chifre'
+  },
+  zelote: {
+    nome: 'Zelote', icon: '🗡️', arma: 'adaga', ref: 'Lucas 6:15',
+    desc: 'Rápido e ágil com a adaga, como Simão, o Zelote. Golpes curtos e muito seguidos, com mais chance de crítico.',
+    base: { hp: 92, fe: 48, atk: 10, def: 3, spd: 192 },
+    grow: { hp: 10, fe: 4, atk: 2.1, def: 0.7 },
+    skill: { nome: 'Investida do Zelote', custo: 16, cd: 4, desc: 'Atravessa os inimigos num avanço rápido, ferindo todos no caminho, e fica invencível durante o avanço.' },
+    armaInicial: 'adaga_ferro_velho'
+  },
+  valente: {
+    nome: 'Valente de Davi', icon: '🔱', arma: 'lanca', ref: '2 Samuel 23:18',
+    desc: 'A lança alcança longe em linha reta, como Abisai, que brandiu a lança contra trezentos. Resistente e firme.',
+    base: { hp: 112, fe: 42, atk: 12, def: 6, spd: 164 },
+    grow: { hp: 13, fe: 3, atk: 2.2, def: 1.1 },
+    skill: { nome: 'Lança de Abisai', custo: 20, cd: 5, desc: 'Arremessa a lança, que atravessa todos os inimigos em linha (2Sm 23:18).' },
+    armaInicial: 'lanca_pastor'
+  },
+  juiz: {
+    nome: 'Juiz', icon: '〰️', arma: 'chicote', ref: 'Juízes 3:31',
+    desc: 'O chicote de boieiro alcança longe e puxa os inimigos. Sangar venceu seiscentos filisteus com uma aguilhada de bois.',
+    base: { hp: 100, fe: 55, atk: 11, def: 5, spd: 174 },
+    grow: { hp: 11, fe: 5, atk: 2.1, def: 0.9 },
+    skill: { nome: 'Aguilhada de Sangar', custo: 22, cd: 6, desc: 'Gira o chicote em volta, acerta todos por perto e puxa os inimigos para junto de você (Jz 3:31).' },
+    armaInicial: 'chicote_couro'
   }
 };
 

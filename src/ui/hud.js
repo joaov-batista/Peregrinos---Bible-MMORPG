@@ -65,6 +65,7 @@ export function createHud(onExit) {
     $('hLvl').textContent = s.level; $('hGold').textContent = fmt(s.gold); $('hScore').textContent = fmt(s.score);
     $('hpWrap').classList.toggle('low', s.hp / s.maxHp < 0.3);
     const sk = $('aSkill'); sk.style.setProperty('--cd', (s.skillCd * 100) + '%'); sk.classList.toggle('nofe', !s.skillOk);
+    $('aLock').classList.toggle('on', !!s.lock);
     const bDef = document.querySelector('[data-act="defend"]'); if (bDef._e !== s.escudo) { bDef._e = s.escudo; bDef.classList.toggle('vazio', !s.escudo); bDef.title = s.escudo ? 'Defender (Shift)' : 'Sem escudo: equipe um no menu › Personagem'; }
     s.atalhos.forEach((a, i) => {
       const b = $('aItem' + (i + 1)), key = a ? a.icon + a.n : '';
@@ -88,11 +89,12 @@ export function createHud(onExit) {
     while ($('toasts').children.length > 3) $('toasts').firstChild.remove();
     setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, ms);
   };
-  ui.bossBar = (name, ratio, titulo) => {
+  ui.bossBar = (name, ratio, titulo, postura = 0) => {
     const b = $('bossBar');
     if (!name) { b.hidden = true; return; }
     b.hidden = false; b.querySelector('.bn').textContent = (titulo ? titulo + ' · ' : '') + name;
-    b.querySelector('i').style.width = Math.max(0, ratio * 100) + '%';
+    b.querySelector('.bb i').style.width = Math.max(0, ratio * 100) + '%';
+    b.querySelector('.bp i').style.width = Math.min(100, Math.max(0, postura * 100)) + '%';
   };
   ui.faseHud = f => {
     const el = $('faseHud');
@@ -242,7 +244,9 @@ export function createHud(onExit) {
     const pc = h('div', { class: 'ctl-card' + (toque ? '' : ' atual') }, h('h4', {}, '💻 Computador', toque ? '' : h('em', {}, 'você está aqui')),
       linha([k('W'), k('A'), k('S'), k('D')], 'andar (ou as setas)'),
       linha([k('🖱 mover')], 'mirar'),
-      linha([k('Clique'), k('J')], 'atacar (segure para combo)'),
+      linha([k('Clique'), k('J')], 'atacar (cliques seguidos fazem o combo; cada golpe gasta fôlego)'),
+      linha([k('Segurar clique')], 'carregar um GOLPE FORTE (quebra a postura)'),
+      linha([k('T'), k('Botão do meio')], 'travar / soltar o alvo'),
       linha([k('Botão direito'), k('K')], 'especial: ' + sk),
       linha([k('Espaço')], 'esquiva (invencível por um instante)'),
       linha([k('Shift')], 'segurar: defender (precisa de escudo equipado)'),
@@ -253,7 +257,8 @@ export function createHud(onExit) {
       linha([k('Enter')], 'chat (/c fala com o clã)'));
     const cel = h('div', { class: 'ctl-card' + (toque ? ' atual' : '') }, h('h4', {}, '📱 Celular (deitado)', toque ? h('em', {}, 'você está aqui') : ''),
       linha([h('span', { class: 'ctl-i' }, '🕹')], 'arraste o dedo no lado esquerdo da tela para andar'),
-      linha([h('span', { class: 'ctl-i gold' }, '⚔')], 'atacar (mira sozinho no inimigo mais perto)'),
+      linha([h('span', { class: 'ctl-i gold' }, '⚔')], 'tocar: atacar · segurar: golpe forte'),
+      linha([h('span', { class: 'ctl-i' }, '🎯')], 'travar o alvo mais perto'),
       linha([h('span', { class: 'ctl-i' }, '✦')], 'especial: ' + sk),
       linha([h('span', { class: 'ctl-i' }, '💨')], 'esquiva'),
       linha([h('span', { class: 'ctl-i' }, '🛡')], 'segurar: defender (precisa de escudo)'),
@@ -693,14 +698,14 @@ export function createHud(onExit) {
     const C = CLASSES[game.char.cls];
     body.append(h('div', { class: 'help' },
       h('div', {}, h('h4', {}, '⌨️ Computador'), h('ul', {},
-        h('li', {}, h('b', {}, 'WASD / setas'), ' andar'), h('li', {}, h('b', {}, 'Mouse'), ' mirar · ', h('b', {}, 'clique'), ' atacar'),
+        h('li', {}, h('b', {}, 'WASD / setas'), ' andar'), h('li', {}, h('b', {}, 'Mouse'), ' mirar · ', h('b', {}, 'clique'), ' atacar (gasta fôlego) · ', h('b', {}, 'segurar'), ' golpe forte · ', h('b', {}, 'T'), ' travar alvo'),
         h('li', {}, h('b', {}, 'Botão direito / K'), ' especial: ' + C.skill.nome), h('li', {}, h('b', {}, 'Espaço'), ' esquiva (invencível por um instante)'),
         h('li', {}, h('b', {}, 'Shift (segurar)'), ' defender (vira sozinho para o inimigo) — logo ao levantar o escudo é DEFESA PERFEITA e devolve projéteis'),
         h('li', {}, h('b', {}, 'R'), ' montar/descer do burrinho ou cavalo · ', h('b', {}, 'E'), ' na beira da água: pescar'),
         h('li', {}, 'Chat: ', h('b', {}, '/c mensagem'), ' fala só com o seu clã'),
         h('li', {}, h('b', {}, '1 / Q'), ' e ', h('b', {}, '2'), ' usam os itens dos atalhos (escolha no menu › Personagem) · ', h('b', {}, 'E'), ' falar / abrir'), h('li', {}, h('b', {}, 'I'), ' menu · ', h('b', {}, 'Enter'), ' chat'))),
       h('div', {}, h('h4', {}, '📱 Celular (deitado)'), h('ul', {},
-        h('li', {}, 'Lado esquerdo da tela: joystick'), h('li', {}, '⚔ atacar (mira automática) · ✦ especial'), h('li', {}, '💨 esquiva · 🛡 segurar para defender'), h('li', {}, '🍞 ✨ atalhos de itens · 🐎 montar · botão dourado para falar'))),
+        h('li', {}, 'Lado esquerdo da tela: joystick'), h('li', {}, '⚔ tocar: atacar · segurar: golpe forte · 🎯 travar alvo · ✦ especial'), h('li', {}, '💨 esquiva · 🛡 segurar para defender'), h('li', {}, '🍞 ✨ atalhos de itens · 🐎 montar · botão dourado para falar'))),
       h('div', {}, h('h4', {}, '✝️ Como jogar'), h('ul', {},
         h('li', {}, 'O Portão das Dungeons (norte da cidade) leva ao Salão: uma sala por semana de estudo, cada uma com 5 fases.'), h('li', {}, 'Nas fases: abra baús, acerte o quiz e junte 3 chaves para enfrentar o chefe.'),
         h('li', {}, 'Ganhe as 6 peças da Armadura de Deus (Ef 6:13-17).'), h('li', {}, 'Ajude os personagens: missões e minijogos dão pontos para o ranking.'),

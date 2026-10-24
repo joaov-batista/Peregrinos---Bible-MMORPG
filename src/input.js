@@ -1,7 +1,7 @@
 // Teclado + mouse no PC, joystick virtual + botões na tela no celular.
 const KEYMAP = {
   KeyJ: 'attack', KeyK: 'skill', Space: 'dodge', ShiftLeft: 'defend', ShiftRight: 'defend', KeyL: 'defend',
-  KeyQ: 'item1', Digit1: 'item1', Numpad1: 'item1', Digit2: 'item2', Numpad2: 'item2', KeyR: 'mount', KeyE: 'interact', KeyF: 'interact', KeyI: 'menu', Tab: 'menu', KeyM: 'map', Enter: 'chat', Escape: 'escape'
+  KeyQ: 'item1', Digit1: 'item1', Numpad1: 'item1', Digit2: 'item2', Numpad2: 'item2', KeyR: 'mount', KeyE: 'interact', KeyF: 'interact', KeyI: 'menu', Tab: 'menu', KeyM: 'map', KeyT: 'lock', Enter: 'chat', Escape: 'escape'
 };
 const MOVE = { KeyW: [0, -1], ArrowUp: [0, -1], KeyS: [0, 1], ArrowDown: [0, 1], KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0] };
 
@@ -42,6 +42,7 @@ export function initInput(canvas) {
     input.mx = e.clientX; input.my = e.clientY; input.mouseAim = true;
     if (e.button === 0) { input.pressed.add('attack'); input.held.add('attack'); }
     if (e.button === 2) input.pressed.add('skill');
+    if (e.button === 1) { e.preventDefault(); input.pressed.add('lock'); }
   });
   addEventListener('mouseup', e => { if (e.button === 0) input.held.delete('attack'); });
   canvas.addEventListener('contextmenu', e => e.preventDefault());

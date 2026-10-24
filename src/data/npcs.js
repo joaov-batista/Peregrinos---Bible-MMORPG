@@ -176,6 +176,8 @@ export const LOJAS = {
       'cajado_amendoeira', 'cajado_eliseu', 'cajado_moises', 'trombeta_prata', 'trombeta_jerico', 'harpa_davi',
       'escudo_madeira', 'escudo_bronze', 'turbante', 'elmo_bronze', 'tunica_linho', 'gibao_couro', 'cota_malha',
       'espada_golias', 'arco_jonatas', 'vara_arao', 'cimbalos_asafe', 'escudo_ferro', 'escudo_salomao', 'elmo_ferro', 'couraca_golias',
+      'adaga_bronze', 'adaga_eude', 'adaga_zelote', 'adaga_pedro', 'lanca_bronze', 'lanca_benaia', 'lanca_abisai', 'lanca_saul',
+      'chicote_trancado', 'aguilhada_sangar', 'chicote_gideao', 'chicote_juiz',
       'sandalias', 'botas_viajante', 'botas_couro_fino', 'cinto_couro', 'cinto_sacerdote', 'anel_jose', 'manto_cores']
   },
   animais: { nome: 'Curral de Labão', itens: ['burrinho', 'ovelha', 'gato', 'cachorro', 'cavalo'] },

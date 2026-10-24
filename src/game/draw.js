@@ -175,6 +175,17 @@ export function drawWeapon(g, kind, len, glow, legendary) {
   } else if (kind === 'funda') {
     g.strokeStyle = '#8A5A35'; g.lineWidth = 2; g.beginPath(); g.moveTo(4, 0); g.quadraticCurveTo(len * 0.5, 8, len * 0.7, 0); g.stroke();
     g.fillStyle = '#9A958C'; ell(g, len * 0.7, 0, 3.5, 3.5); g.fill();
+  } else if (kind === 'adaga') {
+    g.strokeStyle = '#E8E4DA'; g.lineWidth = 3; g.beginPath(); g.moveTo(6, 0); g.lineTo(len, 0); g.stroke(); g.shadowBlur = 0;
+    g.strokeStyle = '#B8791A'; g.lineWidth = 3; g.beginPath(); g.moveTo(6, -3.5); g.lineTo(6, 3.5); g.stroke();
+    g.strokeStyle = '#4A2E14'; g.lineWidth = 3; g.beginPath(); g.moveTo(1, 0); g.lineTo(5, 0); g.stroke();
+  } else if (kind === 'lanca') {
+    g.strokeStyle = '#7A5232'; g.lineWidth = 3; g.beginPath(); g.moveTo(-10, 0); g.lineTo(len, 0); g.stroke(); g.shadowBlur = 0;
+    g.fillStyle = '#D9D6CE'; g.strokeStyle = '#2A1A10'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(len + 11, 0); g.lineTo(len - 1, -4); g.lineTo(len - 1, 4); g.closePath(); g.fill(); g.stroke();
+  } else if (kind === 'chicote') {
+    g.strokeStyle = '#5A3820'; g.lineWidth = 3.5; g.beginPath(); g.moveTo(0, 0); g.lineTo(8, 0); g.stroke(); g.shadowBlur = 0;
+    g.strokeStyle = '#8A5A35'; g.lineWidth = 1.8; g.beginPath(); g.moveTo(8, 0); g.quadraticCurveTo(len * 0.8, 9, len * 0.55, 14); g.quadraticCurveTo(len * 0.2, 16, len * 0.4, 6); g.stroke();
   } else if (kind === 'cajado') {
     g.strokeStyle = '#7A5232'; g.lineWidth = 3.5; g.beginPath(); g.moveTo(-6, 0); g.lineTo(len, 0); g.stroke(); g.shadowBlur = 0;
     g.fillStyle = '#FFE38A'; g.shadowColor = '#FFD23F'; g.shadowBlur = 10; ell(g, len + 2, 0, 4, 4); g.fill();
@@ -496,6 +507,27 @@ export function drawProjectile(g, p, T) {
     g.globalCompositeOperation = 'lighter';
     const gr = g.createRadialGradient(0, 0, 1, 0, 0, p.r * 2); gr.addColorStop(0, 'rgba(255,255,230,1)'); gr.addColorStop(0.4, p.kind === 'palavra' ? 'rgba(255,230,140,.9)' : 'rgba(255,210,80,.8)'); gr.addColorStop(1, 'rgba(255,180,40,0)');
     g.fillStyle = gr; ell(g, 0, 0, p.r * 2, p.r * 2); g.fill();
+  } else if (p.kind === 'corte') {
+    // risco rápido da adaga
+    g.rotate(p.a); const k = 1 - p.life / p.max, R = p.big ? 34 : 26, d = p.flip ? -1 : 1;
+    g.strokeStyle = 'rgba(255,250,235,' + (0.9 * (1 - k)) + ')'; g.lineWidth = p.big ? 5 : 3; g.lineCap = 'round';
+    g.beginPath(); g.arc(4, 0, R, -0.7 * d, (-0.7 + 1.4 * Math.min(1, k * 2)) * d, d < 0); g.stroke();
+  } else if (p.kind === 'chicote') {
+    // o chicote se estica, estala na ponta e volta
+    const k = 1 - p.life / p.max, ext = Math.sin(Math.min(1, k * 1.4) * Math.PI) * p.len;
+    g.strokeStyle = '#6B4426'; g.lineWidth = p.big ? 3.5 : 2.5; g.lineCap = 'round';
+    if (p.giro) {
+      g.rotate(k * Math.PI * 2.2); g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(p.len * 0.5, 18, p.len, 0); g.stroke();
+      g.strokeStyle = 'rgba(255,230,160,.35)'; g.lineWidth = 10; g.beginPath(); g.arc(0, 0, p.len * 0.85, -0.8, 0); g.stroke();
+    } else {
+      g.rotate(p.a); g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(ext * 0.5, Math.sin(k * 12) * 10, ext, 0); g.stroke();
+      if (k > 0.25 && k < 0.6) { g.fillStyle = '#FFF2C6'; g.font = '900 11px Nunito'; g.textAlign = 'center'; g.fillText('✦', ext, 4); }
+    }
+  } else if (p.kind === 'lanca') {
+    g.rotate(Math.atan2(p.vy, p.vx));
+    g.strokeStyle = '#7A5232'; g.lineWidth = 3; g.beginPath(); g.moveTo(-28, 0); g.lineTo(8, 0); g.stroke();
+    g.fillStyle = '#E8E4DA'; g.strokeStyle = '#2A1A10'; g.lineWidth = 1; g.beginPath(); g.moveTo(20, 0); g.lineTo(7, -5); g.lineTo(7, 5); g.closePath(); g.fill(); g.stroke();
+    g.strokeStyle = 'rgba(255,240,200,.4)'; g.lineWidth = 2; g.beginPath(); g.moveTo(-28, 0); g.lineTo(-48, 0); g.stroke();
   } else if (p.kind === 'som') {
     g.rotate(p.a); g.strokeStyle = 'rgba(255,240,200,' + Math.max(0, p.life / p.max) + ')'; g.lineWidth = 3;
     const rad = 14 + (1 - p.life / p.max) * 40; g.beginPath(); g.arc(-rad + 10, 0, rad, -0.6, 0.6); g.stroke();
