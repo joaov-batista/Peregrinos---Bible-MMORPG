@@ -107,7 +107,7 @@ export const MOVES = {
     const vezes = o.vezes ?? 3, R = o.raioArea ?? 74;
     if (b.stepT > (o.intervalo ?? 0.5) * b.step && b.step < vezes) {
       b.step++; const x = c.p.x, y = c.p.y;
-      G.tele.push({ kind: 'circle', x, y, r: R, t: o.aviso ?? 0.85, max: o.aviso ?? 0.85, color: o.corAviso || '255,60,60', onEnd: () => { G.shake(8); G.burst(x, y, 24, o.cor || '#FF5A3C', 260); if (Math.hypot(G.p.x - x, G.p.y - y) < R + G.p.r) G.damagePlayer(b.atk * (o.dano ?? 1.4), { x, y }); } });
+      G.tele.push({ kind: 'circle', x, y, r: R, t: o.aviso ?? 0.85, max: o.aviso ?? 0.85, color: o.corAviso || '255,60,60', dano: b.atk * (o.dano ?? 1.4), onEnd: () => { G.shake(8); G.burst(x, y, 24, o.cor || '#FF5A3C', 260); if (Math.hypot(G.p.x - x, G.p.y - y) < R + G.p.r) G.damagePlayer(b.atk * (o.dano ?? 1.4), { x, y }); } });
     }
     if (b.stepT > (o.dur ?? 2.4)) G.endAct(b, o.espera ?? 1.2);
   },
@@ -119,7 +119,7 @@ export const MOVES = {
       b.step = 1; sfx('boss'); fala(G, b, o, 70);
       for (let i = 0; i < (o.n ?? 5); i++) {
         const x = c.p.x + rand(-(o.espalhaX ?? 140), o.espalhaX ?? 140), y = c.p.y + rand(-(o.espalhaY ?? 110), o.espalhaY ?? 110), t = 0.85 + i * 0.12;
-        G.tele.push({ kind: 'circle', x, y, r: R, t, max: t, color: o.corAviso || '255,120,60', onEnd: () => { G.shake(5); G.burst(x, y, 14, o.cor || '#9A8466', 180); if (Math.hypot(G.p.x - x, G.p.y - y) < R + G.p.r) G.damagePlayer(b.atk * (o.dano ?? 1.1), { x, y }); } });
+        G.tele.push({ kind: 'circle', x, y, r: R, t, max: t, color: o.corAviso || '255,120,60', dano: b.atk * (o.dano ?? 1.1), onEnd: () => { G.shake(5); G.burst(x, y, 14, o.cor || '#9A8466', 180); if (Math.hypot(G.p.x - x, G.p.y - y) < R + G.p.r) G.damagePlayer(b.atk * (o.dano ?? 1.1), { x, y }); } });
       }
     }
     if (b.stepT > (o.dur ?? 2.2)) G.endAct(b, o.espera ?? 1.1);
@@ -198,7 +198,7 @@ export const MOVES = {
   // Onda em faixa reta na direção do jogador. comprimento, largura, repete (true = 2ª onda mirando de novo)
   onda(G, b, o, dt, c) {
     const len = o.comprimento ?? 520, w = o.largura ?? 70, cor = o.corAviso || '90,200,230';
-    const solta = (a, t) => G.tele.push({ kind: 'line', x: b.x, y: b.y, a, len, w, t, max: t, color: cor, onEnd: () => {
+    const solta = (a, t) => G.tele.push({ kind: 'line', x: b.x, y: b.y, a, len, w, t, max: t, color: cor, dano: b.atk * (o.dano ?? 1.5), onEnd: () => {
       G.shake(10);
       for (let i = 0; i < 30; i++) G.parts.push({ x: b.x + Math.cos(a) * i * 17, y: b.y + Math.sin(a) * i * 17, vx: rand(-40, 40), vy: rand(-80, -20), life: 0.8, max: 0.8, size: 6, color: o.cor || '#9FE6F0' });
       if (G.inLine(G.p, b.x, b.y, a, len, w)) G.damagePlayer(b.atk * (o.dano ?? 1.5), b);

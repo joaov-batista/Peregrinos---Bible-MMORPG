@@ -20,8 +20,8 @@ Abra http://localhost:5180
 
 | Sistema | Detalhes |
 |---|---|
-| Personagem | 4 classes (Guerreiro da Fé, Pastor, Profeta, Levita), aparência personalizável, até 3 por conta |
-| Combate | ataque com combo, especial por classe (gasta Fé), **esquiva** com invencibilidade, **defesa** (segurar) e **defesa perfeita** que atordoa e devolve projéteis |
+| Personagem | 7 classes (Guerreiro da Fé, Pastor, Profeta, Levita, Zelote, Valente de Davi, Juiz), aparência personalizável, até 3 por conta |
+| Combate | golpes gastam fôlego, golpe carregado, postura (quebra o equilíbrio), travar alvo, ataque com combo, especial por classe (gasta Fé), **esquiva** com invencibilidade, **defesa** (segurar) e **defesa perfeita** que atordoa e devolve projéteis |
 | Mundo | mapa grande: Cidade de Refúgio, Caminho dos Portões, colinas, campos, floresta, lago, deserto e costa; ciclo de dia e noite (igual para todos) |
 | Inimigos | 10 vícios (Preguiça, Distração, Desânimo, Inveja, Ganância, Dúvida, Ira, Medo, Orgulho, Vaidade); cada um ensina um versículo ao ser vencido |
 | Chefes | Mamom, Procrastinação, Mentira, Imoralidade Sexual, Satanás (batalha de versículos), Golias (Vale de Elá: só a defesa perfeita contra a lança expõe a testa), Beemote e Leviatã (chefes do mundo) |
@@ -130,7 +130,11 @@ src/
 supabase/schema.sql  tabelas, segurança e ranking
 ```
 
+## Mundo compartilhado
+
+No mundo aberto, todos veem os **mesmos** vícios e chefes. O jogador que está no mundo há mais tempo é o *anfitrião*: só ele simula os inimigos e manda o estado para os outros (~7 vezes por segundo, pelo Supabase Realtime). Os outros mandam seus golpes para ele, que aplica o dano; a recompensa vai para todos que ajudaram a vencer. Se o anfitrião sair, o próximo da fila assume. Dungeons continuam individuais. Código em `src/game/mundoNet.js`.
+
 ## Limitações conhecidas
 
-- O combate roda no aparelho de cada jogador. Os outros jogadores aparecem no mapa e no chat, mas os inimigos não são compartilhados.
+- O anfitrião é o aparelho de um jogador: se ele minimizar o jogo, o mundo para por alguns segundos até outro assumir. Um servidor dedicado (Node no Fly.io/Railway) pode assumir esse papel no futuro com as mesmas mensagens.
 - O banco tem uma proteção básica contra trapaça (a pontuação não pode cair nem pular demais de uma vez). Para um ranking à prova de trapaça, a pontuação precisa ser validada no servidor.

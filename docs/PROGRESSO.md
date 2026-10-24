@@ -39,15 +39,23 @@ No ar em: https://peregrinos-pi.vercel.app
 - **Personagens** com contorno, olhos com brilho, mangas, túnica com gola e listras, sandálias e fivela. Vícios com contorno.
 - **Mapa** com bordas arredondadas entre terrenos, espuma nas margens, grama sem "xadrez", flores, árvores com contorno, cedros no Líbano, rochas, cactos, palmeiras e casas com telhas e janelas.
 
+### Combate, classes e mundo compartilhado
+- Combate com peso: fôlego no ataque, golpe carregado, postura e travar alvo.
+- 3 classes novas: Zelote (adaga), Valente de Davi (lança) e Juiz (chicote), com 5 armas cada.
+- Pastor e Levita melhorados (alcance e efeitos da trombeta, pedra com rastro e pedra dupla).
+- Corpos mais esguios.
+- Chefes mais difíceis; a Mentira não entrega mais qual é a verdadeira; Golias mais duro.
+- Menu › Ajustes: câmera centralizada, esconder a barra de missão, tremor e som.
+- **Mundo compartilhado**: todos veem os mesmos vícios e chefes (anfitrião via Supabase Realtime).
+
 ## ⏳ Falta (pela ordem sugerida no roadmap)
 
 ### Próximos passos (Top 10)
-- [ ] **Combate com peso**: fôlego gasto no ataque, postura (barra de equilíbrio), ataque carregado, travar alvo e pausa no acerto mais forte.
 - [ ] **Pedras de Ebenézer** (pontos de descanso e viagem rápida), **Botija da Viúva** (cura com cargas) e **sacola de talentos** deixada ao morrer.
 - [ ] **Quiz melhor**: explicação depois de cada resposta e um banco maior de perguntas, sorteadas.
 - [ ] **Casa do jogador**: tenda → casa, parede de versículos, horta, cozinha, visitas e casa do clã.
 - [ ] **Validação no servidor** das recompensas (Edge Functions), contra trapaça no ranking.
-- [ ] **Tela de configurações** (volume, dificuldade, tamanho do texto) e suporte a **controle (gamepad)**.
+- [ ] Mais **ajustes** (volume separado, dificuldade, tamanho do texto) e suporte a **controle (gamepad)**.
 - [ ] **Ícones próprios** para os itens no lugar dos emojis.
 - [ ] **Arco do Pecado** em 7 encontros, terminando no chefe que só se vence pela graça.
 - [ ] **Evento de mundo**: os filisteus atacam os muros da cidade.
@@ -62,6 +70,6 @@ No ar em: https://peregrinos-pi.vercel.app
 
 ### Técnico
 - [ ] Dividir `src/game/game.js` (ainda com ~1.700 linhas) em combate, inimigos, mundo e missões.
-- [ ] Co-op de verdade: inimigos compartilhados e chefes do mundo com vida compartilhada.
+- [ ] Servidor dedicado assumindo o papel de anfitrião do mundo (hoje é o aparelho de um jogador).
 - [ ] Equilibrar o Golias jogando de verdade (vida, dano e tempo da testa exposta ficam em `src/data/bestiary.js`).
 - [ ] Testar o visual novo num celular real com toque.

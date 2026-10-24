@@ -12,6 +12,7 @@ import { WORLD_NPCS, QUESTS } from '../data/npcs.js';
 import { SEMANAS, SEMANA_ATUAL } from '../content/index.js';
 import { TS, T, generateWorld, buildFase, buildSalao, buildSemanaSala, zoneAt, ZONES, GATE_XS, GATE_Y, makeMinimap } from './world.js';
 import { MOVES, MOVIMENTOS, REGRAS, faseAtual, modDano, aoDefender } from './bossMoves.js';
+import { instalarMundoNet } from './mundoNet.js';
 import { drawPerson, drawWeapon, drawEnemy, drawBoss, drawChest, drawPortal, drawSheep, drawProjectile, drawAnimal, shade } from './draw.js';
 import { computeStats, xpNeed, addItem, removeItem, count, faseProg, arrumarArmas, MAX_LEVEL } from './player.js';
 
@@ -50,6 +51,8 @@ export class Game {
     };
     if (d.pos && !this.world.map.solid(Math.floor(d.pos.x / TS), Math.floor(d.pos.y / TS))) { this.p.x = d.pos.x; this.p.y = d.pos.y; }
     this.p.hp = Math.min(this.p.hp, this.st.maxHp);
+    this.eu = this.p; // o jogador de verdade (this.p vira outro jogador por um instante quando o anfitrião simula a IA)
+    this.nidSeq = 0; this.proxies = new Map();
     arrumarArmas(char); // saves antigos podiam ter armas de outra classe na mochila
     this.refreshStats(); // de novo, agora com o jogador criado (animal de estimação)
     // tela cheia e giro do celular nem sempre disparam "resize" na hora certa: observa o tamanho real
@@ -59,7 +62,7 @@ export class Game {
     this.resize();
     this.enterWorld(true);
     if (ONLINE) this.net = net.joinWorld({ id: char.id, name: char.name, cls: char.cls }, {
-      pos: m => this.onNetPos(m), chat: m => this.onNetChat(m), leave: k => this.others.delete(k), count: n => this.ui.online(n)
+      pos: m => this.onNetPos(m), chat: m => this.onNetChat(m), ev: m => this.onNetEv(m), leave: k => this.others.delete(k), count: n => this.ui.online(n)
     });
     this.social = { clan: null, friends: new Set(), pedidos: 0 };
     this.refreshSocial();
@@ -98,7 +101,8 @@ export class Game {
     this.projs = []; this.tele = []; this.hazards = []; this.pickups = []; this.chests = [];
     this.npcs = WORLD_NPCS.map(n => ({ ...n, x: n.tx * TS + 16, y: n.ty * TS + 16, talkT: 0 }));
     this.enemies = [];
-    this.spawns = this.world.spawns.map(s => ({ ...s, alive: false, at: 0 }));
+    this.spawns = this.world.spawns.map((s, i) => ({ ...s, i, alive: false, at: 0 }));
+    this.worldSince = Date.now(); this._host = undefined;
     for (const s of this.spawns) this.spawnFrom(s);
     // chefes do mundo: todo chefe com "mundo" no bestiário mora num ponto do mapa
     this.worldBosses = Object.entries(BOSSES).filter(([, d]) => d.mundo)
@@ -204,7 +208,7 @@ export class Game {
     const d = ENEMIES[type];
     const hp = Math.round(d.hp * boost * DIF.hp);
     return {
-      kind: 'enemy', type, d, x, y, hx: x, hy: y, r: d.r, hp, max: hp, atk: Math.round(d.atk * boost * DIF.atk), def: d.def, spd: d.spd,
+      kind: 'enemy', nid: 'a' + String(this.char.id).slice(0, 6) + '.' + (++this.nidSeq), boost, type, d, x, y, hx: x, hy: y, r: d.r, hp, max: hp, atk: Math.round(d.atk * boost * DIF.atk), def: d.def, spd: d.spd,
       xp: Math.round(d.xp * boost), ouro: Math.round(d.ouro * boost), lv: Math.round(d.lv * boost),
       ph: Math.random() * 10, flash: 0, kx: 0, ky: 0, cd: rand(0.5, 1.5), telegraph: 0, aggro: false, stun: 0, dash: 0, stolen: 0,
       pos: 0, posMax: Math.round(22 + d.lv * 6), broken: 0
@@ -212,19 +216,19 @@ export class Game {
   }
   spawnFrom(s) {
     const e = this.makeEnemy(s.type, s.tx * TS + 16, s.ty * TS + 16);
-    e.spawn = s; s.alive = true; this.enemies.push(e);
+    e.spawn = s; e.nid = 's' + s.i; s.alive = true; this.enemies.push(e);
   }
   makeBoss(id, x, y) {
     const d = BOSSES[id];
     return {
-      kind: 'boss', id, d, x, y, hx: x, hy: y, r: d.r, hp: Math.round(d.hp * DIF_CHEFE.hp), max: Math.round(d.hp * DIF_CHEFE.hp), atk: Math.round(d.atk * DIF_CHEFE.atk), def: d.def, spd: d.spd,
+      kind: 'boss', nid: 'a' + String(this.char.id).slice(0, 6) + '.' + (++this.nidSeq), id, d, x, y, hx: x, hy: y, r: d.r, hp: Math.round(d.hp * DIF_CHEFE.hp), max: Math.round(d.hp * DIF_CHEFE.hp), atk: Math.round(d.atk * DIF_CHEFE.atk), def: d.def, spd: d.spd,
       flash: 0, kx: 0, ky: 0, stun: 0, act: null, actT: 1.5, cd: 2, lastHit: 0, phase: 0, accused: 0, ph: 0, engaged: false, alpha: 1,
       pos: 0, posMax: d.postura ?? Math.round(90 + d.lv * 12), broken: 0
     };
   }
   spawnWorldBoss(wb) {
     const b = this.makeBoss(wb.id, wb.home.x, wb.home.y);
-    b.world = wb; wb.alive = true;
+    b.world = wb; wb.alive = true; b.nid = 'b:' + wb.id;
     if (b.d.ancoras) {
       // pontos na água perto da margem, de onde o chefe pode ressurgir (golpe "mergulho")
       b.anchors = [];
@@ -253,10 +257,15 @@ export class Game {
     const blocking = this.ui.blocking;
     this.updateFx(dt);
     this.updateOthers(dt);
-    if (blocking) { input.pressed.clear(); return; }
+    if (blocking) {
+      input.pressed.clear();
+      if (this.netAtivo() && this.souHost() && this.proxies.size) { this.updateEnemies(dt); this.updateProjectiles(dt); this.updateTele(dt); this.netTick(dt); }
+      return;
+    }
     this.char.data.stats.playtime += dt;
     this.updatePlayer(dt);
     this.updatePet(dt);
+    this.netTick(dt);
     this.updateEnemies(dt);
     this.updateProjectiles(dt);
     this.updateTele(dt);
@@ -367,6 +376,8 @@ export class Game {
   }
   // Golpe do animal: mais leve que o do jogador (sem tremer a tela nem pausar o jogo)
   petHit(a, e, luta) {
+    if (!this.souHost() && e.nid) return this.netGolpe(e, luta.mult, Math.atan2(e.y - a.y, e.x - a.x), 40, luta.mult * 9, luta.som);
+    (e.hitBy = e.hitBy || new Set()).add(this.meuId());
     const { dmg } = this.dmgCalc(luta.mult, e);
     e.hp -= dmg; e.flash = 0.1; e.aggro = true; if (e.kind === 'boss') e.lastHit = this.T;
     if (e.kind !== 'boss') { const ang = Math.atan2(e.y - a.y, e.x - a.x); e.kx += Math.cos(ang) * 40; e.ky += Math.sin(ang) * 40; }
@@ -620,12 +631,15 @@ export class Game {
   }
 
   proj(o) {
+    if (o.owner === 'e' && this.netAtivo() && this.souHost() && this.proxies.size) this.netProj(o);
     this.projs.push({ x: o.x, y: o.y, vx: Math.cos(o.a) * o.spd, vy: Math.sin(o.a) * o.spd, r: o.r, life: o.life, max: o.life, mult: o.mult, kind: o.kind, owner: o.owner || 'p', homing: o.homing || 0, pierce: o.pierce || 0, pos: o.pos, hitSet: new Set(), dmg: o.dmg, color: o.color, label: o.label, src: o.src, reflect: o.reflect });
   }
 
   hit(e, mult, a, knock, pos = mult * 9) {
     if (e.inv || e.hp <= 0) return;
     if (e.clone) { this.burst(e.x, e.y, 14, '#B98AF0', 160); this.addText(e.x, e.y - 30, 'Ilusão!', '#E6DBFF', 13); e.hp = 0; this.enemies.splice(this.enemies.indexOf(e), 1); return; }
+    if (!this.souHost() && e.nid) return this.netGolpe(e, mult, a, knock, pos);
+    (e.hitBy = e.hitBy || new Set()).add(this.meuId());
     const { dmg, crit } = this.dmgCalc(mult, e);
     e.hp -= dmg; e.flash = 0.12; e.lastHit = this.T; e.aggro = true; if (e.kind === 'boss') e.engaged = true;
     const kb = e.kind === 'boss' ? knock * 0.1 : knock;
@@ -637,11 +651,20 @@ export class Game {
   }
 
   kill(e) {
-    const p = this.p, c = this.char;
     this.enemies.splice(this.enemies.indexOf(e), 1);
     this.burst(e.x, e.y, 26, e.d.cor, 240); sfx('kill');
-    if (e.kind === 'boss') return this.bossDefeated(e);
+    if (this.lock === e) this.lock = null;
     if (e.spawn) { e.spawn.alive = false; e.spawn.at = this.T + rand(25, 45); }
+    if (e.world) { e.world.alive = false; e.world.at = this.T + e.d.respawn; }
+    if (this.netAtivo()) this.netEnviar({ t: 'morte', id: e.nid, por: [...(e.hitBy || [])] });
+    if (!e.hitBy || e.hitBy.has(this.meuId())) this.recompensa(e);
+    else if (this.boss === e) { this.boss = null; this.ui.bossBar(null); }
+  }
+
+  // XP, denários, missões e lições de quem ajudou a vencer o inimigo
+  recompensa(e) {
+    const c = this.char;
+    if (e.kind === 'boss') return this.bossDefeated(e);
     c.data.stats.kills++; c.data.kills[e.type] = (c.data.kills[e.type] || 0) + 1;
     if (this.fase) this.fase.kills++;
     this.gainXp(e.xp); this.addScore(e.lv * 6);
@@ -662,7 +685,6 @@ export class Game {
     c.data.gold += Math.round(d.ouro * this.st.ouro); sfx('coin');
     this.enemies = this.enemies.filter(e => !e.clone);
     if (b.world) {
-      b.world.alive = false; b.world.at = this.T + d.respawn;
       const first = c.data.stats.bosses[b.id] === 1;
       if (d.drop && (first || Math.random() < 0.25)) { addItem(c, d.drop); this.ui.toast('Você ganhou: ' + ITEMS[d.drop].nome + '!', 4000); }
       this.questEvent('boss', b.id);
@@ -720,6 +742,7 @@ export class Game {
 
   damagePlayer(amount, src, opts = {}) {
     const p = this.p;
+    if (p.remote) return this.netDanoRemoto(p, amount, src, opts);
     if (p.dead || p.dodgeT > 0 || p.inv > 0 || this.ui.blocking) return 'miss';
     let dmg = amount * 60 / (60 + this.st.def);
     if (p.guard && !opts.unblockable) {
@@ -731,6 +754,7 @@ export class Game {
           if (src.kind === 'enemy' || src.kind === 'boss') { src.stun = src.kind === 'boss' ? 0.8 : 1.4; src.kx -= Math.cos(ang) * 200; src.ky -= Math.sin(ang) * 200; }
           if (src.kind === 'boss') aoDefender(this, src);
           if (src.kind === 'enemy' || src.kind === 'boss') this.postura(src, src.kind === 'boss' ? 34 : 999);
+          if (!this.souHost() && src.nid) this.netEnviar({ t: 'parry', id: src.nid });
           return 'parry';
         }
         dmg *= 1 - this.st.block; p.sta -= 10; p.staT = 0.5; sfx('block');
@@ -775,19 +799,21 @@ export class Game {
 
   /* ================= Inimigos ================= */
   updateEnemies(dt) {
-    const p = this.p;
-    for (const e of this.enemies.slice()) {
+    if (!this.souHost()) return this.updateEnemiesCliente(dt);
+    try { for (const e of this.enemies.slice()) {
+      this.p = this.eu;
       e.flash = Math.max(0, e.flash - dt); e.stun = Math.max(0, (e.stun || 0) - dt); if (e.vuln) e.vuln -= dt;
       if (e.broken > 0) e.broken -= dt;
       if (e.pos > 0 && this.T - (e.posT || 0) > 1.6) e.pos = Math.max(0, e.pos - e.posMax * 0.2 * dt);
-      const dist = Math.hypot(p.x - e.x, p.y - e.y);
+      const alvo = this.alvoDe(e), dist = Math.hypot(alvo.x - e.x, alvo.y - e.y);
       if (this.scene === 'world' && dist > 1300 && e.kind !== 'boss') continue;
       // empurrão
       if (Math.abs(e.kx) + Math.abs(e.ky) > 1) { this.moveEnt(e, e.kx * dt, e.ky * dt); e.kx *= Math.pow(0.002, dt); e.ky *= Math.pow(0.002, dt); }
       if (e.stun > 0) continue;
+      this.p = alvo;
       if (e.kind === 'boss') { this.updateBoss(e, dt, dist); continue; }
       this.updateEnemy(e, dt, dist);
-    }
+    } } finally { this.p = this.eu; }
     // ninguém fica em cima de ninguém
     const es = this.enemies;
     for (let i = 0; i < es.length; i++) for (let j = i + 1; j < es.length; j++) {
@@ -854,7 +880,7 @@ export class Game {
     } else if (e.mode === 'charge') { e.dash = 0.45; e.dashHit = false; }
     else if (dist < e.r + p.r + 22) {
       const r = this.damagePlayer(e.atk, e);
-      if (r === 'hit' && e.d.ai === 'thief' && !e.stolen) {
+      if (r === 'hit' && e.d.ai === 'thief' && !e.stolen && !p.remote) {
         const s = Math.min(this.char.data.gold, randi(3, 8)); this.char.data.gold -= s; e.stolen = s;
         if (s) this.addText(p.x, p.y - 46, '-' + s + ' denários', '#F2C14E', 13);
       }
@@ -866,13 +892,16 @@ export class Game {
     const p = this.p;
     if (b.clone) return this.updateClone(b, dt, dist);
     if (b.world) {
-      if (!b.engaged && dist < 380 && !p.dead) { b.engaged = true; this.bossIntro(b); }
-      if (b.engaged && (dist > 950 || p.dead)) { b.engaged = false; b.hp = b.max; b.x = b.hx; b.y = b.hy; b.gritos = null; this.ui.bossBar(null); this.boss = null; music('mundo'); }
+      if (!b.engaged && dist < 380 && !p.dead) { b.engaged = true; if (p === this.eu) { b._intro = true; this.bossIntro(b); } }
+      if (b.engaged && (dist > 950 || p.dead)) { b.engaged = false; b.hp = b.max; b.x = b.hx; b.y = b.hy; b.gritos = null; b._intro = false; if (this.boss === b) { this.ui.bossBar(null); this.boss = null; music('mundo'); } }
       if (!b.engaged) return;
     }
     if (!b.engaged) return;
-    this.boss = b;
-    this.ui.bossBar(b.d.nome, b.hp / b.max, b.d.titulo, b.pos / b.posMax);
+    // barra do chefe só para quem está perto dele
+    if (Math.hypot(this.eu.x - b.x, this.eu.y - b.y) < 950) {
+      if (!b._intro) { b._intro = true; this.bossIntro(b); }
+      this.boss = b; this.ui.bossBar(b.d.nome, b.hp / b.max, b.d.titulo, b.pos / b.posMax);
+    } else if (this.boss === b) { this.boss = null; this.ui.bossBar(null); }
     b.actT -= dt;
     const d = b.d, c = { p, dist, ax: p.x - b.x, ay: p.y - b.y, al: dist || 1 };
     // contato
@@ -1024,8 +1053,10 @@ export class Game {
     const tx = Math.floor(p.x / TS), ty = Math.floor(p.y / TS), z = zoneAt(tx, ty);
     if (z !== this.zone) { this.zone = z; this.ui.zone(ZONES[z].nome, ZONES[z].seguro); }
     // reaparecer inimigos longe do jogador
-    for (const s of this.spawns) if (!s.alive && this.T > s.at && Math.hypot(s.tx * TS - p.x, s.ty * TS - p.y) > 600) this.spawnFrom(s);
-    for (const wb of this.worldBosses) if (!wb.alive && this.T > wb.at && Math.hypot(wb.home.x - p.x, wb.home.y - p.y) > 900) this.spawnWorldBoss(wb);
+    if (this.souHost()) {
+      for (const s of this.spawns) if (!s.alive && this.T > s.at && Math.hypot(s.tx * TS - p.x, s.ty * TS - p.y) > 600) this.spawnFrom(s);
+      for (const wb of this.worldBosses) if (!wb.alive && this.T > wb.at && Math.hypot(wb.home.x - p.x, wb.home.y - p.y) > 900) this.spawnWorldBoss(wb);
+    }
     // o Pecado espreita os portões à noite (Gn 4:7)
     const night = this.darkness() > 0.35;
     if (night && !this.pecado && !this.char.data.secrets.includes('pecado1') && Math.random() < dt / 20) {
@@ -1389,7 +1420,7 @@ export class Game {
   /* ================= Rede ================= */
   sendPos() {
     const p = this.p, c = this.char;
-    const st = { id: c.id, name: c.name, cls: c.cls, look: c.look, lvl: c.level, cla: this.social.clan?.tag, pet: this.st.pet ? { k: this.st.pet, m: p.mounted ? 1 : 0 } : undefined, x: Math.round(p.x), y: Math.round(p.y), fx: +p.fx.toFixed(2), fy: +p.fy.toFixed(2), mv: p.moving ? 1 : 0, atk: p.atkT > 0 ? 1 : 0, eq: c.data.eq };
+    const st = { id: c.id, w: this.worldSince, name: c.name, cls: c.cls, look: c.look, lvl: c.level, cla: this.social.clan?.tag, pet: this.st.pet ? { k: this.st.pet, m: p.mounted ? 1 : 0 } : undefined, x: Math.round(p.x), y: Math.round(p.y), fx: +p.fx.toFixed(2), fy: +p.fy.toFixed(2), mv: p.moving ? 1 : 0, atk: p.atkT > 0 ? 1 : 0, eq: c.data.eq };
     const key = st.x + ',' + st.y + ',' + st.atk + ',' + st.fx;
     if (key === this.lastSent && this.T - (this.lastSentT || 0) < 3) return;
     this.lastSent = key; this.lastSentT = this.T;
@@ -1400,7 +1431,7 @@ export class Game {
     if (m.id === this.char.id) return;
     let o = this.others.get(m.id);
     if (!o) { o = { ...m, walk: 0 }; this.others.set(m.id, o); }
-    Object.assign(o, { tx: m.x, ty: m.y, fx: m.fx, fy: m.fy, mv: m.mv, atk: m.atk, lvl: m.lvl, look: m.look, eq: m.eq, cla: m.cla, pet: m.pet, seen: performance.now() });
+    Object.assign(o, { w: m.w, tx: m.x, ty: m.y, fx: m.fx, fy: m.fy, mv: m.mv, atk: m.atk, lvl: m.lvl, look: m.look, eq: m.eq, cla: m.cla, pet: m.pet, seen: performance.now() });
   }
   updateOthers(dt) {
     const now = performance.now();
@@ -1841,3 +1872,5 @@ function wrap(g, text, max) {
   if (line) out.push(line);
   return out;
 }
+
+instalarMundoNet(Game);

@@ -188,17 +188,19 @@ export const net = {
 
   // Mundo compartilhado: posição dos outros jogadores + chat (Supabase Realtime broadcast/presence).
   joinWorld(me, on) {
-    if (!ONLINE) return { send() {}, chat() {}, leave() {}, count: () => 1, online: () => [me.id] };
+    if (!ONLINE) return { send() {}, chat() {}, ev() {}, leave() {}, count: () => 1, online: () => [me.id] };
     const ch = sb.channel('mundo', { config: { broadcast: { self: false }, presence: { key: me.id } } });
     let n = 1;
     ch.on('broadcast', { event: 'pos' }, ({ payload }) => on.pos(payload))
       .on('broadcast', { event: 'chat' }, ({ payload }) => on.chat(payload))
+      .on('broadcast', { event: 'ev' }, ({ payload }) => on.ev?.(payload)) // inimigos compartilhados (ver game/mundoNet.js)
       .on('presence', { event: 'sync' }, () => { n = Object.keys(ch.presenceState()).length; on.count?.(n); })
       .on('presence', { event: 'leave' }, ({ key }) => on.leave(key))
       .subscribe(st => { if (st === 'SUBSCRIBED') ch.track({ name: me.name, cls: me.cls, at: Date.now() }); });
     return {
       send: p => ch.send({ type: 'broadcast', event: 'pos', payload: p }),
       chat: msg => ch.send({ type: 'broadcast', event: 'chat', payload: msg }),
+      ev: msg => ch.send({ type: 'broadcast', event: 'ev', payload: msg }),
       leave: () => sb.removeChannel(ch),
       count: () => n,
       online: () => Object.keys(ch.presenceState()) // ids dos personagens conectados
