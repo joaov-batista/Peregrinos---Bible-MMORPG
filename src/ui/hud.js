@@ -1,6 +1,6 @@
 // Interface dentro do jogo: HUD, diálogos, quiz, lojas, menu, ranking e telas de vitória/derrota.
 import { $, h, fmt, shuffle, clamp } from '../util.js';
-import { sfx, audio, setMuted, initAudio } from '../audio.js';
+import { sfx, audio, setMuted, initAudio, setVolumes } from '../audio.js';
 import { input } from '../input.js';
 import { net, ONLINE } from '../net.js';
 import { ITEMS, SLOTS, SLOT_NOMES, RARIDADE, itemCor, statLine, STATS, statVal, efeitos, porCategoria } from '../data/items.js';
@@ -47,6 +47,8 @@ export function createHud(onExit) {
   // botão de montar: só aparece com burrinho/cavalo equipado
   ui.mountBtn = (tem, montado) => { const b = $('aMount'); b.hidden = !tem; b.classList.toggle('on', !!montado); b.dataset.name = montado ? 'Descer' : 'Montar'; };
   ui.closeAll = () => root.querySelectorAll('.modal').forEach(m => m._close?.());
+  input.padAcoes = { menu: () => { if (!modals && game) ui.openMenu(); }, mapa: () => { if (!modals && game) ui.openMap(); } };
+  input.padAvisar = msg => ui.toast(msg, 4000);
   addEventListener('keydown', e => {
     if (e.code === 'Escape' && modals > 0) { const all = root.querySelectorAll('.modal:not(.locked)'); all[all.length - 1]?._close?.(); }
   });
@@ -268,8 +270,16 @@ export function createHud(onExit) {
       linha([h('span', { class: 'ctl-i' }, '🐎')], 'montar (aparece com montaria)'),
       linha([h('span', { class: 'ctl-pill' }, 'Falar')], 'botão dourado: falar, abrir, pescar'),
       linha([h('span', { class: 'ctl-i' }, '🗺'), h('span', { class: 'ctl-i' }, '☰')], 'mapa · menu (no canto de cima)'));
+    const pd = h('div', { class: 'ctl-card' + (document.body.classList.contains('pad') ? ' atual' : '') }, h('h4', {}, '🎮 Controle', document.body.classList.contains('pad') ? h('em', {}, 'você está aqui') : ''),
+      linha([k('Analógico esq.')], 'andar'), linha([k('Analógico dir.')], 'mirar'),
+      linha([k('RB / R1')], 'atacar (segurar: golpe forte)'), linha([k('RT / R2')], 'especial: ' + sk),
+      linha([k('LB / L1')], 'defender (no tempo certo: defesa perfeita)'), linha([k('B / ◯')], 'esquiva'),
+      linha([k('A / ✕')], 'falar, abrir, pescar, entrar'), linha([k('X / □')], 'beber da Botija da Viúva'),
+      linha([k('LT / L2'), k('R3')], 'travar / soltar o alvo'), linha([k('Y / △')], 'montar'),
+      linha([k('◀'), k('▶')], 'atalhos de itens'), linha([k('Start'), k('Select / ▲')], 'menu · mapa'),
+      linha([k('Nos menus')], 'direcional escolhe · A confirma · B volta'));
     p.append(h('div', { class: 'p-head' }, h('h3', {}, '🎮 Como jogar'), h('button', { class: 'x', onclick: () => close(), 'aria-label': 'Fechar' }, '✕')),
-      h('div', { class: 'ctl-grid' }, ...(toque ? [cel, pc] : [pc, cel])),
+      h('div', { class: 'ctl-grid' }, ...(document.body.classList.contains('pad') ? [pd, pc, cel] : toque ? [cel, pc, pd] : [pc, cel, pd])),
       h('p', { class: 'hint' }, 'Dica: logo ao levantar o escudo vem a DEFESA PERFEITA — atordoa o inimigo e devolve projéteis. Veja esta tela de novo em ☰ › Ajuda.'),
       h('div', { class: 'btn-row' }, h('button', { class: 'btn gold', onclick: () => close() }, 'Entendi, vamos jogar!')));
   }, { wide: true });
@@ -713,14 +723,21 @@ export function createHud(onExit) {
     const opcoes = [
       ['camCentro', '🎥 Câmera sempre centralizada', 'O personagem fica sempre no meio da tela, até perto das bordas do mapa.'],
       ['esconderMissao', '📜 Esconder a barra de missão', 'Tira o cartão da missão do canto da tela. A seta dourada continua mostrando o caminho.'],
-      ['tremor', '💥 Tremor da tela', 'A tela treme nos golpes fortes, nos chefes e nas explosões.']
+      ['tremor', '💥 Tremor da tela', 'A tela treme nos golpes fortes, nos chefes e nas explosões.'],
+      ['numerosDano', '🔢 Números de dano', 'Mostra quanto cada golpe tirou dos inimigos.'],
+      ['vibrar', '📳 Vibração', 'O controle (ou o celular) treme ao levar dano e na defesa perfeita.']
     ];
     const list = h('div', { class: 'fase-list' });
     for (const [k, nome, desc] of opcoes) list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, nome), h('small', {}, desc)),
       h('button', { class: 'toggle' + (config[k] ? ' on' : ''), role: 'switch', 'aria-checked': String(!!config[k]), 'aria-label': nome, onclick: () => { setConfig(k, !config[k]); sfx('click'); game.mmT = 0; render(); } }, h('i'))));
     list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, '🔊 Som'), h('small', {}, 'Música e efeitos.')),
       h('button', { class: 'toggle' + (audio.muted ? '' : ' on'), role: 'switch', 'aria-checked': String(!audio.muted), 'aria-label': 'Som', onclick: () => { initAudio(); setMuted(!audio.muted); $('bMute').textContent = audio.muted ? '🔇' : '🔊'; render(); } }, h('i'))));
-    body.append(list, h('p', { class: 'hint' }, 'Os ajustes ficam salvos neste aparelho.'));
+    const faixa = (k, nome, desc) => h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, nome), h('small', {}, desc)),
+      h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round((config[k] ?? 1) * 100), class: 'cfg-range', 'aria-label': nome, oninput: e => { setConfig(k, +e.target.value / 100); initAudio(); setVolumes(); }, onchange: () => sfx('click') }));
+    list.append(faixa('volMusica', '🎵 Volume da música', 'A lira do mundo e a música dos chefes.'), faixa('volEfeitos', '🔔 Volume dos efeitos', 'Golpes, moedas, passos e avisos.'));
+    list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, '🔠 Tamanho da interface'), h('small', {}, 'Aumenta textos, botões e janelas.')),
+      h('div', { class: 'cfg-opts' }, [[1, 'Normal'], [1.15, 'Grande'], [1.3, 'Enorme']].map(([v, l]) => h('button', { class: 'chip-btn' + ((config.texto || 1) === v ? ' on' : ''), onclick: () => { setConfig('texto', v); sfx('click'); render(); } }, l)))));
+    body.append(list, h('p', { class: 'hint' }, 'Os ajustes ficam salvos neste aparelho.' + (document.body.classList.contains('pad') ? ' Controle conectado: veja os botões em Ajuda › Ver tela de controles.' : '')));
   }
 
   function tabHelp(body, render, close) {

@@ -6,6 +6,7 @@
 // Mensagens (evento "ev" do canal): snap, golpe, parry, dano, morte, proj, tele, haz.
 import { lerp, rand } from '../util.js';
 import { aoDefender } from './bossMoves.js';
+import { config } from '../config.js';
 
 const SNAP_S = 0.15;      // intervalo entre os estados enviados pelo anfitrião
 const VISTO_MS = 5000;    // jogador sem mandar posição por mais que isso não conta mais
@@ -168,7 +169,7 @@ const metodos = {
   netGolpe(e, mult, a, knock, pos, som) {
     const { dmg, crit } = this.dmgCalc(mult, e);
     e.flash = 0.12;
-    this.addText(e.x + rand(-8, 8), e.y - e.r - 10, (som ? som + ' ' : crit ? '✦' : '') + dmg, crit ? '#FFD23F' : '#FFFFFF', crit ? 17 : 13);
+    if (config.numerosDano) this.addText(e.x + rand(-8, 8), e.y - e.r - 10, (som ? som + ' ' : crit ? '✦' : '') + dmg, crit ? '#FFD23F' : '#FFFFFF', crit ? 17 : 13);
     this.burst(e.x, e.y, crit ? 10 : 5, crit ? '#FFD23F' : '#FFF6E3', 160);
     this.hitstop = Math.max(this.hitstop, crit || pos >= 40 ? 0.07 : 0.03); this.shake(crit ? 5 : 2);
     this.netEnviar({ t: 'golpe', id: e.nid, d: dmg, a: +a.toFixed(2), k: Math.round(knock), ps: Math.round(pos) });

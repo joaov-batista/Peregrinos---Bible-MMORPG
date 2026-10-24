@@ -50,6 +50,8 @@ No ar em: https://peregrinos-pi.vercel.app
 - **Pedras de Ebenézer** (9 pelo mundo): descansar cura, enche a botija, vira o ponto de volta e libera viagem rápida.
 - **Botija da Viúva** (tecla H / 🫙): 3 cargas que curam 42%, mas leva quase 1 s parado para beber.
 - **Quiz que ensina**: explicação depois de cada resposta, 12 perguntas por fase (60 na semana) e lista "Para revisar" com as erradas.
+- **Controle (gamepad)** no estilo Dark Souls, inclusive nos menus, com vibração.
+- **Mais ajustes**: volume da música e dos efeitos, tamanho da interface, números de dano e vibração.
 - **Sacola de talentos**: ao cair no mundo, todos os denários ficam onde você caiu; cair de novo antes de buscar perde a sacola.
 
 ## ⏳ Falta (pela ordem sugerida no roadmap)
@@ -57,7 +59,6 @@ No ar em: https://peregrinos-pi.vercel.app
 ### Próximos passos (Top 10)
 - [ ] **Casa do jogador**: tenda → casa, parede de versículos, horta, cozinha, visitas e casa do clã.
 - [ ] **Validação no servidor** das recompensas (Edge Functions), contra trapaça no ranking.
-- [ ] Mais **ajustes** (volume separado, dificuldade, tamanho do texto) e suporte a **controle (gamepad)**.
 - [ ] **Ícones próprios** para os itens no lugar dos emojis.
 - [ ] **Arco do Pecado** em 7 encontros, terminando no chefe que só se vence pela graça.
 - [ ] **Evento de mundo**: os filisteus atacam os muros da cidade.

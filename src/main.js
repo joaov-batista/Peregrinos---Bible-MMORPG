@@ -4,6 +4,7 @@ import { $ } from './util.js';
 import { initInput, input } from './input.js';
 import { initZoom } from './zoom.js';
 import { initAudio } from './audio.js';
+import { initGamepad } from './gamepad.js';
 import { net, ONLINE } from './net.js';
 import { Game } from './game/game.js';
 import { createHud } from './ui/hud.js';
@@ -12,6 +13,7 @@ import { showAuth, showSelect, showCreator, hideScreens } from './ui/screens.js'
 const canvas = $('cv');
 initZoom();
 initInput(canvas);
+initGamepad();
 addEventListener('pointerdown', initAudio, { once: true });
 addEventListener('keydown', initAudio, { once: true });
 

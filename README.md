@@ -2,7 +2,7 @@
 
 Um jogo de ação e aventura (estilo MMORPG) focado na Bíblia. Toda semana os **5 Portões** do mundo abrem 5 fases novas baseadas num estudo bíblico.
 
-- Jogue no **PC** (teclado + mouse) e no **celular deitado** (joystick e botões na tela).
+- Jogue no **PC** (teclado + mouse), com **controle** (Xbox, PlayStation e genéricos) e no **celular deitado** (joystick e botões na tela).
 - Contas, personagens, ranking mundial e outros jogadores aparecendo no mapa com **Supabase**.
 - Hospedagem na **Vercel**.
 - Sem Supabase configurado, o jogo funciona em **modo offline** (salva no navegador).

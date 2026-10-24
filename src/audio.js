@@ -1,7 +1,8 @@
 // Efeitos sonoros e música sintetizados (WebAudio), sem arquivos.
 import { store } from './util.js';
+import { config } from './config.js';
 
-let AC = null, master = null, musicGain = null, musicTimer = null;
+let AC = null, master = null, musicGain = null, sfxGain = null, musicTimer = null;
 export const audio = { muted: store.get('peregrinos.mute', false) };
 
 export function initAudio() {
@@ -9,11 +10,15 @@ export function initAudio() {
     try {
       AC = new (window.AudioContext || window.webkitAudioContext)();
       master = AC.createGain(); master.gain.value = audio.muted ? 0 : 0.8; master.connect(AC.destination);
-      musicGain = AC.createGain(); musicGain.gain.value = 0.16; musicGain.connect(master);
+      musicGain = AC.createGain(); musicGain.connect(master);
+      sfxGain = AC.createGain(); sfxGain.connect(master);
+      setVolumes();
     } catch { AC = null; }
   }
   if (AC && AC.state === 'suspended') AC.resume();
 }
+// volumes separados de música e efeitos (menu › Ajustes)
+export function setVolumes() { if (!AC) return; musicGain.gain.value = 0.2 * (config.volMusica ?? 0.8); sfxGain.gain.value = config.volEfeitos ?? 1; }
 export function setMuted(m) { audio.muted = m; store.set('peregrinos.mute', m); if (master) master.gain.value = m ? 0 : 0.8; }
 
 function tone(f1, f2, dur, type = 'sine', vol = 0.2, delay = 0, dest) {
@@ -21,7 +26,7 @@ function tone(f1, f2, dur, type = 'sine', vol = 0.2, delay = 0, dest) {
   const t = AC.currentTime + delay, o = AC.createOscillator(), g = AC.createGain();
   o.type = type; o.frequency.setValueAtTime(f1, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
   g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  o.connect(g); g.connect(dest || master); o.start(t); o.stop(t + dur + 0.02);
+  o.connect(g); g.connect(dest || sfxGain || master); o.start(t); o.stop(t + dur + 0.02);
 }
 function noiseBurst(dur, vol = 0.15, freq = 1200) {
   if (!AC) return;
@@ -29,7 +34,7 @@ function noiseBurst(dur, vol = 0.15, freq = 1200) {
   for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
   const f = AC.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq;
   const g = AC.createGain(); g.gain.value = vol;
-  n.buffer = b; n.connect(f); f.connect(g); g.connect(master); n.start();
+  n.buffer = b; n.connect(f); f.connect(g); g.connect(sfxGain || master); n.start();
 }
 
 export function sfx(n) {

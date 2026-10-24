@@ -5,6 +5,7 @@ import { viewSize, zoom } from '../zoom.js';
 import { sfx, music } from '../audio.js';
 import { net, ONLINE } from '../net.js';
 import { config } from '../config.js';
+import { vibrar } from '../gamepad.js';
 import { CLASSES } from '../data/classes.js';
 import { ITEMS } from '../data/items.js';
 import { ENEMIES, BOSSES, ACUSACOES, FALSAS } from '../data/bestiary.js';
@@ -283,6 +284,7 @@ export class Game {
   aimAngle() {
     const p = this.p;
     if (this.lock) return Math.atan2(this.lock.y - p.y, this.lock.x - p.x);
+    if (input.padAim != null) return input.padAim;
     if (input.mouseAim && !input.touch) {
       const wx = input.mx / this.Z + this.camL, wy = input.my / this.Z + this.camT;
       return Math.atan2(wy - (p.y - 6), wx - p.x);
@@ -303,7 +305,7 @@ export class Game {
     if (p.stun > 0) { mv.x = mv.y = 0; }
     // mira / direção do rosto
     const aim = this.aimAngle();
-    if (this.lock || (input.mouseAim && !input.touch)) { p.fx = Math.cos(aim); p.fy = Math.sin(aim); }
+    if (this.lock || input.padAim != null || (input.mouseAim && !input.touch)) { p.fx = Math.cos(aim); p.fy = Math.sin(aim); }
     // segurando o escudo, vira sozinho para o inimigo mais perto
     else if (input.isHeld('defend') && this.char.data.eq.escudo) { p.fx = Math.cos(aim); p.fy = Math.sin(aim); }
     else if (mv.x || mv.y) { const l = Math.hypot(mv.x, mv.y); p.fx = mv.x / l; p.fy = mv.y / l; }
@@ -385,7 +387,7 @@ export class Game {
     const { dmg } = this.dmgCalc(luta.mult, e);
     e.hp -= dmg; e.flash = 0.1; e.aggro = true; if (e.kind === 'boss') e.lastHit = this.T;
     if (e.kind !== 'boss') { const ang = Math.atan2(e.y - a.y, e.x - a.x); e.kx += Math.cos(ang) * 40; e.ky += Math.sin(ang) * 40; }
-    this.addText(e.x + rand(-6, 6), e.y - e.r - 8, luta.som + ' ' + dmg, '#FFE38A', 11);
+    if (config.numerosDano) this.addText(e.x + rand(-6, 6), e.y - e.r - 8, luta.som + ' ' + dmg, '#FFE38A', 11);
     this.burst(e.x, e.y, 3, '#FFF6E3', 100); sfx('hit');
     if (e.hp <= 0) this.kill(e);
   }
@@ -648,7 +650,7 @@ export class Game {
     e.hp -= dmg; e.flash = 0.12; e.lastHit = this.T; e.aggro = true; if (e.kind === 'boss') e.engaged = true;
     const kb = e.kind === 'boss' ? knock * 0.1 : knock;
     e.kx += Math.cos(a) * kb; e.ky += Math.sin(a) * kb;
-    this.addText(e.x + rand(-8, 8), e.y - e.r - 10, (crit ? '✦' : '') + dmg, crit ? '#FFD23F' : '#FFFFFF', crit ? 17 : 13);
+    if (config.numerosDano) this.addText(e.x + rand(-8, 8), e.y - e.r - 10, (crit ? '✦' : '') + dmg, crit ? '#FFD23F' : '#FFFFFF', crit ? 17 : 13);
     this.burst(e.x, e.y, crit ? 10 : 5, crit ? '#FFD23F' : '#FFF6E3', 160);
     sfx(crit ? 'crit' : 'hit'); this.hitstop = Math.max(this.hitstop, crit || pos >= 40 ? 0.07 : 0.03); this.shake(crit ? 5 : 2);
     if (e.hp <= 0) this.kill(e); else this.postura(e, pos);
@@ -753,7 +755,7 @@ export class Game {
       const ang = Math.atan2(src.y - p.y, src.x - p.x), face = Math.atan2(p.fy, p.fx);
       if (Math.abs(angDiff(ang, face)) < 2.1) {
         if (p.guardT < PERFEITA) {
-          sfx('parry'); this.addText(p.x, p.y - 40, 'DEFESA PERFEITA!', '#FFFFFF', 15); this.burst(p.x + p.fx * 14, p.y + p.fy * 14, 16, '#FFFFFF', 220);
+          sfx('parry'); vibrar(70, 0.35); this.addText(p.x, p.y - 40, 'DEFESA PERFEITA!', '#FFFFFF', 15); this.burst(p.x + p.fx * 14, p.y + p.fy * 14, 16, '#FFFFFF', 220);
           this.hitstop = 0.08; p.fe = Math.min(this.st.maxFe, p.fe + 6);
           if (src.kind === 'enemy' || src.kind === 'boss') { src.stun = src.kind === 'boss' ? 0.8 : 1.4; src.kx -= Math.cos(ang) * 200; src.ky -= Math.sin(ang) * 200; }
           if (src.kind === 'boss') aoDefender(this, src);
@@ -768,7 +770,7 @@ export class Game {
       }
     }
     dmg = Math.max(1, Math.round(dmg));
-    p.hp -= dmg; p.inv = 0.45; sfx('hurt');
+    p.hp -= dmg; p.inv = 0.45; sfx('hurt'); vibrar(dmg > this.st.maxHp * 0.2 ? 220 : 120, dmg > this.st.maxHp * 0.2 ? 1 : 0.55);
     if (p.mounted && dmg >= 6) { this.dismount(); this.addText(p.x, p.y - 52, 'Caiu da montaria!', '#FFB3B3', 12); } this.shake(7); this.ui.hurt();
     this.addText(p.x, p.y - 30, '-' + dmg, '#FF5A5F', 15);
     if (src && !opts.noKnock) { const a = Math.atan2(p.y - src.y, p.x - src.x); this.moveEnt(p, Math.cos(a) * 14, Math.sin(a) * 14); }

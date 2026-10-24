@@ -16,6 +16,7 @@ export const input = {
     let x = 0, y = 0;
     for (const k of this.keys) if (MOVE[k]) { x += MOVE[k][0]; y += MOVE[k][1]; }
     if (this.stick.id != null) { x = this.stick.x; y = this.stick.y; }
+    if (this.pad) { x = this.pad.x; y = this.pad.y; } // analógico do controle (gamepad.js)
     const l = Math.hypot(x, y);
     if (l > 1) { x /= l; y /= l; }
     return { x, y };
