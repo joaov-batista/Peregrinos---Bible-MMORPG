@@ -13,6 +13,7 @@ import { count, addItem, removeItem, equip, unequip, canEquip, faseProg, compute
 import { playMinigame } from './minigames.js';
 import { TS, ZONES, ZONE_LABELS } from '../game/world.js';
 import { pwa } from '../pwa.js';
+import { config, setConfig } from '../config.js';
 
 export function createHud(onExit) {
   let modals = 0, game = null;
@@ -120,7 +121,7 @@ export function createHud(onExit) {
   /* ---------- Guia da missão atual ---------- */
   ui.guide = (gd, q) => {
     const el = $('questHud');
-    if (!gd && !q) { el.hidden = true; el._h = ''; return; }
+    if ((!gd && !q) || config.esconderMissao) { el.hidden = true; el._h = ''; return; }
     let html = '';
     if (q) {
       const pct = q.st === 'pronta' ? 100 : Math.round(q.n / q.qtd * 100);
@@ -149,7 +150,7 @@ export function createHud(onExit) {
     for (const n of g.npcs) dot(n.x / TS, n.y / TS, n.missao || n.minijogo || n.loja ? '#FFD23F' : '#FFFFFF', 2.2);
     for (const ch of g.chests || []) if (!ch.open) dot(ch.x / TS, ch.y / TS, '#C98A3A', 2.6);
     for (const o of g.others.values()) dot(o.x / TS, o.y / TS, '#5DADEC', 2.5);
-    for (const e of g.enemies) if (e.kind === 'boss' && !e.clone) dot(e.x / TS, e.y / TS, '#FF2E4A', 4);
+    for (const e of g.enemies) if (e.kind === 'boss') dot(e.x / TS, e.y / TS, '#FF2E4A', 4);
     if (g.guide) {
       // destino: estrela (ou seta na borda do minimapa)
       const gx = clamp((g.guide.x / TS - sx) * k, 6, W - 6), gy = clamp((g.guide.y / TS - sy) * k, 6, H - 6);
@@ -425,7 +426,7 @@ export function createHud(onExit) {
   ui.openMenu = (tab = 'personagem') => modal((p, close) => {
     p.classList.add('menu');
     const c = game.char;
-    const tabs = [['personagem', '🎒', 'Personagem'], ['missoes', '📜', 'Missões'], ['biblia', '📖', 'Bíblia'], ['social', '👥', 'Social'], ['ranking', '🏆', 'Ranking'], ['ajuda', '❔', 'Ajuda']];
+    const tabs = [['personagem', '🎒', 'Personagem'], ['missoes', '📜', 'Missões'], ['biblia', '📖', 'Bíblia'], ['social', '👥', 'Social'], ['ranking', '🏆', 'Ranking'], ['ajustes', '⚙️', 'Ajustes'], ['ajuda', '❔', 'Ajuda']];
     const render = () => {
       p.innerHTML = '';
       // trilho de abas à esquerda (medalhões) + conteúdo
@@ -437,7 +438,7 @@ export function createHud(onExit) {
         h('button', { class: 'x', onclick: () => close(), 'aria-label': 'Fechar' }, '✕')));
       const body = h('div', { class: 'tab-body' }); main.append(body);
       p.append(h('div', { class: 'menu-layout' }, rail, main));
-      ({ personagem: tabChar, missoes: tabQuests, biblia: tabBible, social: tabSocial, ranking: tabRanking, ajuda: tabHelp })[tab](body, render, close);
+      ({ personagem: tabChar, missoes: tabQuests, biblia: tabBible, social: tabSocial, ranking: tabRanking, ajustes: tabConfig, ajuda: tabHelp })[tab](body, render, close);
     };
     render();
   }, { wide: true });
@@ -692,6 +693,21 @@ export function createHud(onExit) {
       } catch (e) { list.innerHTML = ''; list.append(h('li', { class: 'muted' }, 'Não foi possível carregar: ' + e.message)); }
     };
     draw();
+  }
+
+  // Ajustes: interruptores salvos neste aparelho
+  function tabConfig(body, render) {
+    const opcoes = [
+      ['camCentro', '🎥 Câmera sempre centralizada', 'O personagem fica sempre no meio da tela, até perto das bordas do mapa.'],
+      ['esconderMissao', '📜 Esconder a barra de missão', 'Tira o cartão da missão do canto da tela. A seta dourada continua mostrando o caminho.'],
+      ['tremor', '💥 Tremor da tela', 'A tela treme nos golpes fortes, nos chefes e nas explosões.']
+    ];
+    const list = h('div', { class: 'fase-list' });
+    for (const [k, nome, desc] of opcoes) list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, nome), h('small', {}, desc)),
+      h('button', { class: 'toggle' + (config[k] ? ' on' : ''), role: 'switch', 'aria-checked': String(!!config[k]), 'aria-label': nome, onclick: () => { setConfig(k, !config[k]); sfx('click'); game.mmT = 0; render(); } }, h('i'))));
+    list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, '🔊 Som'), h('small', {}, 'Música e efeitos.')),
+      h('button', { class: 'toggle' + (audio.muted ? '' : ' on'), role: 'switch', 'aria-checked': String(!audio.muted), 'aria-label': 'Som', onclick: () => { initAudio(); setMuted(!audio.muted); $('bMute').textContent = audio.muted ? '🔇' : '🔊'; render(); } }, h('i'))));
+    body.append(list, h('p', { class: 'hint' }, 'Os ajustes ficam salvos neste aparelho.'));
   }
 
   function tabHelp(body, render, close) {

@@ -61,13 +61,15 @@ export const BOSSES = {
     intro: 'Ninguém vai acreditar nesse Jesus… Qual de nós é o verdadeiro? Hahaha!',
     derrota: '"Conhecereis a verdade, e a verdade vos libertará" (Jo 8:32).',
     golpes: {
-      copias: { tipo: 'clones', n: 3, fala: 'Qual é o verdadeiro?', corFala: '#E6DBFF' },
+      copias: { tipo: 'clones', n: 4, fala: 'Qual é o verdadeiro?', corFala: '#E6DBFF', espera: 0.8 },
       trocar: { tipo: 'trocar' },
       mentiras: { tipo: 'leque', n: 5, abertura: 0.22, vel: 260, cor: '#C79BFF', rotulo: 'falsas' }
     },
     fases: [
       { golpes: ['copias', 'mentiras'], mover: { tipo: 'rodear', dist: 200 } },
-      { quando: 'temClones', golpes: ['mentiras', 'mentiras', 'trocar'], mover: { tipo: 'rodear', dist: 200 } }
+      { quando: 'temClones', golpes: ['mentiras', 'trocar', 'mentiras', 'trocar'], mover: { tipo: 'rodear', dist: 220 } },
+      { vida: 0.5, golpes: ['copias', 'mentiras', 'copias'], mover: { tipo: 'rodear', dist: 220, vel: 1.2 } },
+      { vida: 0.5, quando: 'temClones', golpes: ['mentiras', 'trocar', 'trocar', 'mentiras'], mover: { tipo: 'rodear', dist: 220, vel: 1.2 } }
     ]
   },
   imoralidade: {
@@ -123,12 +125,12 @@ export const BOSSES = {
   // Lição: não é a armadura nem a força que vencem o gigante (1Sm 17:39,45). Bater na armadura quase não adianta;
   // só quem espera a lança e defende no momento certo (defesa perfeita) faz a testa aparecer — e a funda acerta em dobro (1Sm 17:49).
   golias: {
-    nome: 'Golias de Gate', titulo: 'Chefe do Mundo', lv: 11, hp: 2600, atk: 30, def: 10, spd: 70, r: 44, xp: 800, ouro: 360,
+    nome: 'Golias de Gate', titulo: 'Chefe do Mundo', lv: 11, hp: 3400, atk: 30, def: 10, spd: 70, r: 44, xp: 800, ouro: 360,
     cor: '#B08D57', cor2: '#5A4630', ref: '1 Samuel 17', respawn: 420, drop: 'pedra_lisa', mundo: { tx: 78, ty: 119 },
     intro: 'Sou eu algum cão, para vires a mim com paus? (1Sm 17:43)',
     derrota: '"Tu vens contra mim com espada e lança; eu, porém, vou contra ti em nome do Senhor dos Exércitos" (1Sm 17:45). A batalha é do Senhor!',
     regras: {
-      armadura: { reducao: 0.85, golpes: ['lanca', 'lanca2'], nomeGolpe: 'lança', exposto: 3.5, atordoa: 1.5, bonus: 1.5, bonusArma: { funda: 2 }, texto: 'A TESTA ESTÁ EXPOSTA!' }
+      armadura: { reducao: 0.9, golpes: ['lanca', 'lanca2'], nomeGolpe: 'lança', exposto: 2.2, atordoa: 0.9, bonus: 1.25, bonusArma: { funda: 1.6 }, texto: 'A TESTA ESTÁ EXPOSTA!' }
     },
     golpes: {
       lanca: { tipo: 'estocada', aviso: 0.8, alcance: 180, avanco: 50, dano: 1.3 },

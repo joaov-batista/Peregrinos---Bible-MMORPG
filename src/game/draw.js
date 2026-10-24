@@ -4,9 +4,16 @@ import { TAU, rr, ell, rand } from '../util.js';
 /* ---------- Pessoas (jogadores e NPCs) ---------- */
 // Formatos de corpo: w = largura do tronco, leg = altura das pernas
 const BODY = {
-  medio: { w: 1, leg: 1 }, magro: { w: 0.8, leg: 1.12 }, forte: { w: 1.2, leg: 1.05 },
-  robusto: { w: 1.34, leg: 0.9 }, baixo: { w: 0.96, leg: 0.6 }, alto: { w: 0.94, leg: 1.4 }
+  medio: { w: 0.86, leg: 1.08 }, magro: { w: 0.72, leg: 1.15 }, forte: { w: 1, leg: 1.1 },
+  robusto: { w: 1.12, leg: 1 }, baixo: { w: 0.84, leg: 0.7 }, alto: { w: 0.8, leg: 1.4 }
 };
+// túnica com ombros, cintura e barra (o retângulo antigo deixava todo mundo com cara de gordo)
+function tunicPath(g, w) {
+  const sh = 8.6 * w, wa = 7.6 * w, hem = 9.6 * w;
+  g.beginPath(); g.moveTo(-sh + 2.5, -11); g.lineTo(sh - 2.5, -11); g.quadraticCurveTo(sh + 0.5, -10.5, sh, -7.5);
+  g.quadraticCurveTo(wa, -2, wa, 0); g.lineTo(hem, 7); g.quadraticCurveTo(hem, 8.6, hem - 2, 8.6); g.lineTo(-hem + 2, 8.6); g.quadraticCurveTo(-hem, 8.6, -hem, 7);
+  g.lineTo(-wa, 0); g.quadraticCurveTo(-wa, -2, -sh, -7.5); g.quadraticCurveTo(-sh - 0.5, -10.5, -sh + 2.5, -11); g.closePath();
+}
 // st: { t, fx, fy, walk, moving, weapon, shield, guard, armor, helmet, alpha }
 // Estilo "livro ilustrado": toda forma tem contorno escuro (OL) e um pouco de luz e sombra.
 const OL = '#2A1A10';
@@ -42,7 +49,7 @@ export function drawPerson(g, x, y, s, L, st) {
   g.translate(0, bob);
   const cape = L.cape && L.cape !== 'none' ? L.cape : null;
   const drawCape = () => {
-    g.beginPath(); g.moveTo(-9 * w, -10); g.lineTo(9 * w, -10); g.quadraticCurveTo(12 * w - fx * 3, 2, 11 * w - fx * 3, 10.5); g.lineTo(-11 * w - fx * 3, 10.5); g.quadraticCurveTo(-12 * w - fx * 3, 2, -9 * w, -10); g.closePath(); fo(cape);
+    g.beginPath(); g.moveTo(-8 * w, -10.5); g.lineTo(8 * w, -10.5); g.quadraticCurveTo(10.5 * w - fx * 3, 2, 10 * w - fx * 3, 10.5); g.lineTo(-10 * w - fx * 3, 10.5); g.quadraticCurveTo(-10.5 * w - fx * 3, 2, -8 * w, -10.5); g.closePath(); fo(cape);
     g.strokeStyle = shade(cape, -0.3); g.lineWidth = 1; g.beginPath(); g.moveTo(-4 * w - fx * 2, -4); g.lineTo(-5 * w - fx * 3, 9); g.moveTo(4 * w - fx * 2, -4); g.lineTo(5 * w - fx * 3, 9); g.stroke();
   };
   if (cape && !back) drawCape();
@@ -59,16 +66,16 @@ export function drawPerson(g, x, y, s, L, st) {
   // braços (mangas) atrás do corpo quando ele está de costas
   const arms = () => {
     for (const sd of [-1, 1]) {
-      const hx = sd * 11.5 * w, hy = -3 + sd * lw * 0.4;
-      g.beginPath(); g.moveTo(sd * 8 * w, -8.5); g.quadraticCurveTo(sd * 12 * w, -7, hx, hy - 1);
+      const hx = sd * 10.4 * w, hy = -2 + sd * lw * 0.4;
+      g.beginPath(); g.moveTo(sd * 7.4 * w, -9); g.quadraticCurveTo(sd * 10.8 * w, -7, hx, hy - 1);
       g.lineWidth = 6.8; g.strokeStyle = OL; g.stroke(); g.lineWidth = 4.4; g.strokeStyle = shade(tunic, -0.1); g.stroke();
       ell(g, hx, hy, 3.1, 3.1); fo(skin, 1.1);
     }
   };
   if (back) arms();
   // corpo: túnica com gola, listras (clavi), barra mais escura e cinto com fivela
-  rr(g, -10 * w, -11, 20 * w, 19, 7); fo(tunic);
-  g.save(); rr(g, -10 * w, -11, 20 * w, 19, 7); g.clip();
+  tunicPath(g, w); fo(tunic);
+  g.save(); tunicPath(g, w); g.clip();
   g.fillStyle = tunicD; g.fillRect(-10 * w, 2, 20 * w, 7);
   g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(-9 * w, -10, 4 * w, 10);
   if (!back) {
@@ -76,13 +83,13 @@ export function drawPerson(g, x, y, s, L, st) {
     g.beginPath(); g.moveTo(-3.6, -11); g.lineTo(0, -6.5); g.lineTo(3.6, -11); g.closePath(); g.fillStyle = skin; g.fill(); out(1);
   }
   g.restore();
-  rr(g, -10 * w, -11, 20 * w, 19, 7); out();
+  tunicPath(g, w); out();
   if (st.armor) {
-    rr(g, -9 * w, -10.5, 18 * w, 11.5, 5); fo(st.armor);
+    rr(g, -8 * w, -10.5, 16 * w, 11, 4); fo(st.armor);
     g.fillStyle = 'rgba(255,255,255,.3)'; g.fillRect(-6.5 * w, -9, 3.5, 8);
     g.strokeStyle = shade(st.armor, -0.35); g.lineWidth = 0.9; for (let i = 0; i < 2; i++) { g.beginPath(); g.moveTo(-8 * w, -6.5 + i * 3.6); g.lineTo(8 * w, -6.5 + i * 3.6); g.stroke(); }
   }
-  g.fillStyle = st.belt || '#C9973C'; g.fillRect(-10 * w, -1.2, 20 * w, 3.2); g.strokeStyle = OL; g.lineWidth = 0.9; g.strokeRect(-10 * w, -1.2, 20 * w, 3.2);
+  g.fillStyle = st.belt || '#C9973C'; g.fillRect(-7.9 * w, -1.2, 15.8 * w, 3.2); g.strokeStyle = OL; g.lineWidth = 0.9; g.strokeRect(-7.9 * w, -1.2, 15.8 * w, 3.2);
   if (!back) { rr(g, -2, -1.8, 4, 4.4, 1); fo('#F2D27A', 0.9); }
   if (cape && back) drawCape();
   if (!back) arms();
@@ -260,7 +267,7 @@ export function drawBoss(g, b, T) {
   g.save(); g.translate(b.x, b.y);
   if (b.alpha != null) g.globalAlpha = b.alpha;
   // as ilusões da Mentira não têm sombra
-  if (!b.clone) { g.fillStyle = 'rgba(0,0,0,.28)'; ell(g, 0, b.r * 0.9, b.r * 1.1, b.r * 0.35); g.fill(); }
+  g.fillStyle = 'rgba(0,0,0,.28)'; ell(g, 0, b.r * 0.9, b.r * 1.1, b.r * 0.35); g.fill();
   if (hit > 0) g.translate(rand(-3, 3), rand(-2, 2));
   // "desenho" no bestiário reaproveita o desenho de outro chefe; sem desenho próprio, usa o genérico
   const fn = BOSS_DRAW[b.d?.desenho || b.id] || BOSS_DRAW.generico;
@@ -502,7 +509,14 @@ export function drawSheep(g, x, y, T, lost, flip) {
 
 export function drawProjectile(g, p, T) {
   g.save(); g.translate(p.x, p.y);
-  if (p.kind === 'pedra') { g.fillStyle = '#B4B0A8'; ell(g, 0, 0, 4.5, 4); g.fill(); g.fillStyle = '#7C7870'; ell(g, 1, 1, 2, 2); g.fill(); }
+  if (p.kind === 'pedra') {
+    // rastro da pedra (velocidade) + pedra com contorno
+    const v = Math.hypot(p.vx, p.vy) || 1, tx = -p.vx / v, ty = -p.vy / v;
+    const gr = g.createLinearGradient(0, 0, tx * 26, ty * 26); gr.addColorStop(0, 'rgba(255,245,220,.55)'); gr.addColorStop(1, 'rgba(255,245,220,0)');
+    g.strokeStyle = gr; g.lineWidth = p.r * 1.4; g.lineCap = 'round'; g.beginPath(); g.moveTo(0, 0); g.lineTo(tx * 26, ty * 26); g.stroke();
+    ell(g, 0, 0, p.r, p.r * 0.85); g.fillStyle = '#B4B0A8'; g.fill(); g.lineWidth = 1.2; g.strokeStyle = '#3A3530'; g.stroke();
+    g.fillStyle = '#E2DED6'; ell(g, -1.2, -1.2, p.r * 0.4, p.r * 0.32); g.fill();
+  }
   else if (p.kind === 'luz' || p.kind === 'palavra') {
     g.globalCompositeOperation = 'lighter';
     const gr = g.createRadialGradient(0, 0, 1, 0, 0, p.r * 2); gr.addColorStop(0, 'rgba(255,255,230,1)'); gr.addColorStop(0.4, p.kind === 'palavra' ? 'rgba(255,230,140,.9)' : 'rgba(255,210,80,.8)'); gr.addColorStop(1, 'rgba(255,180,40,0)');
@@ -529,8 +543,17 @@ export function drawProjectile(g, p, T) {
     g.fillStyle = '#E8E4DA'; g.strokeStyle = '#2A1A10'; g.lineWidth = 1; g.beginPath(); g.moveTo(20, 0); g.lineTo(7, -5); g.lineTo(7, 5); g.closePath(); g.fill(); g.stroke();
     g.strokeStyle = 'rgba(255,240,200,.4)'; g.lineWidth = 2; g.beginPath(); g.moveTo(-28, 0); g.lineTo(-48, 0); g.stroke();
   } else if (p.kind === 'som') {
-    g.rotate(p.a); g.strokeStyle = 'rgba(255,240,200,' + Math.max(0, p.life / p.max) + ')'; g.lineWidth = 3;
-    const rad = 14 + (1 - p.life / p.max) * 40; g.beginPath(); g.arc(-rad + 10, 0, rad, -0.6, 0.6); g.stroke();
+    // ondas douradas que se espalham até o alcance, com notas musicais
+    const k = 1 - p.life / p.max, alc = p.alc || 100, abre = p.roda ? Math.PI : (p.abre || 0.7), cor = p.cura ? '160,240,170' : '255,226,140';
+    g.rotate(p.a); g.lineCap = 'round';
+    for (let i = 0; i < 3; i++) {
+      const kk = k - i * 0.16; if (kk <= 0) continue;
+      const rad = 12 + kk * alc, al = Math.max(0, 1 - kk) * 0.85;
+      g.strokeStyle = 'rgba(' + cor + ',' + al + ')'; g.lineWidth = 5 - i * 1.2;
+      g.beginPath(); g.arc(0, 0, rad, -abre, abre); g.stroke();
+    }
+    if (k < 0.9) { g.fillStyle = 'rgba(' + cor + ',' + (1 - k) + ')'; g.font = '900 13px Nunito'; g.textAlign = 'center';
+      const n = p.roda ? 6 : 3; for (let i = 0; i < n; i++) { const an = p.roda ? i * TAU / n : (i - 1) * abre * 0.6, rr2 = 18 + k * alc * 0.8; g.fillText(i % 2 ? '♫' : '♪', Math.cos(an) * rr2, Math.sin(an) * rr2 - k * 8); } }
   } else {
     // projéteis inimigos
     const c = p.color || '#B98AF0';

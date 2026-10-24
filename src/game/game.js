@@ -4,6 +4,7 @@ import { input } from '../input.js';
 import { viewSize, zoom } from '../zoom.js';
 import { sfx, music } from '../audio.js';
 import { net, ONLINE } from '../net.js';
+import { config } from '../config.js';
 import { CLASSES } from '../data/classes.js';
 import { ITEMS } from '../data/items.js';
 import { ENEMIES, BOSSES, ACUSACOES, FALSAS } from '../data/bestiary.js';
@@ -26,6 +27,8 @@ const CUSTO_ATK = { espada: 10, funda: 8, cajado: 10, trombeta: 12, adaga: 6, la
 const CARGA = { inicio: 0.3, cheia: 0.85, custo: 22 }; // s segurando para começar e para completar; fôlego do golpe forte
 // dificuldade dos vícios: mais vida e dano, atacam mais vezes e notam o jogador de mais longe
 const DIF = { hp: 1.3, atk: 1.25, cd: 0.78, aggro: 170 };
+// dificuldade dos chefes: mais vida e dano, e menos pausa entre um golpe e outro
+const DIF_CHEFE = { hp: 1.5, atk: 1.32, ritmo: 0.78 };
 let WORLD = null; // gerado uma única vez
 
 export class Game {
@@ -214,7 +217,7 @@ export class Game {
   makeBoss(id, x, y) {
     const d = BOSSES[id];
     return {
-      kind: 'boss', id, d, x, y, hx: x, hy: y, r: d.r, hp: Math.round(d.hp * 1.2), max: Math.round(d.hp * 1.2), atk: Math.round(d.atk * 1.15), def: d.def, spd: d.spd,
+      kind: 'boss', id, d, x, y, hx: x, hy: y, r: d.r, hp: Math.round(d.hp * DIF_CHEFE.hp), max: Math.round(d.hp * DIF_CHEFE.hp), atk: Math.round(d.atk * DIF_CHEFE.atk), def: d.def, spd: d.spd,
       flash: 0, kx: 0, ky: 0, stun: 0, act: null, actT: 1.5, cd: 2, lastHit: 0, phase: 0, accused: 0, ph: 0, engaged: false, alpha: 1,
       pos: 0, posMax: d.postura ?? Math.round(90 + d.lv * 12), broken: 0
     };
@@ -408,7 +411,7 @@ export class Game {
   dmgCalc(mult, target) {
     const st = this.st, p = this.p;
     let base = st.atk * mult * (p.buffs.atk?.mul || 1) * rand(0.9, 1.1);
-    const crit = Math.random() < (st.weapon === 'adaga' ? 0.25 : 0.12);
+    const crit = Math.random() < (st.weapon === 'adaga' ? 0.25 : st.weapon === 'funda' ? 0.22 : 0.12); // adaga e a pontaria de Davi
     if (crit) base *= 1.7;
     if (target.kind === 'boss' && st.palavra) base *= 1.5;
     if (target.vuln > 0) base *= 1.5;
@@ -467,18 +470,22 @@ export class Game {
         if (d < 118 + e.r && d > 20 && Math.abs(angDiff(Math.atan2(e.y - p.y, e.x - p.x), a)) < 0.45) this.hit(e, 0.95, a, -150);
       }
     } else if (w === 'funda') {
-      p.atkT = 0.18; p.atkCd = 0.4; sfx('shoot');
-      this.proj({ x: p.x, y: p.y - 6, a, spd: 600, r: 5, life: 0.65, mult: 1, kind: 'pedra' });
+      // a cada 3 tiros sai uma pedra dupla
+      p.combo = (p.combo % 3) + 1; p.comboT = 1.2;
+      p.atkT = 0.18; p.atkCd = 0.38; sfx('shoot');
+      this.proj({ x: p.x, y: p.y - 6, a, spd: 700, r: 5.5, life: 0.62, mult: 1, kind: 'pedra' });
+      if (p.combo === 3) this.proj({ x: p.x, y: p.y - 6, a: a + 0.12, spd: 700, r: 5.5, life: 0.62, mult: 0.8, kind: 'pedra' });
     } else if (w === 'cajado') {
       p.atkT = 0.2; p.atkCd = 0.55; sfx('magic');
       this.proj({ x: p.x + Math.cos(a) * 16, y: p.y - 10, a, spd: 400, r: 7, life: 1.1, mult: 1.15, kind: 'luz', homing: 3.5, pierce: 1 });
     } else {
-      p.atkT = 0.25; p.atkCd = 0.5; sfx('shoot');
-      this.projs.push({ x: p.x, y: p.y - 6, vx: 0, vy: 0, a, r: 0, life: 0.3, max: 0.3, kind: 'som', owner: 'fx' });
+      // onda de som em cone: alcance longo, empurra e abala o equilíbrio (Js 6:20)
+      p.atkT = 0.25; p.atkCd = 0.48; sfx('shoot');
+      this.projs.push({ x: p.x, y: p.y - 6, vx: 0, vy: 0, a, r: 0, life: 0.38, max: 0.38, kind: 'som', owner: 'fx', alc: 130, abre: 0.85 });
       for (const e of this.enemies) {
         if (e.hp <= 0 || e.submerged) continue;
         const d = Math.hypot(e.x - p.x, e.y - p.y);
-        if (d < 100 + e.r && Math.abs(angDiff(Math.atan2(e.y - p.y, e.x - p.x), a)) < 0.75) this.hit(e, 0.95, a, 300);
+        if (d < 130 + e.r && Math.abs(angDiff(Math.atan2(e.y - p.y, e.x - p.x), a)) < 0.85) this.hit(e, 0.95, a, 340, 14);
       }
     }
   }
@@ -528,9 +535,10 @@ export class Game {
       p.atkT = 0.25; sfx('magic');
       this.proj({ x: p.x + Math.cos(a) * 16, y: p.y - 10, a, spd: 460, r: 12, life: 1.2, mult: 2.6, kind: 'luz', homing: 4, pierce: 2, pos: 40 });
     } else {
-      p.atkT = 0.3; sfx('shoot');
-      this.projs.push({ x: p.x, y: p.y - 6, vx: 0, vy: 0, a, r: 0, life: 0.4, max: 0.4, kind: 'som', owner: 'fx' });
-      for (const e of this.enemies) { if (e.hp <= 0 || e.submerged) continue; if (Math.hypot(e.x - p.x, e.y - p.y) < 135 + e.r) this.hit(e, 2.2, Math.atan2(e.y - p.y, e.x - p.x), 520, 40); }
+      // toque longo: onda em círculo que derruba muralhas (Js 6:20)
+      p.atkT = 0.3; sfx('shoot'); this.shake(7);
+      this.projs.push({ x: p.x, y: p.y - 6, vx: 0, vy: 0, a, r: 0, life: 0.5, max: 0.5, kind: 'som', owner: 'fx', alc: 165, roda: true });
+      for (const e of this.enemies) { if (e.hp <= 0 || e.submerged) continue; if (Math.hypot(e.x - p.x, e.y - p.y) < 165 + e.r) this.hit(e, 2.2, Math.atan2(e.y - p.y, e.x - p.x), 560, 50); }
     }
   }
 
@@ -588,6 +596,7 @@ export class Game {
       } });
     } else if (cls === 'levita') {
       sfx('heal'); const heal = this.st.maxHp * 0.35; p.hp = Math.min(this.st.maxHp, p.hp + heal);
+      this.projs.push({ x: p.x, y: p.y - 6, vx: 0, vy: 0, a: 0, r: 0, life: 0.6, max: 0.6, kind: 'som', owner: 'fx', alc: 150, roda: true, cura: true });
       this.addText(p.x, p.y - 36, '+' + Math.round(heal), '#7CE0A0', 15);
       for (let i = 0; i < 14; i++) this.parts.push({ x: p.x + rand(-30, 30), y: p.y + rand(-10, 10), vx: rand(-20, 20), vy: rand(-90, -40), life: 1.2, max: 1.2, size: 10, txt: pick(['♪', '♫']), color: '#FFE38A' });
       for (const e of this.enemies) { if (e.hp <= 0 || e.submerged) continue; if (Math.hypot(e.x - p.x, e.y - p.y) < 140 + e.r) this.hit(e, 1, Math.atan2(e.y - p.y, e.x - p.x), 420); }
@@ -890,10 +899,10 @@ export class Game {
   updateClone(c, dt, dist) {
     const p = this.p; c.cd -= dt; c.ph += dt;
     this.moveEnt(c, Math.cos(c.ph * 1.7) * 40 * dt, Math.sin(c.ph * 1.3) * 40 * dt);
-    if (c.cd <= 0 && dist < 420) { c.cd = rand(2, 3.2); this.proj({ x: c.x, y: c.y - 10, a: Math.atan2(p.y - c.y, p.x - c.x), spd: 220, r: 6, life: 2.2, owner: 'e', kind: 'mal', dmg: c.atk * 0.5, color: '#C79BFF', src: c, reflect: true }); }
+    if (c.cd <= 0 && dist < 420) { c.cd = rand(1.3, 2.3); this.proj({ x: c.x, y: c.y - 10, a: Math.atan2(p.y - c.y, p.x - c.x), spd: 220, r: 6, life: 2.2, owner: 'e', kind: 'mal', dmg: c.atk * 0.5, color: '#C79BFF', src: c, reflect: true }); }
   }
 
-  endAct(b, wait) { b.act = null; b.actT = wait; b.talk = false; }
+  endAct(b, wait) { b.act = null; b.actT = wait * DIF_CHEFE.ritmo; b.talk = false; }
 
   inLine(p, x, y, a, len, w) {
     const dx = p.x - x, dy = p.y - y, along = dx * Math.cos(a) + dy * Math.sin(a), perp = Math.abs(-dx * Math.sin(a) + dy * Math.cos(a));
@@ -1006,7 +1015,7 @@ export class Game {
   burst(x, y, n, color, spd) { for (let i = 0; i < n; i++) { const a = rand(0, TAU), s = rand(0.3, 1) * spd; this.parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: rand(0.3, 0.7), max: 0.7, size: rand(2, 4.5), color }); } if (this.parts.length > 700) this.parts.splice(0, this.parts.length - 700); }
   puff(x, y, n, color) { for (let i = 0; i < n; i++) this.parts.push({ x: x + rand(-6, 6), y, vx: rand(-20, 20), vy: rand(-30, -5), life: 0.4, max: 0.4, size: rand(3, 6), color }); }
   addText(x, y, txt, color, size = 13, life = 1.1) { this.texts.push({ x, y, txt, color, size, life, max: life }); }
-  shake(a) { this.shakeA = Math.max(this.shakeA, a); }
+  shake(a) { if (config.tremor) this.shakeA = Math.max(this.shakeA, a); }
 
   /* ================= Mundo ================= */
   updateWorld(dt) {
@@ -1579,9 +1588,11 @@ export class Game {
     const g = this.ctx, p = this.p, m = this.cur.map, Z = this.Z;
     const vw = this.W / Z, vh = this.H / Z;
     let camL = p.x - vw / 2, camT = p.y - 10 - vh / 2;
-    camL = clamp(camL, 0, Math.max(0, m.w * TS - vw)); camT = clamp(camT, 0, Math.max(0, m.h * TS - vh));
-    if (m.w * TS < vw) camL = (m.w * TS - vw) / 2;
-    if (m.h * TS < vh) camT = (m.h * TS - vh) / 2;
+    if (!config.camCentro) {
+      camL = clamp(camL, 0, Math.max(0, m.w * TS - vw)); camT = clamp(camT, 0, Math.max(0, m.h * TS - vh));
+      if (m.w * TS < vw) camL = (m.w * TS - vw) / 2;
+      if (m.h * TS < vh) camT = (m.h * TS - vh) / 2;
+    }
     if (this.shakeA > 0) { camL += rand(-1, 1) * this.shakeA * 0.5; camT += rand(-1, 1) * this.shakeA * 0.5; }
     this.camL = camL; this.camT = camT;
     g.setTransform(1, 0, 0, 1, 0, 0);
@@ -1807,7 +1818,7 @@ export class Game {
 
   drawEnt(g, e) {
     if (e.kind === 'boss') {
-      if (e.clone) { g.save(); g.globalAlpha = 0.85; drawBoss(g, { ...e, alpha: 0.85 }, this.T); g.restore(); }
+      if (e.clone) drawBoss(g, e, this.T); // cópias idênticas: só golpeando para saber qual é a verdadeira
       else drawBoss(g, e, this.T);
       if (e.stun > 0) { g.fillStyle = '#FFE38A'; g.font = '900 13px Nunito'; g.textAlign = 'center'; g.fillText('★ atordoado ★', e.x, e.y - e.r - 40); }
       if (e.world && !e.engaged) this.nameTag(g, e.x, e.y - e.r - 30, e.d.nome, 'nv ' + e.d.lv, '#FF8A8A');

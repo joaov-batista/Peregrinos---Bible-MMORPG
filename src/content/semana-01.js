@@ -116,7 +116,7 @@ export default {
       inimigos: ['desanimo', 'duvida', 'inveja'], chefe: 'mentira', recompensa: 'couraca_justica',
       versiculo: { texto: 'E todos os sábados discorria na sinagoga, persuadindo judeus e gregos.', ref: 'Atos 18:4' },
       npcs: {
-        N: { nome: 'Paulo', look: { skin: '#C68B59', hair: '#6A5A4A', tunic: '#B9875A', cape: 'none', style: 'careca', beard: true }, falas: ['Todo sábado eu ensino aqui. Judeus e gregos precisam ouvir!', 'A Mentira cria cópias de si mesma. A verdadeira projeta sombra no chão — preste atenção.'] },
+        N: { nome: 'Paulo', look: { skin: '#C68B59', hair: '#6A5A4A', tunic: '#B9875A', cape: 'none', style: 'careca', beard: true }, falas: ['Todo sábado eu ensino aqui. Judeus e gregos precisam ouvir!', 'A Mentira cria cópias iguaizinhas. Não dá para saber olhando: golpeie! A cópia se desfaz com um toque; a verdadeira, não.'] },
         M: { nome: 'Silas', look: { skin: '#B97A4E', hair: '#1C120A', tunic: '#2E8B57', cape: '#ECE3CF', style: 'curto', beard: true }, falas: ['Timóteo e eu chegamos da Macedônia. Agora Paulo pode se dedicar só à Palavra!'] },
         O: { nome: 'Timóteo', look: { skin: '#E3B48C', hair: '#6B4423', tunic: '#1F8A9E', cape: 'none', style: 'curto', beard: false }, falas: ['Paulo diz que ninguém deve desprezar minha juventude (1Tm 4:12). Vale pra você também!'] }
       },
