@@ -22,6 +22,13 @@ export const ITEMS = {
   roma: { nome: 'Romã', icon: '🍎', tipo: 'consumivel', fe: 90, preco: 40, nivel: 5, desc: 'Recupera 90 de Fé. Romãs enfeitavam as vestes do sacerdote (Êx 28:33).' },
   tamaras: { nome: 'Tâmaras', icon: '🌴', tipo: 'consumivel', cura: 40, fe: 30, preco: 30, nivel: 4, desc: 'Recupera 40 de vida e 30 de Fé. "O justo florescerá como a palmeira" (Sl 92:12).' },
   leite_mel: { nome: 'Leite e Mel', icon: '🥛', tipo: 'consumivel', buff: { atk: 1.2, spd: 1.15, t: 40 }, preco: 90, nivel: 6, raridade: 'raro', desc: '+20% de ataque e +15% de velocidade por 40s. "Terra que mana leite e mel" (Êx 3:8).' },
+  // Pratos da cozinha de casa (receitas em game/casa.js); não se vendem
+  guisado_jaco: { nome: 'Guisado de Jacó', icon: '🍲', tipo: 'consumivel', cura: 220, fe: 40, raridade: 'raro', desc: 'Recupera 220 de vida e 40 de Fé. O guisado pelo qual Esaú vendeu a primogenitura (Gn 25:34). Valorize o que é eterno!' },
+  bolo_passas: { nome: 'Bolo de Passas', icon: '🥮', tipo: 'consumivel', cura: 40, buff: { atk: 1.25, t: 60 }, raridade: 'raro', desc: '+25% de ataque por 60s. Davi deu bolos de passas ao povo quando a arca chegou (2Sm 6:19).' },
+  pao_mel: { nome: 'Pão com Mel', icon: '🥯', tipo: 'consumivel', cura: 60, buff: { spd: 1.2, t: 60 }, raridade: 'raro', desc: '+20% de velocidade por 60s. O maná tinha gosto de bolo com mel (Êx 16:31).' },
+  peixe_brasa: { nome: 'Peixe na Brasa com Pão', icon: '🍢', tipo: 'consumivel', curaPct: 1, fe: 30, raridade: 'raro', desc: 'Vida cheia e 30 de Fé. Jesus preparou peixe na brasa e pão para os discípulos na praia (Jo 21:9).' },
+  suco_roma: { nome: 'Suco de Romã', icon: '🧃', tipo: 'consumivel', fe: 200, raridade: 'raro', desc: 'Recupera 200 de Fé. "Dar-te-ia a beber… do suco das minhas romãs" (Ct 8:2).' },
+  tamaras_mel: { nome: 'Tâmaras com Mel', icon: '🍡', tipo: 'consumivel', buff: { atk: 1.2, spd: 1.15, t: 90 }, raridade: 'raro', desc: '+20% de ataque e +15% de velocidade por 90s. Doce como a terra que mana leite e mel (Êx 3:8).' },
   // Sementes para a horta de casa (ver game/casa.js)
   semente_trigo: { nome: 'Sementes de Trigo', icon: '🌾', tipo: 'semente', preco: 8, desc: 'Em 10 minutos vira 3 pães. "Se o grão de trigo não morrer, fica só" (Jo 12:24).' },
   semente_uva: { nome: 'Muda de Videira', icon: '🍇', tipo: 'semente', preco: 14, desc: 'Em 20 minutos dá 3 cachos de uvas. "Eu sou a videira, vós, os ramos" (Jo 15:5).' },

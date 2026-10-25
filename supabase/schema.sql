@@ -163,3 +163,62 @@ create or replace view public.clan_ranking as
   from public.clans c left join public.clan_members m on m.clan_id = c.id left join public.characters ch on ch.id = m.char_id
   group by c.id;
 grant select on public.clan_ranking to anon, authenticated;
+
+-- ============================================================
+-- CASAS: visitar a casa dos amigos, livro de visitas e casa do clã
+-- (rode de novo este arquivo inteiro para criar)
+-- ============================================================
+
+-- O que dá para ver da casa de outro jogador (sem inventário, ouro nem e-mail)
+create or replace view public.casas as
+  select id, name, look, data->'casa' as casa, data->'verses' as verses, data->'stats'->'bosses' as bosses from public.characters;
+grant select on public.casas to anon, authenticated;
+
+create table if not exists public.visitas (
+  id         uuid primary key default gen_random_uuid(),
+  casa_de    uuid not null references public.characters(id) on delete cascade,
+  autor      uuid not null references public.characters(id) on delete cascade,
+  nome       text not null check (char_length(nome) between 1 and 16),
+  msg        text not null check (char_length(msg) between 1 and 120),
+  created_at timestamptz not null default now()
+);
+create index if not exists visitas_casa on public.visitas (casa_de, created_at desc);
+alter table public.visitas enable row level security;
+drop policy if exists "ler livros" on public.visitas;
+drop policy if exists "assinar livro" on public.visitas;
+drop policy if exists "apagar do livro" on public.visitas;
+create policy "ler livros"      on public.visitas for select using (true);
+create policy "assinar livro"   on public.visitas for insert with check (public.my_char(autor) and not public.my_char(casa_de));
+create policy "apagar do livro" on public.visitas for delete using (public.my_char(casa_de) or public.my_char(autor));
+
+-- Casa do clã: nível e tesouro do clã; quanto cada membro doou
+alter table public.clans add column if not exists casa_nivel int not null default 0;
+alter table public.clans add column if not exists tesouro int not null default 0;
+alter table public.clan_members add column if not exists doado int not null default 0;
+
+-- Doar denários para o tesouro do clã (só membros, só com o próprio personagem)
+create or replace function public.doar_cla(cid uuid, quem uuid, valor int) returns int language plpgsql security definer set search_path = public as $$
+declare t int;
+begin
+  if not public.my_char(quem) then raise exception 'Personagem inválido'; end if;
+  if valor < 1 or valor > 100000 then raise exception 'Valor inválido'; end if;
+  if not exists (select 1 from clan_members where char_id = quem and clan_id = cid) then raise exception 'Você não é deste clã'; end if;
+  update clan_members set doado = doado + valor where char_id = quem;
+  update clans set tesouro = tesouro + valor where id = cid returning tesouro into t;
+  return t;
+end $$;
+
+-- O líder sobe o nível da casa do clã pagando com o tesouro: 3.000 → 10.000 → 30.000
+create or replace function public.subir_casa_cla(cid uuid) returns int language plpgsql security definer set search_path = public as $$
+declare n int; t int; custo int;
+begin
+  if not public.clan_leader(cid) then raise exception 'Só o líder pode construir'; end if;
+  select casa_nivel, tesouro into n, t from clans where id = cid for update;
+  custo := case n when 0 then 3000 when 1 then 10000 when 2 then 30000 else null end;
+  if custo is null then raise exception 'A casa do clã já está completa'; end if;
+  if t < custo then raise exception 'Faltam % denários no tesouro do clã', custo - t; end if;
+  update clans set casa_nivel = n + 1, tesouro = t - custo where id = cid;
+  return n + 1;
+end $$;
+grant execute on function public.doar_cla(uuid, uuid, int) to authenticated;
+grant execute on function public.subir_casa_cla(uuid) to authenticated;

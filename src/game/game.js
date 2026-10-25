@@ -677,7 +677,7 @@ export class Game {
     c.data.stats.kills++; c.data.kills[e.type] = (c.data.kills[e.type] || 0) + 1;
     if (this.fase) this.fase.kills++;
     this.gainXp(e.xp); this.addScore(e.lv * 6);
-    const gold = Math.round((e.ouro + e.stolen) * this.st.ouro * rand(0.8, 1.3));
+    const gold = Math.round((e.ouro + e.stolen) * this.st.ouro * this.bonusOuro() * rand(0.8, 1.3)); // bênção do clã (game/casa.js)
     for (let i = 0; i < Math.min(6, Math.ceil(gold / 4)); i++) this.pickups.push({ kind: 'ouro', v: Math.ceil(gold / Math.min(6, Math.ceil(gold / 4))), x: e.x, y: e.y, vx: rand(-90, 90), vy: rand(-90, 90), t: 0 });
     if (Math.random() < 0.14) this.pickups.push({ kind: 'cura', v: 18, x: e.x, y: e.y, vx: rand(-50, 50), vy: rand(-50, 50), t: 0 });
     if (Math.random() < 0.04) this.pickups.push({ kind: 'item', id: pick(['pao', 'pao', 'mana', 'mel']), x: e.x, y: e.y, vx: 0, vy: 0, t: 0 });
@@ -707,7 +707,7 @@ export class Game {
   gainXp(n) {
     const c = this.char, p = this.p;
     if (c.level >= MAX_LEVEL) return;
-    if (this.repousando()) n = Math.round(n * 1.15); // dormiu em casa (game/casa.js)
+    n = Math.round(n * this.bonusXp()); // dormiu em casa ou visitou um amigo (game/casa.js)
     c.data.xp += n;
     let up = false;
     while (c.data.xp >= xpNeed(c.level) && c.level < MAX_LEVEL) { c.data.xp -= xpNeed(c.level); c.level++; up = true; }

@@ -13,6 +13,7 @@ const saveLocal = d => store.set(LOCAL_KEY, d);
 const SOC_KEY = 'peregrinos.social.v1';
 const soc = () => store.get(SOC_KEY, { friends: [], clans: [], members: [] });
 const saveSoc = d => store.set(SOC_KEY, d);
+export const CUSTO_CASA_CLA = [3000, 10000, 30000]; // igual a subir_casa_cla no schema.sql
 // nome/classe/nível de vários personagens de uma vez: { id: { id, name, cls, level, score } }
 async function players(ids) {
   const out = {}; if (!ids.length) return out;
@@ -137,7 +138,7 @@ export const net = {
       }
       if (!clan) return null;
       const info = await players(ms.map(x => x.char_id));
-      const members = ms.map(x => ({ ...(info[x.char_id] || { id: x.char_id, name: '?' }), role: x.role })).sort((a, b) => (b.role === 'lider') - (a.role === 'lider') || (b.score || 0) - (a.score || 0));
+      const members = ms.map(x => ({ ...(info[x.char_id] || { id: x.char_id, name: '?' }), role: x.role, doado: x.doado || 0 })).sort((a, b) => (b.role === 'lider') - (a.role === 'lider') || (b.score || 0) - (a.score || 0));
       return { clan, members };
     },
     async clans() {
@@ -183,6 +184,53 @@ export const net = {
       const { error } = fim ? await sb.from('clans').delete().eq('id', clan.id) : await sb.from('clan_members').delete().eq('char_id', charId);
       if (error) throw traduz(error);
       return fim;
+    }
+  },
+
+  // Casas: visitar a casa de outro jogador, livro de visitas e tesouro/casa do clã.
+  casa: {
+    // { id, name, look, casa, verses, bosses } da casa de outro personagem
+    async de(id) {
+      if (!ONLINE) { const c = local().chars.find(x => x.id === id); return c && { id: c.id, name: c.name, look: c.look, casa: c.data.casa, verses: c.data.verses || [], bosses: c.data.stats?.bosses || {} }; }
+      const { data, error } = await sb.from('casas').select('*').eq('id', id).maybeSingle();
+      if (error) throw traduz(error);
+      return data && { id: data.id, name: data.name, look: data.look, casa: data.casa, verses: data.verses || [], bosses: data.bosses || {} };
+    },
+    async livro(id) {
+      if (!ONLINE) return (soc().visitas || []).filter(v => v.casa_de === id).slice(-20).reverse();
+      const { data, error } = await sb.from('visitas').select('nome,msg,created_at').eq('casa_de', id).order('created_at', { ascending: false }).limit(20);
+      if (error) throw traduz(error);
+      return data;
+    },
+    async assinar(me, casaDe, msg) {
+      msg = msg.trim().slice(0, 120); if (!msg) throw new Error('Escreva uma mensagem.');
+      if (!ONLINE) { const s = soc(); (s.visitas = s.visitas || []).push({ casa_de: casaDe, autor: me.id, nome: me.name, msg, created_at: new Date().toISOString() }); saveSoc(s); return; }
+      const { error } = await sb.from('visitas').insert({ casa_de: casaDe, autor: me.id, nome: me.name, msg });
+      if (error) throw traduz(error);
+    },
+    // denários para o tesouro do clã; devolve o tesouro novo
+    async doar(me, clan, valor) {
+      if (!ONLINE) {
+        const s = soc(), c = s.clans.find(x => x.id === clan.id), m = s.members.find(x => x.char_id === me.id && x.clan_id === clan.id);
+        if (!c || !m) throw new Error('Você não é deste clã.');
+        c.tesouro = (c.tesouro || 0) + valor; m.doado = (m.doado || 0) + valor; saveSoc(s); return c.tesouro;
+      }
+      const { data, error } = await sb.rpc('doar_cla', { cid: clan.id, quem: me.id, valor });
+      if (error) throw traduz(error);
+      return data;
+    },
+    // o líder constrói o próximo nível da casa do clã com o tesouro
+    async subir(me, clan) {
+      if (!ONLINE) {
+        const s = soc(), c = s.clans.find(x => x.id === clan.id), n = c.casa_nivel || 0, custo = CUSTO_CASA_CLA[n];
+        if (c.owner !== me.id) throw new Error('Só o líder pode construir.');
+        if (custo == null) throw new Error('A casa do clã já está completa.');
+        if ((c.tesouro || 0) < custo) throw new Error('Faltam ' + (custo - (c.tesouro || 0)) + ' denários no tesouro do clã.');
+        c.tesouro -= custo; c.casa_nivel = n + 1; saveSoc(s); return c.casa_nivel;
+      }
+      const { data, error } = await sb.rpc('subir_casa_cla', { cid: clan.id });
+      if (error) throw traduz(error);
+      return data;
     }
   },
 

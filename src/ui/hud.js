@@ -294,6 +294,15 @@ export function createHud(onExit) {
     p.append(row);
   });
 
+  /* ---------- Caixa de texto (livro de visitas) ---------- */
+  ui.pergunta = (titulo, texto, ph = '') => modal((p, close) => {
+    const inp = h('input', { maxlength: 120, placeholder: ph });
+    inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') close(inp.value.trim()); if (e.key === 'Escape') close(''); });
+    p.append(h('h3', {}, titulo), h('p', { class: 'muted', style: 'margin:8px 0' }, texto), inp,
+      h('div', { class: 'btn-row' }, h('button', { class: 'btn gold', onclick: () => close(inp.value.trim()) }, 'Enviar'), h('button', { class: 'btn', onclick: () => close('') }, 'Cancelar')));
+    setTimeout(() => inp.focus(), 50);
+  }, { dismissValue: '' });
+
   /* ---------- Quiz ---------- */
   ui.quiz = (q, title) => modal((p, close) => {
     p.classList.add('quiz'); p.parentElement.classList.add('locked');
@@ -527,6 +536,7 @@ export function createHud(onExit) {
         const { clan, members } = mine, lider = clan.owner === me.id;
         cb.append(h('div', { class: 'quest-focus' }, h('small', { class: 'eyebrow' }, 'SEU CLÃ'), h('b', {}, '[' + clan.tag + '] ' + clan.name), clan.lema ? h('p', {}, '“' + clan.lema + '”') : '',
           h('small', {}, members.length + '/30 membros · ⭐ ' + fmt(members.reduce((t, m) => t + (m.score || 0), 0)) + ' pontos juntos'),
+          h('small', {}, '🏛 Casa do clã: nível ' + (clan.casa_nivel || 0) + ' · 💰 tesouro ' + fmt(clan.tesouro || 0) + ' (fale com Áquila, na cidade, para entrar)'),
           h('small', { class: 'where' }, '💬 Para falar só com o clã, escreva no chat: /c sua mensagem')));
         const ml = h('div', { class: 'fase-list' });
         for (const m of members) ml.append(h('div', { class: 'fase-row' }, h('span', { class: 'num' }, m.role === 'lider' ? '👑' : online.has(m.id) ? '🟢' : '⚪'),
