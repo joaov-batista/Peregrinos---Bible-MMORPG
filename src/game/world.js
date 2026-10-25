@@ -73,6 +73,8 @@ export const FASE_PAL = {
   sinagoga: { floor: ['#CFC6B5', '#C6BCA9'], floor2: ['#9E2B2B', '#922626'], wall: '#9C8F7A', wallTop: '#B9AD98', wallDark: '#6E6352', obst: 'column', bg: '#0F0D0B', accent: '#D9A93A', water: '#3C8DC0' },
   casa: { floor: ['#C9A27A', '#C09870'], floor2: ['#6FA85A', '#679F52'], wall: '#D8C6A4', wallTop: '#EADBC0', wallDark: '#A8916C', obst: 'tree', bg: '#1A1410', accent: '#3B4CCA', water: '#3C8DC0' },
   tribunal: { floor: ['#E8E4DA', '#DCD7CB'], floor2: ['#8E1B2E', '#82182A'], wall: '#BDB6A6', wallTop: '#D9D3C4', wallDark: '#8A8374', obst: 'column', bg: '#101014', accent: '#F2C14E', water: '#3C8DC0' },
+  tenda: { floor: ['#D9C29A', '#D2BA90'], floor2: ['#86AE5C', '#7FA654'], wall: '#8C6448', wallTop: '#B08D57', wallDark: '#5F412C', obst: 'crate', bg: '#1A1410', accent: '#C0392B', water: '#3C8DC0' },
+  rocha: { floor: ['#CFC6B5', '#C6BCA9'], floor2: ['#86AE5C', '#7FA654'], wall: '#9C8F7A', wallTop: '#B9AD98', wallDark: '#6E6352', obst: 'column', bg: '#0F0D0B', accent: '#D9A93A', water: '#3C8DC0' },
   salao: { floor: ['#5E5478', '#584E72'], floor2: ['#7A3E8E', '#723886'], wall: '#3E3656', wallTop: '#57507A', wallDark: '#2A243C', obst: 'column', bg: '#0C0914', accent: '#F2C14E', water: '#3C8DC0' }
 };
 
@@ -114,6 +116,7 @@ function paintGround(g, m, id, tx, ty, draw) {
 function drawGround(g, m, tx, ty, x, y) {
   const id = m.get(tx, ty), P = m.pal;
   if (m.kind === 'fase') {
+    if (tx < 0 || ty < 0 || tx >= m.w || ty >= m.h) { g.fillStyle = P.bg; g.fillRect(x, y, TS, TS); return; } // fora do mapa: escuro
     let c = id === T.FLOOR2 ? v(P.floor2, tx, ty) : v(P.floor, tx, ty);
     if (id === T.FWALL) c = P.wall;
     if (id === T.WATER) c = P.water;
@@ -308,6 +311,7 @@ function drawObject(g, m, tx, ty, x, y) {
 
 function drawFaseObject(g, m, id, tx, ty, x, y) {
   const P = m.pal;
+  if (tx < 0 || ty < 0 || tx >= m.w || ty >= m.h) return;
   if (id === T.FWALL) {
     const below = m.get(tx, ty + 1);
     g.fillStyle = P.wall; g.fillRect(x, y, TS, TS);

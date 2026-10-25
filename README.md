@@ -31,6 +31,7 @@ Abra http://localhost:5180
 | Itens | lojas, armas por classe, armaduras, comida, buffs e as 6 peças da **Armadura de Deus** (Ef 6) |
 | NPCs | personagens bíblicos com falas, missões, lojas e minijogos |
 | Minijogos | A Ovelha Perdida (Lc 15), Pesca Maravilhosa (Jo 21), Colheita do Maná (Êx 16), Pares da Arca (Gn 7) e **pescaria livre** em qualquer beira de lago ou mar |
+| Casa | **Áquila** (na cidade) dá uma tenda e reforma: casa de barro e casa sobre a rocha. Cama, parede de versículos, troféus e horta (sementes da Lídia) |
 | Classe | **Samuel** (na cidade) troca sua classe; nível e itens continuam |
 | Atalhos | 2 itens usáveis nas teclas **1** e **2** (Q = atalho 1), escolhidos no menu › Personagem |
 | Animais | Labão (na cidade) vende **burrinho** e **cavalo** (montarias, tecla R), **cachorro** (morde vícios, acha moedas) e **ovelha** (cura devagar) |

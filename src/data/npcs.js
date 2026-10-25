@@ -32,6 +32,11 @@ export const WORLD_NPCS = [
     falas: ['Sou de Tiatira, vendo púrpura… e provisões para a jornada! (At 16:14)']
   },
   {
+    id: 'aquila', nome: 'Áquila, o Fazedor de Tendas', tx: 81, ty: 76, casa: true,
+    look: { skin: '#B97A4E', hair: '#2B1A10', tunic: '#7A5232', cape: 'none', style: 'curto', beard: true },
+    falas: ['Eu e Priscila fazemos tendas (At 18:3). Todo peregrino precisa de um lugar para descansar!', 'Quer uma tenda? É de graça. E quando tiver denários, eu reformo: casa de barro, e depois uma casa firme sobre a rocha (Mt 7:24).']
+  },
+  {
     id: 'baruque', nome: 'Baruque, o Escriba', tx: 83, ty: 82, ranking: true,
     look: { skin: '#C68B59', hair: '#3A2314', tunic: '#ECE3CF', cape: '#1F8A9E', style: 'curto', beard: true },
     falas: ['Eu escrevo os feitos de todos os peregrinos. Quer ver o ranking?']
@@ -181,5 +186,5 @@ export const LOJAS = {
       'sandalias', 'botas_viajante', 'botas_couro_fino', 'cinto_couro', 'cinto_sacerdote', 'anel_jose', 'manto_cores']
   },
   animais: { nome: 'Curral de Labão', itens: ['burrinho', 'ovelha', 'gato', 'cachorro', 'cavalo'] },
-  provisoes: { nome: 'Tenda de Lídia', itens: ['pao', 'uvas', 'tamaras', 'peixe', 'agua_viva', 'mana', 'roma', 'mel', 'oleo', 'leite_mel', 'pergaminho'] }
+  provisoes: { nome: 'Tenda de Lídia', itens: ['pao', 'uvas', 'tamaras', 'peixe', 'agua_viva', 'mana', 'roma', 'mel', 'oleo', 'leite_mel', 'pergaminho', 'semente_trigo', 'semente_uva', 'semente_tamara', 'semente_roma'] }
 };

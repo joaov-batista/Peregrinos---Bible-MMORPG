@@ -52,12 +52,13 @@ No ar em: https://peregrinos-pi.vercel.app
 - **Quiz que ensina**: explicação depois de cada resposta, 12 perguntas por fase (60 na semana) e lista "Para revisar" com as erradas.
 - **Controle (gamepad)** no estilo Dark Souls, inclusive nos menus, com vibração.
 - **Mais ajustes**: volume da música e dos efeitos, tamanho da interface, números de dano e vibração.
+- **Casa do jogador** (Áquila, na cidade): tenda grátis → casa de barro → casa sobre a rocha; cama com +15% de XP, parede de versículos, troféus e horta com sementes que crescem em tempo real.
 - **Sacola de talentos**: ao cair no mundo, todos os denários ficam onde você caiu; cair de novo antes de buscar perde a sacola.
 
 ## ⏳ Falta (pela ordem sugerida no roadmap)
 
 ### Próximos passos (Top 10)
-- [ ] **Casa do jogador**: tenda → casa, parede de versículos, horta, cozinha, visitas e casa do clã.
+- [ ] Casa: visitas de amigos online, cozinha e casa do clã.
 - [ ] **Validação no servidor** das recompensas (Edge Functions), contra trapaça no ranking.
 - [ ] **Ícones próprios** para os itens no lugar dos emojis.
 - [ ] **Arco do Pecado** em 7 encontros, terminando no chefe que só se vence pela graça.

@@ -15,6 +15,7 @@ import { TS, T, generateWorld, buildFase, buildSalao, buildSemanaSala, zoneAt, Z
 import { MOVES, MOVIMENTOS, REGRAS, faseAtual, modDano, aoDefender } from './bossMoves.js';
 import { instalarMundoNet } from './mundoNet.js';
 import { instalarDescanso } from './descanso.js';
+import { instalarCasa } from './casa.js';
 import { drawPerson, drawWeapon, drawEnemy, drawBoss, drawChest, drawPortal, drawSheep, drawProjectile, drawAnimal, shade } from './draw.js';
 import { computeStats, xpNeed, addItem, removeItem, count, faseProg, arrumarArmas, MAX_LEVEL } from './player.js';
 
@@ -202,6 +203,7 @@ export class Game {
   }
   // saída do salão / da sala da semana
   exitHub() {
+    if (this.hub?.tipo === 'casa') return this.sairCasa();
     if (this.hub?.tipo === 'semana') this.enterSalao(SEMANAS.indexOf(this.hub.sem) + 1);
     else this.enterWorld(false, { x: GATE_XS[0] * TS + 16, y: (GATE_Y + 2) * TS + 16 });
   }
@@ -269,6 +271,7 @@ export class Game {
     this.updatePlayer(dt);
     this.updatePet(dt);
     this.netTick(dt);
+    if (this.hub?.tipo === 'casa') this.tickCasa();
     this.updateEnemies(dt);
     this.updateProjectiles(dt);
     this.updateTele(dt);
@@ -704,6 +707,7 @@ export class Game {
   gainXp(n) {
     const c = this.char, p = this.p;
     if (c.level >= MAX_LEVEL) return;
+    if (this.repousando()) n = Math.round(n * 1.15); // dormiu em casa (game/casa.js)
     c.data.xp += n;
     let up = false;
     while (c.data.xp >= xpNeed(c.level) && c.level < MAX_LEVEL) { c.data.xp -= xpNeed(c.level); c.level++; up = true; }
@@ -1365,6 +1369,7 @@ export class Game {
     if (n.loja) acoes.push({ label: '🛒 Ver loja', fn: () => this.ui.shop(n.loja) });
     if (n.ranking) acoes.push({ label: '🏆 Ver ranking', fn: () => this.ui.openMenu('ranking') });
     if (n.classe) acoes.push({ label: '✝ Trocar de classe', fn: () => this.trocarClasse(n) });
+    if (n.casa) acoes.unshift(...this.acoesCasa());
     if (n.minijogo) {
       const MJ = { ovelha: 'Procurar a ovelha', pesca: 'Pescar', mana: 'Colher o maná', arca: 'Formar os pares' };
       acoes.push({ label: '🎮 ' + MJ[n.minijogo], fn: () => this.playMini(n.minijogo) });
@@ -1592,7 +1597,7 @@ export class Game {
       return out;
     }
     if (this.scene === 'salao') {
-      for (const pt of this.portais) out.push({ x: pt.x, y: pt.y, icon: pt.state === 'feito' ? '✅' : pt.state === 'fechado' ? '🔒' : '⛩️', nome: pt.tag + ': ' + pt.label, tipo: 'Portais', desc: pt.fase ? pt.fase.ref + ' · nível ' + pt.fase.nivel + ' · chefe: ' + BOSSES[pt.fase.chefe].nome : pt.sem.estudo + ' — ' + pt.sem.resumo });
+      for (const pt of this.portais) out.push({ x: pt.x, y: pt.y, icon: pt.casa ? pt.tag : pt.state === 'feito' ? '✅' : pt.state === 'fechado' ? '🔒' : '⛩️', nome: pt.tag + ': ' + pt.label, tipo: 'Portais', desc: pt.fase ? pt.fase.ref + ' · nível ' + pt.fase.nivel + ' · chefe: ' + BOSSES[pt.fase.chefe].nome : pt.sem.estudo + ' — ' + pt.sem.resumo });
       for (const n of this.npcs) out.push({ x: n.x, y: n.y, icon: '💬', nome: n.nome, tipo: 'Personagens', desc: n.falas[0] });
       if (this.saida) out.push({ x: this.saida.x, y: this.saida.y, icon: '🚪', nome: 'Saída', tipo: 'Portais', desc: this.hub.tipo === 'semana' ? 'Volta ao Salão das Dungeons.' : 'Volta ao mundo.' });
       return out;
@@ -1667,6 +1672,9 @@ export class Game {
       // brilho da fonte
       g.fillStyle = 'rgba(255,255,255,' + (0.3 + 0.2 * Math.sin(T0 * 3)) + ')';
       for (let i = 0; i < 3; i++) { ell(g, 90 * TS + 16 + Math.sin(T0 * 2 + i * 2) * 20, 75 * TS + 22 + Math.cos(T0 * 1.7 + i) * 10, 3, 1.5); g.fill(); }
+    } else if (this.scene === 'salao' && this.hub?.tipo === 'casa') {
+      this.drawCasa(g, T0);
+      if (this.saida) { g.fillStyle = 'rgba(242,193,78,' + (0.25 + 0.15 * Math.sin(T0 * 3)) + ')'; ell(g, this.saida.x, this.saida.y, 18, 8); g.fill(); }
     } else if (this.scene === 'salao') {
       for (const pt of this.portais) {
         drawPortal(g, pt.x, pt.y - 6, T0 + pt.key, pt.state);
@@ -1911,3 +1919,4 @@ function wrap(g, text, max) {
 
 instalarMundoNet(Game);
 instalarDescanso(Game);
+instalarCasa(Game);

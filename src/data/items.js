@@ -22,6 +22,11 @@ export const ITEMS = {
   roma: { nome: 'Romã', icon: '🍎', tipo: 'consumivel', fe: 90, preco: 40, nivel: 5, desc: 'Recupera 90 de Fé. Romãs enfeitavam as vestes do sacerdote (Êx 28:33).' },
   tamaras: { nome: 'Tâmaras', icon: '🌴', tipo: 'consumivel', cura: 40, fe: 30, preco: 30, nivel: 4, desc: 'Recupera 40 de vida e 30 de Fé. "O justo florescerá como a palmeira" (Sl 92:12).' },
   leite_mel: { nome: 'Leite e Mel', icon: '🥛', tipo: 'consumivel', buff: { atk: 1.2, spd: 1.15, t: 40 }, preco: 90, nivel: 6, raridade: 'raro', desc: '+20% de ataque e +15% de velocidade por 40s. "Terra que mana leite e mel" (Êx 3:8).' },
+  // Sementes para a horta de casa (ver game/casa.js)
+  semente_trigo: { nome: 'Sementes de Trigo', icon: '🌾', tipo: 'semente', preco: 8, desc: 'Em 10 minutos vira 3 pães. "Se o grão de trigo não morrer, fica só" (Jo 12:24).' },
+  semente_uva: { nome: 'Muda de Videira', icon: '🍇', tipo: 'semente', preco: 14, desc: 'Em 20 minutos dá 3 cachos de uvas. "Eu sou a videira, vós, os ramos" (Jo 15:5).' },
+  semente_tamara: { nome: 'Caroço de Tâmara', icon: '🌴', tipo: 'semente', preco: 16, desc: 'Em 25 minutos dá 3 porções de tâmaras.' },
+  semente_roma: { nome: 'Sementes de Romã', icon: '🍎', tipo: 'semente', preco: 22, desc: 'Em 35 minutos dá 2 romãs.' },
   pergaminho: { nome: 'Pergaminho do Retorno', icon: '📜', tipo: 'consumivel', retorno: true, preco: 25, desc: 'Leva você de volta à Cidade de Refúgio.' },
 
   // ---------- Armas por classe ----------
@@ -113,11 +118,12 @@ export const ITEMS = {
 export const CATEGORIAS = [
   { k: 'consumivel', nome: 'Consumíveis', ico: '🍞' }, { k: 'arma', nome: 'Armas', ico: '⚔️' }, { k: 'escudo', nome: 'Escudos', ico: '🛡️' },
   { k: 'armadura', nome: 'Armaduras', ico: '🥋' }, { k: 'reliquia', nome: 'Relíquias', ico: '💍' }, { k: 'pet', nome: 'Animais', ico: '🐾' },
-  { k: 'especial', nome: 'Especiais', ico: '📃' }
+  { k: 'semente', nome: 'Sementes', ico: '🌱' }, { k: 'especial', nome: 'Especiais', ico: '📃' }
 ];
 export function categoria(id) {
   const it = ITEMS[id]; if (!it) return 'especial';
   if (it.tipo === 'consumivel') return 'consumivel';
+  if (it.tipo === 'semente') return 'semente';
   if (['cabeca', 'corpo', 'cinto', 'pes'].includes(it.slot)) return 'armadura';
   return ['arma', 'escudo', 'reliquia', 'pet'].includes(it.slot) ? it.slot : 'especial';
 }
