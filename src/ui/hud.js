@@ -772,7 +772,8 @@ export function createHud(onExit) {
     list.append(faixa('volMusica', '🎵 Volume da música', 'A lira do mundo e a música dos chefes.'), faixa('volEfeitos', '🔔 Volume dos efeitos', 'Golpes, moedas, passos e avisos.'));
     list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, '🔠 Tamanho da interface'), h('small', {}, 'Aumenta textos, botões e janelas.')),
       h('div', { class: 'cfg-opts' }, [[1, 'Normal'], [1.15, 'Grande'], [1.3, 'Enorme']].map(([v, l]) => h('button', { class: 'chip-btn' + ((config.texto || 1) === v ? ' on' : ''), onclick: () => { setConfig('texto', v); sfx('click'); render(); } }, l)))));
-    body.append(list, h('p', { class: 'hint' }, 'Os ajustes ficam salvos neste aparelho.' + (document.body.classList.contains('pad') ? ' Controle conectado: veja os botões em Ajuda › Ver tela de controles.' : '')));
+    const versao = (document.querySelector('script[type="module"][src*="/assets/"]')?.getAttribute('src') || 'dev').replace(/^.*index-|.js$/g, '');
+    body.append(list, h('p', { class: 'hint' }, '🏷 Versão do jogo: ' + versao + ' · ' + 'Os ajustes ficam salvos neste aparelho.' + (document.body.classList.contains('pad') ? ' Controle conectado: veja os botões em Ajuda › Ver tela de controles.' : '')));
   }
 
   function tabHelp(body, render, close) {
