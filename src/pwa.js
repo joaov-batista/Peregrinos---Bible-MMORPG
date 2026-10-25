@@ -29,3 +29,23 @@ addEventListener('appinstalled', () => { deferred = null; notify(); });
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 }
+
+// Versão nova publicada: o jogo aberto continua com a versão antiga até recarregar (no celular quase nunca recarrega).
+// Confere ao abrir, a cada 5 minutos e ao voltar para o jogo; se mudou, mostra um botão para atualizar.
+const minhaVersao = document.querySelector('script[type="module"][src*="/assets/"]')?.getAttribute('src');
+async function checarVersao() {
+  if (!minhaVersao || document.getElementById('novaVersao')) return;
+  try {
+    const html = await (await fetch('/index.html', { cache: 'no-store' })).text();
+    const nova = html.match(/\/assets\/index-[^"']+\.js/)?.[0];
+    if (!nova || minhaVersao.includes(nova)) return;
+    const b = document.createElement('button');
+    b.id = 'novaVersao'; b.textContent = '🔄 Nova versão do Peregrinos! Toque para atualizar';
+    b.onclick = async () => { b.disabled = true; try { await window.__game?.save(); } catch { /* salva o que der */ } location.reload(); };
+    document.body.append(b);
+  } catch { /* sem internet */ }
+}
+if (import.meta.env.PROD) {
+  setTimeout(checarVersao, 8000); setInterval(checarVersao, 5 * 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checarVersao(); });
+}

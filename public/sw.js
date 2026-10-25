@@ -1,6 +1,6 @@
 // Service worker do Peregrinos: guarda o jogo no aparelho para abrir rápido e funcionar sem internet.
 // Supabase (contas, ranking, online) nunca passa pelo cache.
-const CACHE = 'peregrinos-v2';
+const CACHE = 'peregrinos-v3';
 const CORE = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -14,6 +14,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.hostname.endsWith('supabase.co')) return;
+  // a página (index.html) nunca sai do cache quando há internet: é por ela que o jogo descobre a versão nova
+  if (req.mode !== 'navigate' && (url.pathname === '/' || url.pathname.endsWith('.html'))) return;
   // página: tenta a rede primeiro (pega a semana nova), cai no cache sem internet
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put('/index.html', copy)); return r; })
