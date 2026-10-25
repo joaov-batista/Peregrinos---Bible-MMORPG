@@ -167,6 +167,10 @@ h1, h2, h3 { font-family: var(--font-title); letter-spacing: .02em; }
 .side-card .keys span.on { filter: none; animation: pop .4s; }
 .side-card .keys em { margin-left: auto; font-style: normal; font-size: 12px; color: var(--muted); }
 #sheepHud em { font-style: normal; font-size: 12px; color: var(--muted); }
+#grupoHud .gm { position: relative; font-size: 12px; font-weight: 700; padding: 1px 6px; margin-top: 2px; border-radius: 3px; background: var(--wood-0); overflow: hidden; }
+#grupoHud .gm span { position: relative; z-index: 1; text-shadow: 0 1px 0 #000; }
+#grupoHud .gm i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(180deg, #D9442C, #A52A18); opacity: .75; }
+#grupoHud .gm.longe { opacity: .45; }
 #questHud { pointer-events: auto; text-align: left; cursor: pointer; font: inherit; color: inherit; }
 #questHud:hover { box-shadow: 0 0 0 2px var(--wood-0), inset 0 0 0 1.5px var(--gold), 0 3px 8px rgba(0,0,0,.35); }
 #questHud em { font-style: normal; font-size: 12px; color: #FFE38A; line-height: 1.3; }

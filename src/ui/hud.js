@@ -109,6 +109,13 @@ export function createHud(onExit) {
     const html = '<b>Fase ' + f.n + ' · ' + f.nome + '</b><div class="keys">' + keys + '<em>' + time + '</em></div><small>' + f.objetivo + '</small>';
     if (el._h !== html) { el.innerHTML = html; el._h = html; }
   };
+  ui.grupoHud = lista => {
+    const el = $('grupoHud');
+    if (!lista) { el.hidden = true; el._h = ''; return; }
+    const html = '<b>⚔️ Grupo</b>' + lista.map(m => '<div class="gm' + (m.junto ? '' : ' longe') + '"><span>' + (m.lider ? '👑 ' : '') + m.nome.replace(/</g, '') + '</span><i style="width:' + Math.round(Math.max(0, m.hp) * 100) + '%"></i></div>').join('');
+    if (el._h !== html) { el.innerHTML = html; el._h = html; }
+    el.hidden = false;
+  };
   ui.sheepHint = (text, time, heat) => {
     const el = $('sheepHud');
     if (!text) { el.hidden = true; return; }
@@ -152,7 +159,7 @@ export function createHud(onExit) {
     const dot = (tx, ty, col, r = 3) => { x.fillStyle = col; x.beginPath(); x.arc((tx - sx) * k, (ty - sy) * k, r, 0, 7); x.fill(); };
     for (const n of g.npcs) dot(n.x / TS, n.y / TS, n.missao || n.minijogo || n.loja ? '#FFD23F' : '#FFFFFF', 2.2);
     for (const ch of g.chests || []) if (!ch.open) dot(ch.x / TS, ch.y / TS, '#C98A3A', 2.6);
-    for (const o of g.others.values()) dot(o.x / TS, o.y / TS, '#5DADEC', 2.5);
+    for (const o of g.others.values()) if ((o.sala || 'world') === g.salaAtual()) dot(o.x / TS, o.y / TS, '#5DADEC', 2.5);
     for (const e of g.enemies) if (e.kind === 'boss') dot(e.x / TS, e.y / TS, '#FF2E4A', 4);
     if (g.guide) {
       // destino: estrela (ou seta na borda do minimapa)
@@ -491,6 +498,24 @@ export function createHud(onExit) {
     wrap.append(colA, colB); body.append(wrap);
     const err = (box, e) => { box.append(h('p', { class: 'form-msg err' }, e.message)); };
     const act = (fn) => async e => { const b = e.currentTarget; b.disabled = true; try { await fn(); sfx('click'); await game.refreshSocial(); render(); } catch (x) { ui.toast(x.message); b.disabled = false; } };
+
+    // --- Grupo para as dungeons ---
+    const gb = h('div', { class: 'quest-focus' });
+    const g = game.grupo;
+    gb.append(h('small', { class: 'eyebrow' }, '⚔️ GRUPO PARA AS DUNGEONS'));
+    if (!game.net) gb.append(h('p', {}, 'O grupo funciona online (com o Supabase ligado).'));
+    else {
+      gb.append(h('p', {}, g && g.membros.length > 1 ? g.membros.map(m => (String(m.id) === String(g.lider) ? '👑 ' : '• ') + m.name).join('  ') : 'Chame até 3 amigos ou gente do clã que estejam online. Quando o líder entra numa fase, todos lutam juntos.'));
+      const lista = h('div', { class: 'btn-row', style: 'justify-content:flex-start' }, h('small', { class: 'muted' }, 'Procurando quem está online…'));
+      gb.append(lista);
+      game.candidatosGrupo().then(cs => {
+        lista.innerHTML = '';
+        if (!g || game.souLider()) for (const c of cs) lista.append(h('button', { class: 'btn sm gold', onclick: () => { game.convidar(c.id, c.name); render(); } }, '+ ' + c.name));
+        if (!cs.length && (!g || game.souLider())) lista.append(h('small', { class: 'muted' }, 'Nenhum amigo ou membro do clã online agora.'));
+        if (g) lista.append(h('button', { class: 'btn sm danger', onclick: () => { game.sairGrupo(); render(); } }, game.souLider() ? 'Desfazer grupo' : 'Sair do grupo'));
+      });
+    }
+    body.prepend(gb);
 
     // --- Amigos ---
     colA.append(h('h4', {}, '💚 Amigos'));

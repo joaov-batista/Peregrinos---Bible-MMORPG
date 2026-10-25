@@ -1,5 +1,5 @@
 // Núcleo do jogo: loop, câmera, combate, inimigos, chefes, fases e mundo compartilhado.
-import { TAU, rand, randi, clamp, lerp, pick, angDiff, ell, rr, shuffle, weekId } from '../util.js';
+import { TAU, rand, randi, clamp, lerp, pick, angDiff, ell, rr, shuffle, weekId, hash } from '../util.js';
 import { input } from '../input.js';
 import { viewSize, zoom } from '../zoom.js';
 import { sfx, music } from '../audio.js';
@@ -16,6 +16,7 @@ import { MOVES, MOVIMENTOS, REGRAS, faseAtual, modDano, aoDefender } from './bos
 import { instalarMundoNet } from './mundoNet.js';
 import { instalarDescanso } from './descanso.js';
 import { instalarCasa } from './casa.js';
+import { instalarGrupo } from './grupo.js';
 import { drawPerson, drawWeapon, drawEnemy, drawBoss, drawChest, drawPortal, drawSheep, drawProjectile, drawAnimal, shade } from './draw.js';
 import { computeStats, xpNeed, addItem, removeItem, count, faseProg, arrumarArmas, MAX_LEVEL } from './player.js';
 
@@ -175,7 +176,7 @@ export class Game {
     if (!at) this.ui.banner(sem === SEMANA_ATUAL ? 'SEMANA NOVA' : 'SEMANA PASSADA', sem.titulo, sem.estudo);
   }
 
-  enterFase(sem, n) {
+  enterFase(sem, n, run = null) {
     const fase = sem.fases[n - 1];
     const built = buildFase(fase);
     this.scene = 'fase';
@@ -186,7 +187,9 @@ export class Game {
     this.chests = built.chests.map(c => ({ ...c, open: false, locked: 0 }));
     this.npcs = built.npcs.map(n2 => { const d = fase.npcs[n2.key]; return { id: 'f' + n2.key, nome: d.nome, look: d.look, falas: d.falas, x: n2.x, y: n2.y, talkT: 0 }; });
     const lvBoost = 1 + (n - 1) * 0.24;
-    for (const e of built.enemies) this.enemies.push(this.makeEnemy(pick(fase.inimigos), e.x, e.y, lvBoost));
+    // tipo e id de cada vício saem da posição no mapa: iguais em todos os aparelhos (fase em grupo)
+    built.enemies.forEach((e, i) => { const en = this.makeEnemy(fase.inimigos[Math.floor(hash(i, n, 91) * fase.inimigos.length)], e.x, e.y, lvBoost); en.nid = 'f' + i; this.enemies.push(en); });
+    this.fase.run = run; this.worldSince = Date.now(); this._host = undefined; this.lock = null;
     this.p.x = built.start.x; this.p.y = built.start.y; this.p.charm = null; this.p.slow = 1; this.dismount(true);
     if (this.pet) { this.pet.x = this.p.x - 24; this.pet.y = this.p.y; }
     this.p.hp = Math.max(this.p.hp, this.st.maxHp * 0.6);
@@ -280,7 +283,8 @@ export class Game {
     this.updateInteract();
     this.updateHud(dt);
     this.saveT += dt; if (this.saveT > 30) { this.saveT = 0; this.save(); }
-    this.netT += dt; if (this.net && this.scene === 'world' && this.netT > 0.1) { this.netT = 0; this.sendPos(); }
+    this.netT += dt; if (this.net && this.salaAtual() && this.netT > 0.1) { this.netT = 0; this.sendPos(); }
+    this._gT = (this._gT || 0) - dt; if (this._gT <= 0) { this._gT = 0.5; this.grupoTick(); }
   }
 
   /* ================= Jogador ================= */
@@ -791,6 +795,7 @@ export class Game {
     }
     p.dead = true; p.hp = 0; c.data.stats.deaths++; p.charm = null;
     input.clear();
+    if (this.scene === 'fase' && this.fase.run) { this.cairEmGrupo(); this.save(); return; }
     if (this.scene === 'fase') {
       this.ui.dead({
         titulo: 'Você caiu…', texto: '"O justo cai sete vezes e se levanta" (Pv 24:16). Tente de novo!',
@@ -1195,7 +1200,7 @@ export class Game {
     if (!f || f.done) return;
     f.healCd -= dt;
     const doorRow = f.built.door.length ? f.built.door[0].ty : 0;
-    if (!f.bossSpawned && f.keys >= 3 && p.y < doorRow * TS) {
+    if (!f.bossSpawned && f.keys >= 3 && p.y < doorRow * TS && this.souHost()) {
       f.bossSpawned = true;
       const bp = f.built.boss;
       const b = this.makeBoss(f.def.chefe, bp.x, bp.y); b.engaged = true;
@@ -1212,6 +1217,7 @@ export class Game {
     const q = f.quiz.pop();
     const ok = await this.ui.quiz(q, 'Baú da Fase ' + f.n);
     this.revisao(q, ok);
+    this.bauGrupo(c, ok);
     if (ok && f.keys >= 3) return this.bonusChest(c);
     if (ok) {
       c.open = true; f.keys++; f.ok++; this.char.data.stats.quizOk++; this.addScore(60); sfx('key');
@@ -1344,7 +1350,9 @@ export class Game {
     const acoes = [];
     const entrar = () => { sfx('gate'); this.enterFase(sem, n); };
     const lidoKey = sem.id + ':' + n, lidos = c.data.lidos || (c.data.lidos = []);
+    if (this.grupoAtivo() && this.souLider() && prevOk) acoes.push({ label: '⚔️ Entrar com o grupo (' + this.grupo.membros.length + ')', fn: () => this.entrarComGrupo(sem, n) });
     if (prevOk && lvlOk) acoes.push({ label: done ? 'Jogar de novo' : 'Entrar no portão', fn: done || lidos.includes(lidoKey) ? entrar : () => this.readFirst(f, lidoKey, entrar) });
+    if (this.grupoAtivo() && !this.souLider()) txt += '\n\n⚔️ Você está num grupo: espere o líder entrar para lutar junto.';
     acoes.push({ label: 'Voltar' });
     this.ui.dialog({ nome: 'Fase ' + n + ': ' + f.nome, texto: txt, acoes });
   }
@@ -1448,7 +1456,7 @@ export class Game {
   /* ================= Rede ================= */
   sendPos() {
     const p = this.p, c = this.char;
-    const st = { id: c.id, w: this.worldSince, name: c.name, cls: c.cls, look: c.look, lvl: c.level, cla: this.social.clan?.tag, pet: this.st.pet ? { k: this.st.pet, m: p.mounted ? 1 : 0 } : undefined, x: Math.round(p.x), y: Math.round(p.y), fx: +p.fx.toFixed(2), fy: +p.fy.toFixed(2), mv: p.moving ? 1 : 0, atk: p.atkT > 0 ? 1 : 0, eq: c.data.eq };
+    const st = { id: c.id, w: this.worldSince, sala: this.salaAtual(), hp: +(Math.max(0, p.hp) / this.st.maxHp).toFixed(2), name: c.name, cls: c.cls, look: c.look, lvl: c.level, cla: this.social.clan?.tag, pet: this.st.pet ? { k: this.st.pet, m: p.mounted ? 1 : 0 } : undefined, x: Math.round(p.x), y: Math.round(p.y), fx: +p.fx.toFixed(2), fy: +p.fy.toFixed(2), mv: p.moving ? 1 : 0, atk: p.atkT > 0 ? 1 : 0, eq: c.data.eq };
     const key = st.x + ',' + st.y + ',' + st.atk + ',' + st.fx;
     if (key === this.lastSent && this.T - (this.lastSentT || 0) < 3) return;
     this.lastSent = key; this.lastSentT = this.T;
@@ -1459,7 +1467,7 @@ export class Game {
     if (m.id === this.char.id) return;
     let o = this.others.get(m.id);
     if (!o) { o = { ...m, walk: 0 }; this.others.set(m.id, o); }
-    Object.assign(o, { w: m.w, tx: m.x, ty: m.y, fx: m.fx, fy: m.fy, mv: m.mv, atk: m.atk, lvl: m.lvl, look: m.look, eq: m.eq, cla: m.cla, pet: m.pet, seen: performance.now() });
+    Object.assign(o, { w: m.w, sala: m.sala, hp: m.hp, tx: m.x, ty: m.y, fx: m.fx, fy: m.fy, mv: m.mv, atk: m.atk, lvl: m.lvl, look: m.look, eq: m.eq, cla: m.cla, pet: m.pet, seen: performance.now() });
   }
   updateOthers(dt) {
     const now = performance.now();
@@ -1720,7 +1728,7 @@ export class Game {
     }
     for (const c of this.chests) list.push({ y: c.y, d: () => drawChest(g, c, T0) });
     for (const e of this.enemies) list.push({ y: e.y, d: () => this.drawEnt(g, e) });
-    for (const o of this.others.values()) if (this.scene === 'world') list.push({ y: o.y, d: () => this.drawOther(g, o) });
+    for (const o of this.others.values()) if (this.salaAtual() && (o.sala || 'world') === this.salaAtual()) list.push({ y: o.y, d: () => this.drawOther(g, o) });
     if (this.sheep) list.push({ y: this.sheep.y, d: () => drawSheep(g, this.sheep.x, this.sheep.y, T0, !this.sheep.found) });
     if (this.fugidas && this.scene === 'world') for (const o of this.fugidas) list.push({ y: o.y, d: () => { drawSheep(g, o.x, o.y, o.moving ? T0 * 4 : T0, false, o.fx < 0); if (o.cansada > 0) { g.font = '12px sans-serif'; g.textAlign = 'center'; g.fillText('💦', o.x + 12, o.y - 14); } } });
     if (this.scene === 'world') {
@@ -1920,3 +1928,4 @@ function wrap(g, text, max) {
 instalarMundoNet(Game);
 instalarDescanso(Game);
 instalarCasa(Game);
+instalarGrupo(Game);

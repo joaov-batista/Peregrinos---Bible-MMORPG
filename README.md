@@ -134,7 +134,7 @@ supabase/schema.sql  tabelas, segurança e ranking
 
 ## Mundo compartilhado
 
-No mundo aberto, todos veem os **mesmos** vícios e chefes. O jogador que está no mundo há mais tempo é o *anfitrião*: só ele simula os inimigos e manda o estado para os outros (~7 vezes por segundo, pelo Supabase Realtime). Os outros mandam seus golpes para ele, que aplica o dano; a recompensa vai para todos que ajudaram a vencer. Se o anfitrião sair, o próximo da fila assume. Dungeons continuam individuais. Código em `src/game/mundoNet.js`.
+No mundo aberto, todos veem os **mesmos** vícios e chefes. O jogador que está no mundo há mais tempo é o *anfitrião*: só ele simula os inimigos e manda o estado para os outros (~7 vezes por segundo, pelo Supabase Realtime). Os outros mandam seus golpes para ele, que aplica o dano; a recompensa vai para todos que ajudaram a vencer. Se o anfitrião sair, o próximo da fila assume. Nas **dungeons em grupo** (até 4, convite em menu › Social) vale o mesmo sistema dentro da fase do grupo (`src/game/grupo.js`); jogando sozinho, a dungeon é local. Código em `src/game/mundoNet.js`.
 
 ## Limitações conhecidas
 

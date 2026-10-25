@@ -15,17 +15,18 @@ const ALCANCE = 1100;     // só vão no estado os inimigos perto de algum jogad
 export function instalarMundoNet(Game) { Object.assign(Game.prototype, metodos); }
 
 const metodos = {
-  netAtivo() { return !!this.net && this.scene === 'world'; },
+  // online vale no mundo e na fase do grupo (game/grupo.js); fase solo, salões e casa são locais
+  netAtivo() { return !!this.net && !!this.salaAtual(); },
   meuId() { return String(this.char.id); },
 
   // Anfitrião = quem entrou no mundo primeiro (empate: menor id). Recalcula uma vez por quadro.
   souHost() {
     if (!this.netAtivo()) return true;
     if (this._hostT === this.T) return this._host;
-    const agora = performance.now(), w = this.worldSince, id = this.meuId();
+    const agora = performance.now(), w = this.worldSince, id = this.meuId(), sala = this.salaAtual();
     let host = true;
     for (const o of this.others.values()) {
-      if (agora - o.seen > VISTO_MS || !o.w) continue;
+      if (agora - o.seen > VISTO_MS || !o.w || (o.sala || 'world') !== sala) continue;
       if (o.w < w || (o.w === w && String(o.id) < id)) { host = false; break; }
     }
     if (host && this._host === false) this.virouHost();
@@ -35,6 +36,7 @@ const metodos = {
 
   // Assume a simulação: os pontos de surgimento e os chefes do mundo seguem o que já existe
   virouHost() {
+    if (this.scene !== 'world') { for (const e of this.enemies) { e.tx = e.ty = null; e.cd = rand(0.5, 1.5); } return; }
     for (const s of this.spawns) { s.alive = this.enemies.some(e => e.nid === 's' + s.i); if (!s.alive) s.at = this.T + rand(4, 12); }
     for (const wb of this.worldBosses) {
       const b = this.enemies.find(e => e.nid === 'b:' + wb.id);
@@ -45,9 +47,9 @@ const metodos = {
 
   // Jogadores próximos viram "alvos" para a IA do anfitrião (o dano neles vira mensagem)
   atualizaProxies() {
-    const agora = performance.now(), vivos = new Set();
+    const agora = performance.now(), vivos = new Set(), sala = this.salaAtual();
     for (const o of this.others.values()) {
-      if (agora - o.seen > 4000 || o.x == null) continue;
+      if (agora - o.seen > 4000 || o.x == null || (o.sala || 'world') !== sala) continue;
       let px = this.proxies.get(o.id);
       if (!px) { px = { remote: true, id: o.id, r: 12, fx: 0, fy: 1, slow: 1, buffs: {}, dead: false }; this.proxies.set(o.id, px); }
       px.x = o.x; px.y = o.y; vivos.add(o.id);
@@ -60,7 +62,7 @@ const metodos = {
     return best;
   },
 
-  netEnviar(m) { this.net?.ev({ ...m, de: this.meuId() }); },
+  netEnviar(m) { this.net?.ev({ ...m, de: this.meuId(), sala: this.salaAtual() }); },
   porNid(id) { return id && this.enemies.find(e => e.nid === id); },
 
   // Chamado todo quadro no mundo
@@ -93,12 +95,14 @@ const metodos = {
       if (e.engaged) s.en = 1; if (e.dash > 0) s.ds = 1;
       lista.push(s);
     }
-    this.net.ev({ t: 'snap', de: this.meuId(), e: lista });
+    this.net.ev({ t: 'snap', de: this.meuId(), sala: this.salaAtual(), e: lista });
   },
 
   // Mensagens recebidas pelo canal
   onNetEv(m) {
-    if (this.scene !== 'world' || String(m.de) === this.meuId()) return;
+    if (String(m.de) === this.meuId()) return;
+    if (m.t?.startsWith('g-')) return this.onGrupoEv(m); // convites e avisos do grupo (game/grupo.js)
+    if (!this.netAtivo() || (m.sala || 'world') !== this.salaAtual()) return;
     const host = this.souHost();
     switch (m.t) {
       case 'snap': if (!host) this.aplicarSnapshot(m.e); break;
@@ -119,12 +123,14 @@ const metodos = {
         this.enemies.splice(this.enemies.indexOf(e), 1);
         this.burst(e.x, e.y, 26, e.d.cor, 240);
         if (this.lock === e) this.lock = null;
-        if ((m.por || []).map(String).includes(this.meuId())) this.recompensa(e);
+        // na fase do grupo, vencer o chefe vale para todos
+        if ((m.por || []).map(String).includes(this.meuId()) || (e.kind === 'boss' && this.fase)) this.recompensa(e);
         else if (this.boss === e) { this.boss = null; this.ui.bossBar(null); }
       } break;
       case 'proj': if (!host) { const o = m.o, src = this.porNid(o.sid) || { x: o.x, y: o.y }; this.proj({ ...o, owner: 'e', src }); } break;
       case 'tele': if (!host) this.teleRede(m); break;
       case 'haz': if (!host) this.hazards.push({ ...m.h, tick: 0, hit: false }); break;
+      case 'bau': this.receberBau(m); break;
     }
   },
 
