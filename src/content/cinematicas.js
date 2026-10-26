@@ -36,7 +36,7 @@ export const CINEMAS = {
         texto: '[hopeful] Mas Deus não abandonou a sua criação. Ele enviou o seu Filho, e a luz resplandeceu nas trevas… e as trevas não prevaleceram contra ela.' },
       { cena: 'cidade', fig: [{ p: 'jogador', x: 0.5, y: 0.84, s: 1.7, anda: true, entra: 'baixo' }],
         texto: 'Agora, um novo peregrino chega à Cidade de Refúgio. Você não tem riquezas, nem fama. Tem uma Bíblia, um coração disposto… e um caminho pela frente.' },
-      { cena: 'portais', fig: [{ p: 'jogador', x: 0.5, y: 0.86, s: 1.4, vira: -1 }],
+      { cena: 'portais', fig: [{ p: 'jogador', perfil: true, x: 0.36, y: 0.36, s: 1.7 }], cam: 'push',
         titulo: 'Sede fortes no Senhor', sub: 'Efésios 6:10',
         texto: 'Ao norte da cidade, os Portões das Dungeons guardam as histórias da Palavra. Vista a armadura de Deus, peregrino. A jornada começa agora.' }
     ]
@@ -63,7 +63,7 @@ export const CINEMAS = {
         texto: 'Pela estrada que vem de Atenas, chega um homem sozinho, com as mãos calejadas e uma mensagem que pode virar a cidade de cabeça para baixo. O nome dele é Paulo.' },
       { cena: 'oficina', fig: [{ p: PRISCILA, x: 0.34, y: 0.82, s: 1.5 }, { p: PAULO, x: 0.5, y: 0.82, s: 1.5 }, { p: AQUILA, x: 0.66, y: 0.82, s: 1.5, vira: -1 }],
         texto: 'Ele vai costurar tendas com Priscila e Áquila, ensinar na sinagoga, ser rejeitado, receber uma visão do próprio Senhor e ser arrastado a um tribunal romano.' },
-      { cena: 'tribunal', fx: 'brasas', titulo: 'Não temas', sub: 'Atos 18:9-10',
+      { cena: 'tribunal', fx: 'brasas', titulo: 'Não temas', sub: 'Atos 18:9-10', fig: [{ p: PAULO, perfil: true, x: 0.34, y: 0.4, s: 1.6 }], cam: 'push',
         texto: 'Cinco salões. Cinco inimigos. Mamom, a Procrastinação, a Mentira, a Imoralidade… e, no fim, o próprio Acusador. Peregrino: trabalho e missão andam juntos. Não temas. Fala, e não te cales.' }
     ]
   },
@@ -106,7 +106,7 @@ export const CINEMAS = {
     cenas: [
       { cena: 'sinagoga', titulo: 'FASE 3', sub: 'A Sinagoga · Atos 18:4-6',
         texto: 'Todo sábado, Paulo deixa as tendas e vai à sinagoga. Abre os rolos das Escrituras e mostra a judeus e gregos que Jesus é o Cristo.' },
-      { cena: 'sinagoga', fig: [{ p: SILAS, x: 0.34, y: 0.82, s: 1.5, entra: 'esq', anda: true }, { p: PAULO, x: 0.5, y: 0.82, s: 1.6 }, { p: TIMOTEO, x: 0.66, y: 0.82, s: 1.4, vira: -1, entra: 'dir', anda: true }],
+      { cena: 'sinagoga', fig: [{ p: SILAS, x: 0.4, y: 0.84, s: 1.3, entra: 'esq', anda: true }, { p: PAULO, x: 0.5, y: 0.84, s: 1.4 }, { p: TIMOTEO, x: 0.6, y: 0.84, s: 1.2, vira: -1, entra: 'dir', anda: true }],
         texto: 'Silas e Timóteo chegam da Macedônia. Timóteo é jovem, mas ninguém deve desprezar a sua mocidade. Agora Paulo pode se dedicar inteiro à Palavra.' },
       { cena: 'sinagoga', fx: 'raio', fig: [{ p: 'chefe:mentira', x: 0.3, y: 0.78, s: 1.2 }, { p: 'chefe:mentira', x: 0.5, y: 0.78, s: 1.4 }, { p: 'chefe:mentira', x: 0.7, y: 0.78, s: 1.2 }],
         texto: '[mysterious] Mas nem todos querem ouvir. Entre as colunas, a Mentira se multiplica em cópias perfeitas. Qual delas é a verdadeira? Só a verdade revela quem ela é.' }
@@ -119,7 +119,7 @@ export const CINEMAS = {
         texto: 'Rejeitado na sinagoga, Paulo atravessa a rua. Ao lado, fica a casa de Tício Justo, um gentio que temia a Deus. As portas se abrem.' },
       { cena: 'casa', fig: [{ p: TICIO, x: 0.38, y: 0.82, s: 1.6 }, { p: CRISPO, x: 0.62, y: 0.82, s: 1.6, vira: -1 }],
         texto: 'E então, o impossível: Crispo, o chefe da sinagoga, crê no Senhor com toda a sua casa. Muitos coríntios ouvem, creem e são batizados.' },
-      { cena: 'noite', fx: 'clarão', fig: [{ p: ANJO, x: 0.62, y: 0.7, s: 1.7, vira: -1 }, { p: PAULO, x: 0.38, y: 0.84, s: 1.5 }],
+      { cena: 'luz', fx: 'clarão', fig: [{ p: 'serafim', x: 0.66, y: 0.42, s: 1.3 }, { p: PAULO, perfil: true, x: 0.3, y: 0.42, s: 1.5 }], cam: 'push',
         texto: '[softly] Numa noite, o Senhor fala a Paulo em visão: "Não temas. Fala, e não te cales, porque eu estou contigo. Tenho muito povo nesta cidade."' },
       { cena: 'casa', fx: 'brasas', fig: [{ p: 'chefe:imoralidade', x: 0.5, y: 0.78, s: 1.5 }],
         texto: '[tense] Mas Corinto era famosa por outra coisa. No último salão, a Imoralidade encanta e puxa para perto. Contra ela, não se luta parado: foge. Use a esquiva, e o encanto se quebra.' }
@@ -185,7 +185,7 @@ export const CINEMAS = {
         texto: 'Ele foi um querubim de luz. Quis subir acima das estrelas de Deus e caiu. Desde então, o seu trabalho é um só: acusar.' },
       { cena: 'trono', voz: 'vilao', fx: 'fogo', fig: [{ p: 'chefe:satanas', x: 0.5, y: 0.78, s: 2.1 }],
         texto: '[menacing] Eu conheço você. Conheço cada erro. Eu acuso você dia e noite diante do trono… Você não merece estar aqui!' },
-      { cena: 'luz', fig: [{ p: 'jogador', x: 0.5, y: 0.84, s: 1.7 }],
+      { cena: 'luz', fig: [{ p: 'jogador', perfil: true, x: 0.4, y: 0.4, s: 1.7 }], cam: 'push',
         texto: '[firm] Mas para os que estão em Cristo Jesus, nenhuma condenação há. Quando ele acusar, responda com a Palavra.' }
     ]
   },

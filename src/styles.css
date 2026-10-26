@@ -608,3 +608,12 @@ body.tiny .stats { grid-template-columns: 1fr 1fr; }
 #screens .title { color: #FFF4D6; text-shadow: 0 2px 0 #5A3510, 0 0 24px rgba(255,214,140,.7); }
 .creator-preview { box-shadow: inset 0 0 0 2px var(--gold-deep), 0 0 30px rgba(255,220,150,.35); }
 .char-card .portrait { width: 84px; height: 84px; border-radius: 10px; background: radial-gradient(circle at 50% 70%, rgba(255,226,150,.55), rgba(90,60,110,.6) 75%); box-shadow: inset 0 0 0 2px var(--gold-deep), 0 0 18px rgba(255,220,150,.3); }
+/* cutscenes: tipografia de cinema, separada da interface do jogo */
+.cine-title b { font-weight: 700; letter-spacing: .28em; font-size: clamp(22px, 4.4vw, 52px); color: #F4EEE2; text-shadow: 0 0 30px rgba(255,236,200,.35), 0 2px 12px rgba(0,0,0,.8); }
+.cine-title span { font-family: Alegreya, serif; font-style: italic; font-weight: 500; letter-spacing: .08em; color: rgba(244,238,226,.75); text-shadow: 0 1px 8px #000; }
+.cine-title b::after { content: ''; display: block; width: 120px; height: 1px; margin: 12px auto 0; background: linear-gradient(90deg, transparent, rgba(244,238,226,.7), transparent); }
+.cine-sub { font-family: Alegreya, serif; font-weight: 500; font-size: clamp(14px, 1.9vw, 20px); letter-spacing: .01em; color: #F2EEE6; text-shadow: 0 1px 3px #000, 0 0 10px rgba(0,0,0,.9); max-width: 860px; }
+.cine-bar { background: linear-gradient(to bottom, transparent, rgba(0,0,0,.55) 40%, rgba(0,0,0,.85)); }
+.cine-btns .btn { background: transparent !important; border: 1px solid rgba(244,238,226,.28) !important; box-shadow: none !important; color: rgba(244,238,226,.8) !important; font-family: Alegreya, serif; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; font-size: 11px; min-height: 30px; padding: 4px 12px; border-radius: 2px; opacity: .7; }
+.cine-btns .btn:hover, .cine-btns .btn:focus-visible { opacity: 1; border-color: rgba(244,238,226,.7) !important; }
+.cine-hint { font-family: Alegreya, serif; font-style: italic; letter-spacing: .06em; color: rgba(244,238,226,.4); }

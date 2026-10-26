@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cutscenes</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@500;700;800;900&family=Alegreya:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cinzel:wght@700;900&display=swap">
+</head>
+<body style="margin:0;background:#000">
+  <!-- Prévia das cutscenes (só para desenvolvimento): npm run dev e abra /cinema.html?id=prologo&plano=2 -->
+  <div id="overlay"><div class="modal cinema"><div class="panel" id="painel"></div></div></div>
+  <select id="lista" style="position:fixed;top:8px;left:8px;z-index:99;font:13px sans-serif;opacity:.6"></select>
+  <script type="module">
+    import './src/styles.css';
+    import { montarCinema } from './src/ui/cinema.js';
+    import { CINEMAS } from './src/content/cinematicas.js';
+    import { initAudio } from './src/audio.js';
+    const q = new URLSearchParams(location.search), id = q.get('id') || 'prologo', plano = +(q.get('plano') || 0);
+    const lista = document.getElementById('lista');
+    for (const k of Object.keys(CINEMAS)) lista.append(new Option(CINEMAS[k].titulo + ' (' + k + ')', k, false, k === id));
+    lista.onchange = () => { location.search = '?id=' + lista.value; };
+    addEventListener('pointerdown', initAudio, { once: true });
+    const painel = document.getElementById('painel');
+    montarCinema(painel, () => { painel.innerHTML = '<p style="color:#ccc;font:16px serif;padding:40px">Fim da cutscene.</p>'; }, id,
+      { look: { skin: '#C68B59', hair: '#3A2314', tunic: '#3B4CCA', cape: '#E0483A', style: 'curto' } });
+    // pula direto para o plano pedido
+    if (plano) setTimeout(async () => { for (let i = 0; i < plano; i++) { dispatchEvent(new KeyboardEvent('keydown', { code: 'Enter' })); await new Promise(r => setTimeout(r, 120)); } }, 1500);
+  </script>
+</body>
+</html>
