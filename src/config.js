@@ -9,6 +9,10 @@ const PADRAO = {
   numerosDano: true,     // mostra o dano em cima dos inimigos
   volMusica: 0.8,        // 0 a 1
   volEfeitos: 1,         // 0 a 1
+  volVoz: 1,             // narração das cutscenes, 0 a 1
+  atmosfera: true,       // névoa, partículas, cor e vinheta por cima do mundo (game/atmos.js)
+  cinemas: true,         // cutscenes narradas (content/cinematicas.js)
+  vozNavegador: true,    // sem o mp3 da narração, o aparelho lê a legenda em voz alta
   texto: 1               // tamanho da interface: 1, 1.15 ou 1.3
 };
 export const config = { ...PADRAO, ...store.get('peregrinos.config', {}) };

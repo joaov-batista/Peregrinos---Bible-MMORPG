@@ -2,7 +2,7 @@
 import { TAU, rand, randi, clamp, lerp, pick, angDiff, ell, rr, shuffle, weekId, hash } from '../util.js';
 import { input } from '../input.js';
 import { viewSize, zoom } from '../zoom.js';
-import { sfx, music } from '../audio.js';
+import { sfx, music, audio } from '../audio.js';
 import { net, ONLINE } from '../net.js';
 import { config } from '../config.js';
 import { vibrar } from '../gamepad.js';
@@ -11,16 +11,19 @@ import { ITEMS } from '../data/items.js';
 import { ENEMIES, BOSSES, ACUSACOES, FALSAS } from '../data/bestiary.js';
 import { WORLD_NPCS, QUESTS } from '../data/npcs.js';
 import { SEMANAS, SEMANA_ATUAL } from '../content/index.js';
+import { CINEMAS, CINEMA_CHEFE } from '../content/cinematicas.js';
 import { TS, T, generateWorld, buildFase, buildSalao, buildSemanaSala, zoneAt, ZONES, GATE_XS, GATE_Y, makeMinimap } from './world.js';
 import { MOVES, MOVIMENTOS, REGRAS, faseAtual, modDano, aoDefender } from './bossMoves.js';
 import { instalarMundoNet } from './mundoNet.js';
 import { instalarDescanso } from './descanso.js';
 import { instalarCasa } from './casa.js';
 import { instalarGrupo } from './grupo.js';
+import { atmosfera } from './atmos.js';
 import { drawPerson, drawWeapon, drawEnemy, drawBoss, drawChest, drawPortal, drawSheep, drawProjectile, drawAnimal, shade } from './draw.js';
 import { computeStats, xpNeed, addItem, removeItem, count, faseProg, arrumarArmas, MAX_LEVEL } from './player.js';
 
 const SPAWN = { x: 90 * TS + 16, y: 78 * TS + 8 };
+const audioModo = () => audio.modo;
 const RIDE_H = { cavalo: 17, burrinho: 12 }; // quanto o cavaleiro fica acima do chão em cada montaria
 // animais que lutam: mult = fração do ataque do jogador, cd = segundos entre golpes
 const PET_LUTA = { cachorro: { mult: 0.45, cd: 1.1, som: 'Au!' }, gato: { mult: 0.22, cd: 0.5, som: 'Miau!' } };
@@ -99,6 +102,19 @@ export class Game {
     this.light.width = Math.ceil(this.W / 2); this.light.height = Math.ceil(this.H / 2);
   }
 
+  // Cutscene narrada (content/cinematicas.js): toca uma vez por personagem; "forcar" revê (menu › Ajustes).
+  // Devolve true se tocou. O jogo fica pausado enquanto ela roda (é um modal).
+  async cinema(id, forcar = false) {
+    const vistas = this.char.data.cinemas || (this.char.data.cinemas = []);
+    if (!CINEMAS[id] || (!forcar && (vistas.includes(id) || config.cinemas === false))) return false;
+    if (!vistas.includes(id)) vistas.push(id);
+    const antes = audioModo(); music('cinema');
+    await this.ui.cinema(id, { look: this.char.look });
+    if (this.running) music(antes);
+    this.save();
+    return true;
+  }
+
   /* ================= Cenas ================= */
   enterWorld(first, at) {
     this.scene = 'world'; this.cur = { map: this.world.map, lights: this.world.lights };
@@ -154,6 +170,7 @@ export class Game {
       }
     }, built, at);
     this.ui.banner('SALÃO DAS DUNGEONS', 'Escolha uma semana de estudo', SEMANAS.length + (SEMANAS.length > 1 ? ' semanas' : ' semana'));
+    this.cinema('salao');
   }
   enterSemana(sem, at) {
     const c = this.char, prog = faseProg(c, sem.id), built = buildSemanaSala(sem.sala);
@@ -174,6 +191,7 @@ export class Game {
       }
     }, built, at);
     if (!at) this.ui.banner(sem === SEMANA_ATUAL ? 'SEMANA NOVA' : 'SEMANA PASSADA', sem.titulo, sem.estudo);
+    this.cinema(sem.id);
   }
 
   enterFase(sem, n, run = null) {
@@ -961,7 +979,8 @@ export class Game {
     return along > 0 && along < len && perp < w / 2 + p.r;
   }
 
-  bossIntro(b) {
+  async bossIntro(b) {
+    if (b.id && CINEMA_CHEFE[b.id]) await this.cinema(CINEMA_CHEFE[b.id]);
     sfx('boss'); music('chefe'); this.shake(10);
     this.ui.banner(b.d.titulo.toUpperCase(), b.d.nome, b.d.ref);
     this.addText(b.x, b.y - b.r - 30, b.d.intro, '#FFFFFF', 14, 3.5);
@@ -1122,8 +1141,10 @@ export class Game {
 
   async meetPecado() {
     const pc = this.pecado;
-    await this.ui.dialog({ nome: '???', look: null, texto: '…Você me sente, não sente? Eu estou sempre à porta. Esperando.', acoes: [{ label: 'Quem é você?' }] });
-    await this.ui.dialog({ nome: '???', texto: 'Ainda não é hora de você me enfrentar. Mas eu sei o seu nome… e você logo vai saber o meu.', acoes: [{ label: '…' }] });
+    if (!await this.cinema('pecado')) {
+      await this.ui.dialog({ nome: '???', look: null, texto: '…Você me sente, não sente? Eu estou sempre à porta. Esperando.', acoes: [{ label: 'Quem é você?' }] });
+      await this.ui.dialog({ nome: '???', texto: 'Ainda não é hora de você me enfrentar. Mas eu sei o seu nome… e você logo vai saber o meu.', acoes: [{ label: '…' }] });
+    }
     this.burst(pc.x, pc.y, 60, '#000000', 260); this.burst(pc.x, pc.y, 20, '#FF2E4A', 200); this.shake(10); sfx('boss');
     this.pecado = null;
     this.char.data.secrets.push('pecado1'); addItem(this.char, 'pagina_rasgada'); this.addScore(777);
@@ -1288,7 +1309,8 @@ export class Game {
     if (all && !prog.semana) { prog.semana = true; addItem(c, sem.recompensaSemana); semana = sem.recompensaSemana; this.addScore(3000); }
     this.questEvent('fase', f.n);
     this.save();
-    this.ui.faseComplete({ fase: def, semPremio, secs, pts: first ? pts : Math.round(pts * 0.3), first, xp, gold, item, semana, ok: f.ok, err: f.err, kills: f.kills }).then(() => this.exitFase());
+    this.ui.faseComplete({ fase: def, semPremio, secs, pts: first ? pts : Math.round(pts * 0.3), first, xp, gold, item, semana, ok: f.ok, err: f.err, kills: f.kills })
+      .then(() => all ? this.cinema(sem.id + '-fim') : null).then(() => this.exitFase());
   }
 
   /* ================= Interação ================= */
@@ -1348,7 +1370,7 @@ export class Game {
     if (sem !== SEMANA_ATUAL && !done) txt += '\n\n(Semana passada: os prêmios continuam valendo!)';
     if (prevOk && lvlOk && !done) txt += '\n\n📖 Recomendado: leia ' + f.ref + ' na Bíblia antes de entrar. As perguntas dos baús saem desse texto!';
     const acoes = [];
-    const entrar = () => { sfx('gate'); this.enterFase(sem, n); };
+    const entrar = async () => { sfx('gate'); await this.cinema(sem.id + '-fase-' + n); this.enterFase(sem, n); };
     const lidoKey = sem.id + ':' + n, lidos = c.data.lidos || (c.data.lidos = []);
     if (this.grupoAtivo() && this.souLider() && prevOk) acoes.push({ label: '⚔️ Entrar com o grupo (' + this.grupo.membros.length + ')', fn: () => this.entrarComGrupo(sem, n) });
     if (prevOk && lvlOk) acoes.push({ label: done ? 'Jogar de novo' : 'Entrar no portão', fn: done || lidos.includes(lidoKey) ? entrar : () => this.readFirst(f, lidoKey, entrar) });
@@ -1385,7 +1407,7 @@ export class Game {
     let texto = n.falas[(n.idx = ((n.idx ?? -1) + 1) % n.falas.length)];
     if (n.missao) {
       const qd = QUESTS[n.missao], qs = c.data.quests[n.missao];
-      if (!qs) acoes.unshift({ label: (qd.dificil ? '🔥 Missão difícil: ' : '📜 Missão: ') + qd.titulo, fn: () => { c.data.quests[n.missao] = { st: 'ativa', n: 0 }; this.ui.toast('Missão aceita: ' + qd.titulo + ' — ' + qd.desc, 4500); sfx('right'); if (qd.tipo === 'fase' && faseProg(c, SEMANA_ATUAL.id)[qd.alvo]?.done) this.questEvent('fase', qd.alvo); } });
+      if (!qs) acoes.unshift({ label: (qd.dificil ? '🔥 Missão difícil: ' : '📜 Missão: ') + qd.titulo, fn: async () => { c.data.quests[n.missao] = { st: 'ativa', n: 0 }; await this.cinema(n.missao); this.ui.toast('Missão aceita: ' + qd.titulo + ' — ' + qd.desc, 4500); sfx('right'); if (qd.tipo === 'fase' && faseProg(c, SEMANA_ATUAL.id)[qd.alvo]?.done) this.questEvent('fase', qd.alvo); } });
       else if (qs.st === 'ativa') texto += '\n\n📜 ' + qd.titulo + ': ' + qd.desc + ' (' + qs.n + '/' + qd.qtd + ')';
       else if (qs.st === 'pronta') acoes.unshift({ label: '🎁 Entregar missão', fn: () => this.completeQuest(n.missao) });
     }
@@ -1665,7 +1687,7 @@ export class Game {
     if (this.shakeA > 0) { camL += rand(-1, 1) * this.shakeA * 0.5; camT += rand(-1, 1) * this.shakeA * 0.5; }
     this.camL = camL; this.camT = camT;
     g.setTransform(1, 0, 0, 1, 0, 0);
-    g.fillStyle = this.scene !== 'world' ? m.pal.bg : '#2C78AE'; g.fillRect(0, 0, this.cv.width, this.cv.height);
+    g.fillStyle = this.scene !== 'world' ? m.pal.bg : '#0E1A24'; g.fillRect(0, 0, this.cv.width, this.cv.height);
     const k = this.DPR * Z;
     g.setTransform(k, 0, 0, k, -camL * k, -camT * k);
     g.imageSmoothingEnabled = true;
@@ -1675,10 +1697,10 @@ export class Game {
     if (this.scene === 'world') {
       const gx = GATE_XS[0];
       drawPortal(g, gx * TS + 16, 34 * TS + 4, T0, 'aberto');
-      g.fillStyle = '#FFF6E3'; g.font = '900 14px Cinzel, serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = 'rgba(0,0,0,.6)';
+      g.fillStyle = '#E9E4D6'; g.font = '700 14px Cinzel, serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = 'rgba(4,4,10,.7)';
       g.strokeText('DUNGEONS', gx * TS + 16, 32 * TS + 18); g.fillText('DUNGEONS', gx * TS + 16, 32 * TS + 18);
       // brilho da fonte
-      g.fillStyle = 'rgba(255,255,255,' + (0.3 + 0.2 * Math.sin(T0 * 3)) + ')';
+      g.fillStyle = 'rgba(200,235,245,' + (0.3 + 0.2 * Math.sin(T0 * 3)) + ')';
       for (let i = 0; i < 3; i++) { ell(g, 90 * TS + 16 + Math.sin(T0 * 2 + i * 2) * 20, 75 * TS + 22 + Math.cos(T0 * 1.7 + i) * 10, 3, 1.5); g.fill(); }
     } else if (this.scene === 'salao' && this.hub?.tipo === 'casa') {
       this.drawCasa(g, T0);
@@ -1687,9 +1709,9 @@ export class Game {
       for (const pt of this.portais) {
         drawPortal(g, pt.x, pt.y - 6, T0 + pt.key, pt.state);
         g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = 'rgba(0,0,0,.7)';
-        g.font = '900 11px Nunito, sans-serif'; g.fillStyle = pt.tag === 'NOVA' ? '#FFD23F' : '#FFF6E3';
+        g.font = '700 11px Cinzel, serif'; g.fillStyle = pt.tag === 'NOVA' ? '#F6E2AA' : '#E9E4D6';
         g.strokeText(pt.tag, pt.x, pt.y - 62); g.fillText(pt.tag, pt.x, pt.y - 62);
-        g.font = '800 10px Nunito, sans-serif'; g.fillStyle = '#E6DBFF'; g.strokeText(pt.label, pt.x, pt.y + 50); g.fillText(pt.label, pt.x, pt.y + 50);
+        g.font = '600 11px Alegreya, serif'; g.fillStyle = '#C8C4D8'; g.strokeText(pt.label, pt.x, pt.y + 50); g.fillText(pt.label, pt.x, pt.y + 50);
         if (pt.state === 'fechado') { g.font = '16px sans-serif'; g.fillText('🔒', pt.x, pt.y); }
       }
       if (this.saida) { g.fillStyle = 'rgba(242,193,78,' + (0.25 + 0.15 * Math.sin(T0 * 3)) + ')'; ell(g, this.saida.x, this.saida.y, 18, 8); g.fill(); }
@@ -1697,8 +1719,8 @@ export class Game {
       for (const h of this.fase.built.heal) { g.fillStyle = 'rgba(160,230,255,' + (0.3 + 0.2 * Math.sin(T0 * 3)) + ')'; ell(g, h.x, h.y - 2, 10, 5); g.fill(); }
       if (this.fase.keys < 3) for (const d of this.fase.built.door) {
         const x = d.tx * TS, y = d.ty * TS;
-        g.fillStyle = '#5A3820'; g.fillRect(x, y - 8, TS, TS + 8); g.fillStyle = '#7A4F2E'; g.fillRect(x + 3, y - 5, TS - 6, TS + 2);
-        g.fillStyle = '#E9B949'; ell(g, x + (d.tx % 2 ? 6 : TS - 6), y + 12, 2.5, 2.5); g.fill();
+        g.fillStyle = '#0B0A10'; g.fillRect(x, y - 8, TS, TS + 8); g.fillStyle = '#2A2422'; g.fillRect(x + 3, y - 5, TS - 6, TS + 2);
+        g.fillStyle = '#C9B48A'; ell(g, x + (d.tx % 2 ? 6 : TS - 6), y + 12, 2.5, 2.5); g.fill();
       }
     }
     // telegrafias e áreas no chão
@@ -1751,7 +1773,7 @@ export class Game {
     // alvo travado: colchetes dourados girando em volta
     if (this.lock) {
       const e = this.lock, R = e.r + 12 + Math.sin(T0 * 6) * 2;
-      g.save(); g.translate(e.x, e.y); g.rotate(T0 * 1.5); g.strokeStyle = '#FFD23F'; g.lineWidth = 3; g.shadowColor = '#FFD23F'; g.shadowBlur = 8;
+      g.save(); g.translate(e.x, e.y); g.rotate(T0 * 1.5); g.strokeStyle = '#E9E4D6'; g.lineWidth = 2; g.shadowColor = '#DDE8FF'; g.shadowBlur = 8;
       for (let i = 0; i < 4; i++) { g.rotate(Math.PI / 2); g.beginPath(); g.arc(0, 0, R, -0.35, 0.35); g.stroke(); }
       g.restore();
     }
@@ -1771,10 +1793,11 @@ export class Game {
     // marcador de interação
     if (this.interactTarget) {
       const o = this.interactTarget.o;
-      g.fillStyle = '#FFE38A'; g.font = '900 13px Nunito'; g.textAlign = 'center';
-      g.fillText(input.touch ? '▼' : '[E]', o.x, o.y - 46 + Math.sin(T0 * 5) * 3);
+      g.fillStyle = '#E9E4D6'; g.font = '700 12px Cinzel, serif'; g.textAlign = 'center'; g.shadowColor = '#DDE8FF'; g.shadowBlur = 8;
+      g.fillText(input.touch ? '▼' : 'E', o.x, o.y - 62 + Math.sin(T0 * 3) * 2); g.shadowBlur = 0;
     }
-    // luz da noite
+    // atmosfera (cor, névoa, partículas, vinheta) e luz da noite
+    if (config.atmosfera !== false) atmosfera(this, g);
     if (this.scene === 'world') this.drawNight(g, camL, camT);
     g.setTransform(this.DPR, 0, 0, this.DPR, 0, 0);
     this.drawGuide(g);
@@ -1783,7 +1806,7 @@ export class Game {
     g.textAlign = 'center';
     for (const t of this.texts) {
       g.globalAlpha = Math.min(1, t.life / t.max * 2);
-      g.font = '900 ' + t.size + 'px Nunito, sans-serif'; g.lineWidth = 3.5; g.strokeStyle = 'rgba(0,0,0,.7)';
+      g.font = '800 ' + t.size + 'px "Alegreya Sans", sans-serif'; g.lineWidth = 3.5; g.strokeStyle = 'rgba(4,4,10,.75)';
       const lines = wrap(g, t.txt, 220);
       lines.forEach((ln, i) => { g.strokeText(ln, t.x, t.y + i * (t.size + 3)); g.fillStyle = t.color; g.fillText(ln, t.x, t.y + i * (t.size + 3)); });
     }
@@ -1867,7 +1890,7 @@ export class Game {
     if (!behind) drawW();
     if (ride) g.restore();
     g.globalAlpha = 1;
-    this.nameTag(g, p.x, p.y - 40 - (ride ? RIDE_H[this.pet.kind] || 12 : 0), c.name, c.level, '#FFE38A', this.social.clan?.tag);
+    this.nameTag(g, p.x, p.y - 56 - (ride ? RIDE_H[this.pet.kind] || 12 : 0), c.name, c.level, '#FFE38A', this.social.clan?.tag);
   }
 
   drawOther(g, o) {
@@ -1880,11 +1903,11 @@ export class Game {
     if (ride) g.restore();
     // amigos em verde, colegas de clã em dourado
     const mesmoCla = o.cla && o.cla === this.social.clan?.tag;
-    this.nameTag(g, o.x, o.y - 40, o.name, o.lvl, this.social.friends.has(o.id) ? '#7CE0A0' : mesmoCla ? '#FFD23F' : '#9FD8FF', o.cla);
+    this.nameTag(g, o.x, o.y - 56, o.name, o.lvl, this.social.friends.has(o.id) ? '#7CE0A0' : mesmoCla ? '#FFD23F' : '#9FD8FF', o.cla);
   }
 
   nameTag(g, x, y, name, lvl, col, tag) {
-    g.font = '800 11px Nunito, sans-serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.7)';
+    g.font = '600 12px Alegreya, serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(4,4,10,.75)';
     const s = (tag ? '[' + tag + '] ' : '') + name + (lvl ? ' · ' + lvl : '');
     g.strokeText(s, x, y); g.fillStyle = col; g.fillText(s, x, y);
   }
@@ -1895,8 +1918,8 @@ export class Game {
     drawPerson(g, n.x, n.y, 1, n.look, { t: this.T + n.x, fx: near ? dx / d : 0, fy: near ? dy / d : 1, walk: 0, moving: false });
     const hasQuest = n.missao && (!this.char.data.quests[n.missao] || this.char.data.quests[n.missao].st === 'pronta');
     const icon = hasQuest ? (this.char.data.quests[n.missao]?.st === 'pronta' ? '🎁' : '❗') : n.loja ? '🛒' : n.minijogo ? '🎮' : n.ranking ? '🏆' : null;
-    this.nameTag(g, n.x, n.y - 40, n.nome, null, '#FFFFFF');
-    if (icon) { g.font = '15px sans-serif'; g.textAlign = 'center'; g.fillText(icon, n.x, n.y - 54 + Math.sin(this.T * 3) * 2); }
+    this.nameTag(g, n.x, n.y - 56, n.nome, null, '#FFFFFF');
+    if (icon) { g.font = '15px sans-serif'; g.textAlign = 'center'; g.fillText(icon, n.x, n.y - 70 + Math.sin(this.T * 3) * 2); }
   }
 
   drawEnt(g, e) {
@@ -1910,10 +1933,10 @@ export class Game {
     drawEnemy(g, e, e.d, this.T, this.p.x, this.p.y);
     if (e.stun > 0) { g.fillStyle = '#FFE38A'; g.font = '900 10px Nunito'; g.textAlign = 'center'; g.fillText('★', e.x + Math.sin(this.T * 8) * 8, e.y - e.r - 26); }
     const yTop = e.y - e.r - (e.type === 'distracao' || e.type === 'desanimo' ? 30 : 18);
-    g.font = '800 9px Nunito, sans-serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.65)';
-    const label = e.d.nome + ' ' + e.lv; g.strokeText(label, e.x, yTop); g.fillStyle = e.lv > this.char.level + 2 ? '#FF8A8A' : '#fff'; g.fillText(label, e.x, yTop);
-    if (e.hp < e.max) { const w = 30; g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(e.x - w / 2, e.y + e.r + 4, w, 4); g.fillStyle = '#FF5A5F'; g.fillRect(e.x - w / 2, e.y + e.r + 4, w * Math.max(0, e.hp / e.max), 4); }
-    if (e.pos > 0) { const w = 30; g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(e.x - w / 2, e.y + e.r + 9, w, 3); g.fillStyle = '#FFD23F'; g.fillRect(e.x - w / 2, e.y + e.r + 9, w * Math.min(1, e.pos / e.posMax), 3); }
+    g.font = '600 10px Alegreya, serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(4,4,10,.7)';
+    const label = e.d.nome + ' ' + e.lv; g.strokeText(label, e.x, yTop); g.fillStyle = e.lv > this.char.level + 2 ? '#E8907E' : '#D8D4C8'; g.fillText(label, e.x, yTop);
+    if (e.hp < e.max) { const w = 30; g.fillStyle = 'rgba(4,4,10,.6)'; g.fillRect(e.x - w / 2 - 1, e.y + e.r + 3, w + 2, 4); g.fillStyle = '#E0574F'; g.fillRect(e.x - w / 2, e.y + e.r + 4, w * Math.max(0, e.hp / e.max), 2); }
+    if (e.pos > 0) { const w = 30; g.fillStyle = 'rgba(4,4,10,.6)'; g.fillRect(e.x - w / 2 - 1, e.y + e.r + 8, w + 2, 3); g.fillStyle = '#E6C27A'; g.fillRect(e.x - w / 2, e.y + e.r + 9, w * Math.min(1, e.pos / e.posMax), 1.5); }
   }
 }
 

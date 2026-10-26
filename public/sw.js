@@ -14,6 +14,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.hostname.endsWith('supabase.co')) return;
+  // narrações das cutscenes: o <audio> pede pedaços (Range) que o cache não guarda; vão direto para a rede
+  if (url.pathname.startsWith('/narracao/')) return;
   // a página (index.html) nunca sai do cache quando há internet: é por ela que o jogo descobre a versão nova
   if (req.mode !== 'navigate' && (url.pathname === '/' || url.pathname.endsWith('.html'))) return;
   // página: tenta a rede primeiro (pega a semana nova), cai no cache sem internet

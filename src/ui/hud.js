@@ -7,6 +7,8 @@ import { ITEMS, SLOTS, SLOT_NOMES, RARIDADE, itemCor, statLine, STATS, statVal, 
 import { CLASSES } from '../data/classes.js';
 import { ENEMIES, BOSSES } from '../data/bestiary.js';
 import { QUESTS, LOJAS } from '../data/npcs.js';
+import { montarCinema } from './cinema.js';
+import { CINEMAS } from '../content/cinematicas.js';
 import { SEMANA_ATUAL } from '../content/index.js';
 import { drawPerson } from '../game/draw.js';
 import { count, addItem, removeItem, equip, unequip, canEquip, faseProg, computeStats } from '../game/player.js';
@@ -55,7 +57,7 @@ export function createHud(onExit) {
 
   function portrait(look, size = 64) {
     const c = h('canvas', { class: 'portrait', width: size * 2, height: size * 2 });
-    if (look) { const g = c.getContext('2d'); g.scale(2, 2); drawPerson(g, size / 2, size * 0.78, size / 40, look, { t: 0, fx: 0, fy: 1 }); }
+    if (look) { const g = c.getContext('2d'); g.scale(2, 2); drawPerson(g, size / 2, size * 1.12, size / 32, look, { t: 0, fx: 0, fy: 1, semLuz: true }); }
     else { const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, size * 2, size * 2); g.fillStyle = '#FF2E4A'; g.fillRect(size * 0.8, size * 0.9, 10, 5); g.fillRect(size * 1.1, size * 0.9, 10, 5); }
     return c;
   }
@@ -290,6 +292,9 @@ export function createHud(onExit) {
       h('p', { class: 'hint' }, 'Dica: logo ao levantar o escudo vem a DEFESA PERFEITA — atordoa o inimigo e devolve projéteis. Veja esta tela de novo em ☰ › Ajuda.'),
       h('div', { class: 'btn-row' }, h('button', { class: 'btn gold', onclick: () => close() }, 'Entendi, vamos jogar!')));
   }, { wide: true });
+
+  /* ---------- Cutscene (ui/cinema.js) ---------- */
+  ui.cinema = (id, opts) => modal((p, close) => montarCinema(p, close, id, opts), { cls: 'cinema', dismiss: false });
 
   /* ---------- Diálogo ---------- */
   ui.dialog = ({ nome, look, texto, acoes }) => modal((p, close) => {
@@ -760,7 +765,10 @@ export function createHud(onExit) {
       ['esconderMissao', '📜 Esconder a barra de missão', 'Tira o cartão da missão do canto da tela. A seta dourada continua mostrando o caminho.'],
       ['tremor', '💥 Tremor da tela', 'A tela treme nos golpes fortes, nos chefes e nas explosões.'],
       ['numerosDano', '🔢 Números de dano', 'Mostra quanto cada golpe tirou dos inimigos.'],
-      ['vibrar', '📳 Vibração', 'O controle (ou o celular) treme ao levar dano e na defesa perfeita.']
+      ['vibrar', '📳 Vibração', 'O controle (ou o celular) treme ao levar dano e na defesa perfeita.'],
+      ['atmosfera', '🌫 Atmosfera', 'Névoa, partículas, luz e cor por região. Desligue se o celular ficar lento.'],
+      ['cinemas', '🎬 Cutscenes', 'Cenas narradas no começo do jogo, antes das fases, dos chefes e das missões (cada uma toca uma vez).'],
+      ['vozNavegador', '🗣 Voz do aparelho', 'Quando uma cutscene ainda não tem narração gravada, o aparelho lê a legenda em voz alta.']
     ];
     const list = h('div', { class: 'fase-list' });
     for (const [k, nome, desc] of opcoes) list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, nome), h('small', {}, desc)),
@@ -769,7 +777,10 @@ export function createHud(onExit) {
       h('button', { class: 'toggle' + (audio.muted ? '' : ' on'), role: 'switch', 'aria-checked': String(!audio.muted), 'aria-label': 'Som', onclick: () => { initAudio(); setMuted(!audio.muted); $('bMute').textContent = audio.muted ? '🔇' : '🔊'; render(); } }, h('i'))));
     const faixa = (k, nome, desc) => h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, nome), h('small', {}, desc)),
       h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round((config[k] ?? 1) * 100), class: 'cfg-range', 'aria-label': nome, oninput: e => { setConfig(k, +e.target.value / 100); initAudio(); setVolumes(); }, onchange: () => sfx('click') }));
-    list.append(faixa('volMusica', '🎵 Volume da música', 'A lira do mundo e a música dos chefes.'), faixa('volEfeitos', '🔔 Volume dos efeitos', 'Golpes, moedas, passos e avisos.'));
+    list.append(faixa('volMusica', '🎵 Volume da música', 'A lira do mundo e a música dos chefes.'), faixa('volEfeitos', '🔔 Volume dos efeitos', 'Golpes, moedas, passos e avisos.'), faixa('volVoz', '🎙 Volume da narração', 'A voz do narrador e dos chefes nas cutscenes.'));
+    const vistas = (game.char.data.cinemas || []).filter(id => CINEMAS[id]);
+    list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, '🎞 Rever cutscenes'), h('small', {}, vistas.length ? 'Toque numa cena que você já viu.' : 'As cenas que você assistir aparecem aqui.')),
+      h('div', { class: 'cfg-opts cine-lista' }, vistas.map(id => h('button', { class: 'chip-btn', onclick: () => { sfx('click'); game.cinema(id, true); } }, CINEMAS[id].titulo)))));
     list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, '🔠 Tamanho da interface'), h('small', {}, 'Aumenta textos, botões e janelas.')),
       h('div', { class: 'cfg-opts' }, [[1, 'Normal'], [1.15, 'Grande'], [1.3, 'Enorme']].map(([v, l]) => h('button', { class: 'chip-btn' + ((config.texto || 1) === v ? ' on' : ''), onclick: () => { setConfig('texto', v); sfx('click'); render(); } }, l)))));
     const versao = (document.querySelector('script[type="module"][src*="/assets/"]')?.getAttribute('src') || 'dev').replace(/^.*index-|.js$/g, '');

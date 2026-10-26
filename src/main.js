@@ -36,7 +36,8 @@ function play(char) {
     texto: 'Você chegou à Cidade de Refúgio. Fale com o Velho Peregrino (logo abaixo da fonte) para receber sua primeira missão.\n\nAo norte da cidade fica o Portão das Dungeons, com as fases de cada semana de estudo. Fora dos muros, vícios e demônios esperam por você.\n\n"Sede fortes no Senhor e na força do seu poder" (Ef 6:10).',
     acoes: [{ label: 'Vamos lá!' }]
   });
-  if (novo || !viu) setTimeout(async () => { await ui.controles(); try { localStorage.setItem('peregrinos.controles', '1'); } catch {} boasVindas(); }, 600);
+  // personagem novo: prólogo narrado (content/cinematicas.js), depois os controles e as boas-vindas
+  if (novo || !viu) setTimeout(async () => { if (novo) await game.cinema('prologo'); await ui.controles(); try { localStorage.setItem('peregrinos.controles', '1'); } catch {} boasVindas(); }, 600);
 }
 
 function exitToSelect() {

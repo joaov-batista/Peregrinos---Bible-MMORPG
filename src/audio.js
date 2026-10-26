@@ -3,7 +3,7 @@ import { store } from './util.js';
 import { config } from './config.js';
 
 let AC = null, master = null, musicGain = null, sfxGain = null, musicTimer = null;
-export const audio = { muted: store.get('peregrinos.mute', false) };
+export const audio = { muted: store.get('peregrinos.mute', false), modo: null };
 
 export function initAudio() {
   if (!AC) {
@@ -64,11 +64,13 @@ export function sfx(n) {
 }
 
 // Música ambiente: arpejo modal de lira, troca de clima no combate com chefe.
-const SCALES = { mundo: [0, 2, 3, 5, 7, 9, 10], chefe: [0, 1, 4, 5, 7, 8, 10], fase: [0, 2, 4, 5, 7, 9, 11] };
+const SCALES = { mundo: [0, 2, 3, 5, 7, 9, 10], chefe: [0, 1, 4, 5, 7, 8, 10], fase: [0, 2, 4, 5, 7, 9, 11], cinema: [0, 2, 3, 5, 7, 8, 10] };
 export function music(mode) {
+  audio.modo = mode || null;
   if (!AC) return;
   clearInterval(musicTimer);
   if (!mode) return;
+  if (mode === 'cinema') return pad(); // fundo lento e baixo para não brigar com a narração
   const sc = SCALES[mode] || SCALES.mundo, root = mode === 'chefe' ? 110 : 146.8;
   let step = 0;
   const beat = mode === 'chefe' ? 210 : 340;
@@ -82,4 +84,15 @@ export function music(mode) {
     if (mode === 'chefe' && step % 2 === 0) tone(55, 40, 0.12, 'square', 0.12, 0, musicGain);
     step++;
   }, beat);
+}
+
+// Cutscene: acordes longos e graves (sobe e desce devagar), bem baixinho por baixo da voz
+function pad() {
+  const acordes = [[0, 7, 12], [-4, 3, 8], [-2, 5, 10], [-5, 2, 7]], root = 110;
+  let i = 0;
+  const toca = () => {
+    if (audio.muted || document.hidden) return;
+    for (const st of acordes[i++ % acordes.length]) tone(root * Math.pow(2, st / 12), 0, 5.2, 'sine', 0.09, 0, musicGain);
+  };
+  toca(); musicTimer = setInterval(toca, 4800);
 }

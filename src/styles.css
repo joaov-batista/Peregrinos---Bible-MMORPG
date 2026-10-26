@@ -574,3 +574,37 @@ body.tiny .stats { grid-template-columns: 1fr 1fr; }
 @keyframes glow { to { box-shadow: 0 0 22px rgba(232,181,79,.45); } }
 @keyframes tilt { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
+
+/* ---------- Cutscenes (ui/cinema.js) ---------- */
+.modal.cinema { padding: 0; background: #000; z-index: 50; animation: fade .5s; }
+.modal.cinema .panel.cine { position: absolute; inset: 0; width: 100%; max-height: none; height: 100%; padding: 0; overflow: hidden; background: #000; border: 0; box-shadow: none; border-radius: 0; animation: none; }
+.modal.cinema .panel.cine::before, .modal.cinema .panel.cine::after { display: none; }
+.cine-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
+.cine-title { position: absolute; left: 0; right: 0; top: 18%; text-align: center; pointer-events: none; opacity: 0; transform: translateY(8px) scale(.98); transition: opacity 1.1s ease, transform 1.6s ease; }
+.cine-title.on { opacity: 1; transform: none; }
+.cine-title b { display: block; font-family: Cinzel, serif; font-weight: 900; font-size: clamp(26px, 6vw, 64px); letter-spacing: .12em; color: #FBDE93; text-shadow: 0 0 24px rgba(242,193,78,.55), 0 3px 0 #3A2412; }
+.cine-title span { display: block; margin-top: 6px; font-family: Alegreya, serif; font-style: italic; font-size: clamp(14px, 2.4vw, 22px); color: #F3E6C8; text-shadow: 0 2px 6px #000; }
+.cine-bar { position: absolute; left: 0; right: 0; bottom: 0; min-height: 22%; padding: 14px max(16px, var(--safe-r)) max(12px, var(--safe-b)) max(16px, var(--safe-l)); background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.82) 28%, #000); display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; pointer-events: none; }
+.modal.cinema .panel.cine { box-shadow: inset 0 9vh 0 #000; }
+.cine-sub { margin: 0 auto; max-width: 980px; min-height: 3.1em; text-align: center; font-family: Alegreya, serif; font-weight: 600; font-size: clamp(15px, 2.3vw, 23px); line-height: 1.4; color: #FFF6E0; text-shadow: 0 2px 4px #000, 0 0 12px rgba(0,0,0,.8); }
+.cine-btns { display: flex; align-items: center; justify-content: flex-end; gap: 8px; pointer-events: auto; }
+.cine-hint { margin-right: auto; color: rgba(243,230,200,.55); font-family: Cinzel, serif; font-size: 12px; letter-spacing: .08em; }
+.cine-btns .btn { opacity: .78; }
+.cine-btns .btn:hover, .cine-btns .btn:focus-visible { opacity: 1; }
+.cine-lista { flex-wrap: wrap; max-width: 60%; justify-content: flex-end; }
+@media (max-width: 640px) { .cine-hint { display: none; } .cine-lista { max-width: 100%; } }
+
+
+/* ---------- Telas iniciais sobre o céu da aurora (ui/ceu.js) ---------- */
+#ceu { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 39; pointer-events: none; }
+#screens { background: transparent !important; }
+#screens::before { display: none; }
+.logo .cross { font-size: 40px; color: #FFF4D0; text-shadow: 0 0 18px #FFE08A, 0 0 40px rgba(255,214,120,.9); animation: cruz 4s ease-in-out infinite; }
+@keyframes cruz { 50% { text-shadow: 0 0 26px #FFE08A, 0 0 70px rgba(255,214,120,1); transform: translateY(-2px); } }
+.logo h1 { color: #FFF6DE; text-shadow: 0 2px 0 #8E5F1E, 0 4px 0 #5A3510, 0 0 30px rgba(255,220,140,.8), 0 0 70px rgba(255,200,120,.5); letter-spacing: .06em; }
+.logo p { color: #FFF0D0; text-shadow: 0 1px 4px rgba(60,30,40,.8); }
+.week, .muted { text-shadow: 0 1px 3px rgba(40,20,30,.6); }
+#screens .card, #screens .creator { box-shadow: var(--frame), 0 0 60px rgba(255,220,150,.25), 0 18px 50px rgba(40,20,40,.55); }
+#screens .title { color: #FFF4D6; text-shadow: 0 2px 0 #5A3510, 0 0 24px rgba(255,214,140,.7); }
+.creator-preview { box-shadow: inset 0 0 0 2px var(--gold-deep), 0 0 30px rgba(255,220,150,.35); }
+.char-card .portrait { width: 84px; height: 84px; border-radius: 10px; background: radial-gradient(circle at 50% 70%, rgba(255,226,150,.55), rgba(90,60,110,.6) 75%); box-shadow: inset 0 0 0 2px var(--gold-deep), 0 0 18px rgba(255,220,150,.3); }

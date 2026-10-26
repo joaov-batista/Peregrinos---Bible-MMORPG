@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --port 5180",
     "build": "vite build",
-    "preview": "vite preview --port 5180"
+    "preview": "vite preview --port 5180",
+    "narracoes": "node scripts/gerar-narracoes.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4"

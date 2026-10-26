@@ -7,10 +7,11 @@ import { drawPerson, drawWeapon } from '../game/draw.js';
 import { newCharData } from '../game/player.js';
 import { SEMANA_ATUAL } from '../content/index.js';
 import { pwa } from '../pwa.js';
+import { ligarCeu, desligarCeu } from './ceu.js';
 
 const scr = () => $('screens');
 function screen(...kids) {
-  const s = scr(); s.innerHTML = ''; s.hidden = false;
+  const s = scr(); s.innerHTML = ''; s.hidden = false; ligarCeu();
   s.append(h('div', { class: 'screen' }, ...kids));
 }
 const logo = () => h('div', { class: 'logo' }, h('span', { class: 'cross' }, '✝'), h('h1', {}, 'PEREGRINOS'), h('p', {}, 'RPG bíblico online'));
@@ -58,7 +59,7 @@ function installButton(msg) {
 function miniPortrait(look, cls, size = 80) {
   const c = h('canvas', { width: size * 2, height: size * 2, class: 'portrait' });
   const g = c.getContext('2d'); g.scale(2, 2);
-  drawPerson(g, size / 2, size * 0.75, size / 44, look, { t: 0, fx: 0.3, fy: 1 });
+  drawPerson(g, size / 2, size * 1.12, size / 32, look, { t: 0, fx: 0.2, fy: 1, semLuz: true }); // busto: cabeça e ombros
   return c;
 }
 
@@ -94,14 +95,23 @@ export function showCreator(onCreated, onBack) {
   const draw = () => {
     t += 1 / 60;
     g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 180, 180);
-    const gr = g.createRadialGradient(90, 110, 10, 90, 110, 90); gr.addColorStop(0, 'rgba(242,193,78,.25)'); gr.addColorStop(1, 'rgba(242,193,78,0)');
-    g.fillStyle = gr; g.fillRect(0, 0, 180, 180);
+    // palco de luz: céu suave, holofote vindo do alto, círculo dourado no chão e partículas subindo
+    const bg = g.createLinearGradient(0, 0, 0, 180); bg.addColorStop(0, '#3A3470'); bg.addColorStop(0.6, '#7A5A8A'); bg.addColorStop(1, '#C88A78');
+    g.fillStyle = bg; g.fillRect(0, 0, 180, 180);
+    g.globalCompositeOperation = 'lighter';
+    const fe = g.createLinearGradient(0, 0, 0, 170); fe.addColorStop(0, 'rgba(255,240,200,.55)'); fe.addColorStop(1, 'rgba(255,230,170,.08)');
+    g.fillStyle = fe; g.beginPath(); g.moveTo(72, -4); g.lineTo(108, -4); g.lineTo(140, 166); g.lineTo(40, 166); g.closePath(); g.fill();
+    const ch = g.createRadialGradient(90, 168, 2, 90, 168, 48); ch.addColorStop(0, 'rgba(255,226,150,.8)'); ch.addColorStop(1, 'rgba(255,226,150,0)');
+    g.fillStyle = ch; g.beginPath(); g.ellipse(90, 168, 48, 12, 0, 0, Math.PI * 2); g.fill();
+    for (let i = 0; i < 14; i++) { const k = (t * 0.25 + i / 14) % 1, x = 52 + ((i * 37) % 76) + Math.sin(t + i) * 4; g.fillStyle = 'rgba(255,244,210,' + (1 - k) * 0.8 + ')'; g.beginPath(); g.arc(x, 162 - k * 150, 0.9 + (i % 3) * 0.4, 0, Math.PI * 2); g.fill(); }
+    g.globalCompositeOperation = 'source-over';
     // parado de frente; o jogador gira com os botões ◀ ▶
     const fx = FACES[face][0], fy = FACES[face][1];
     const w = CLASSES[cls].arma;
-    const drawW = () => { g.save(); g.translate(90 + fx * 22, 112); g.scale(2.6, 2.6); g.rotate(w === 'espada' ? (fx < -0.3 ? -Math.PI + 0.9 : -0.9) : Math.atan2(fy, fx) * 0.4 - 0.4); drawWeapon(g, w, w === 'cajado' ? 30 : 26, 0); g.restore(); };
+    // arma ao lado do corpo (não passa na frente do rosto)
+    const drawW = () => { g.save(); g.translate(90 + (fx < -0.3 ? -1 : 1) * 34, 128); g.scale(2.3, 2.3); g.rotate(w === 'espada' ? (fx < -0.3 ? -Math.PI + 1.25 : -1.25) : -1.1); drawWeapon(g, w, w === 'cajado' ? 30 : 24, 6); g.restore(); };
     if (fy < -0.3) drawW();
-    drawPerson(g, 90, 130, 2.6, look, { t, fx, fy, walk: 0, moving: false });
+    drawPerson(g, 90, 132, 2.7, look, { t, fx, fy, walk: 0, moving: false });
     if (fy >= -0.3) drawW();
     raf = requestAnimationFrame(draw);
   };
@@ -162,4 +172,4 @@ export function showCreator(onCreated, onBack) {
   draw();
 }
 
-export function hideScreens() { scr().hidden = true; scr().innerHTML = ''; }
+export function hideScreens() { scr().hidden = true; scr().innerHTML = ''; desligarCeu(); }

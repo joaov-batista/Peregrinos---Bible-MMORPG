@@ -94,6 +94,25 @@ export default {
 
 Se algum golpe, fase ou regra estiver escrito errado, o console do navegador avisa (`[chefe golias] …`) assim que o jogo abre.
 
+## Cutscenes narradas
+
+Cenas de cinema tocam no começo do jogo (prólogo), ao entrar no Salão e numa semana, antes de cada fase, quando um chefe aparece, ao aceitar uma missão e no fim da semana. Cada uma toca uma vez por personagem; dá para rever em menu › Ajustes › Rever cutscenes (e desligar em Ajustes › Cutscenes).
+
+- **Roteiro:** `src/content/cinematicas.js` — lista de planos com cenário, personagens, efeitos, câmera (`cam`) e o texto narrado. Para uma semana nova, crie `semana-02` e `semana-02-fase-1…5` no mesmo formato.
+- **Player:** `src/ui/cinema.js` — cenários animados, câmera (close, push-in, tilt, pan), faixas de cinema, luz volumétrica, primeiro plano desfocado, bloom e granulação.
+- **Áudio:** `public/narracao/<id>-<n>.mp3`, um arquivo por trecho de voz (cenas seguidas com a mesma voz). Sem o arquivo, a cena usa a voz do aparelho e a legenda.
+
+Gerar as narrações que faltam (motor OmniVoice, o mesmo do VoiceStudio; roda no PC, sem conta):
+
+```bash
+python -m venv .venv-voz
+.venv-voz/Scripts/pip install torch==2.8.0+cu128 torchaudio==2.8.0+cu128 --extra-index-url https://download.pytorch.org/whl/cu128
+.venv-voz/Scripts/pip install omnivoice
+.venv-voz/Scripts/python scripts/gerar-narracoes-omnivoice.py
+```
+
+Precisa de `node` e `ffmpeg` no PATH. As vozes do narrador e do vilão ficam em `scripts/vozes/` (recrie com `--vozes`). Também há `npm run narracoes` para gerar com a ElevenLabs (precisa de `ELEVENLABS_API_KEY` e de plano pago).
+
 ## Colocar online
 
 ### 1. Supabase (banco de dados e contas)
