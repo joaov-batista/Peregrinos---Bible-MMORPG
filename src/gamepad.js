@@ -1,12 +1,13 @@
-// Controle (Xbox, PlayStation e genéricos no layout "standard" do navegador), no estilo Dark Souls:
-//   analógico esq.: andar · analógico dir.: mirar · RB/R1: atacar (segurar = golpe forte) · RT/R2: especial
-//   LB/L1: defender · LT/L2 ou R3: travar alvo · A/✕: falar/abrir · B/◯: esquiva · X/□: botija · Y/△: montar
-//   ◀ ▶: atalhos · ▲ ou Select: mapa · Start: menu
+// Controle (Xbox, PlayStation e genéricos no layout "standard" do navegador).
+// Ações nos botões frontais, inspiradas em Hollow Knight; como não há salto, A esquiva.
+//   analógico esq.: andar · analógico dir.: mirar · X/□: atacar (segurar = golpe forte) · B/◯: especial
+//   A/✕: esquiva · Y/△: falar/abrir · RB/R1: defender · RT/R2: botija · LT/L2 ou R3: travar alvo
+//   ◀ ▶: atalhos · ▼: montar · ▲ ou Select: mapa · Start: menu · LB/L1: sem função
 // Com uma janela aberta, o direcional/analógico escolhe o botão, A confirma e B volta.
 import { input, input2 } from './input.js';
 import { config } from './config.js';
 
-const ACOES = { 5: 'attack', 7: 'skill', 4: 'defend', 6: 'lock', 11: 'lock', 0: 'interact', 1: 'dodge', 2: 'botija', 3: 'mount', 14: 'item1', 15: 'item2' };
+const ACOES = { 2: 'attack', 1: 'skill', 5: 'defend', 6: 'lock', 11: 'lock', 3: 'interact', 0: 'dodge', 7: 'botija', 13: 'mount', 14: 'item1', 15: 'item2' };
 const ZONA = 0.22; // zona morta dos analógicos
 let mode = 'solo', slots = [null, null];
 const previous = new Map(), navigation = new Map();

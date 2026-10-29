@@ -25,7 +25,7 @@ Na opção com teclado, o controle fica com J2.
 
 - Dois guerreiros prontos, com cores e barras de vida diferentes, no mesmo mundo.
 - Perto um do outro, a câmera enquadra a dupla. Ao se afastarem, divide verticalmente (J1 à esquerda, J2 à direita).
-- Cada um anda, ataca, defende, esquiva, mira e usa especial de forma independente, com o mapeamento de controle que o jogo já usa.
+- Cada um anda, ataca, defende, esquiva, mira e usa especial de forma independente, com as ações principais nos botões frontais (layout abaixo).
 - Vida, Fé e fôlego são individuais. Nível, classe, equipamentos, mochila, botijas e progresso da aventura são compartilhados.
 - J1 conduz diálogos, baús, missões e portais. Trocar de mapa ou usar viagem rápida leva os dois juntos. Menus e diálogos pausam a dupla; qualquer controle pode navegar neles.
 - Quem cair volta após 5 segundos perto do companheiro. Se os dois caírem, a fase reinicia (no mundo, voltam ao ponto de descanso).
@@ -34,6 +34,26 @@ Na opção com teclado, o controle fica com J2.
 
 O modo solo continua disponível normalmente. O modo local usa a Gamepad API já existente;
 o reconhecimento e o mapeamento de controles genéricos continuam dependendo do navegador.
+
+### Controle sem L1
+
+Layout inspirado em Hollow Knight, adaptado às ações deste jogo (não há salto). Vale para os dois jogadores e para o modo solo.
+
+| Xbox / PlayStation | Ação |
+|---|---|
+| X / □ | Atacar; segurar carrega golpe forte |
+| A / ✕ | Esquivar |
+| B / ◯ | Especial |
+| Y / △ | Interagir: falar, abrir, pescar, entrar |
+| RB / R1 | Defender; no tempo certo, defesa perfeita |
+| RT / R2 | Beber da Botija da Viúva |
+| LT / L2 ou R3 | Travar/soltar alvo |
+| Direcional ▼ | Montar/desmontar |
+| Direcional ◀ / ▶ | Atalhos de itens |
+| Direcional ▲ / Select | Mapa |
+| Start | Menu |
+
+**LB/L1 fica sem função.** Nos menus, A/✕ confirma e B/◯ volta. Teclado e mouse mantêm seus atalhos.
 
 ### Teste automatizado da dupla
 

@@ -37,13 +37,27 @@ try {
     const a = pad(1), b = pad(3);
     window.testPads = [null, a, null, b];
     setGamepadMode('pads'); readGamepads();
-    a.axes[0] = -1; b.axes[0] = 1; b.buttons[5].pressed = true; readGamepads();
+    a.axes[0] = -1; b.axes[0] = 1; b.buttons[2].pressed = true; readGamepads();
     check(input.move().x === -1 && input2.move().x === 1, 'independent pads, including sparse indices');
     check(!input.consume('attack') && input2.consume('attack'), 'J2 attack never reaches J1');
     window.testPads[1] = null; readGamepads();
     check(input.pad === null && input2.move().x === 1 && !input.held.has('attack'), 'disconnect keeps J2 in its original slot');
     window.testPads[1] = a; readGamepads();
     check(input.move().x === -1 && input2.move().x === 1, 'reconnect restores J1');
+    for (const [gp, target, other] of [[a, input, input2], [b, input2, input]]) {
+      a.buttons.forEach(x => x.pressed = false); b.buttons.forEach(x => x.pressed = false); readGamepads();
+      for (const [index, action] of [[2, 'attack'], [0, 'dodge'], [1, 'skill'], [3, 'interact'], [5, 'defend'], [7, 'botija'], [13, 'mount']]) {
+        input.pressed.clear(); input2.pressed.clear(); gp.buttons[index].pressed = true; readGamepads();
+        check(target.pressed.size === 1 && target.consume(action) && target.isHeld(action) && other.pressed.size === 0, 'button ' + index + ' maps only to ' + action + ' on pad ' + gp.index);
+        readGamepads(); check(target.pressed.size === 0, 'holding ' + action + ' does not repeat presses on pad ' + gp.index);
+        gp.buttons[index].pressed = false; readGamepads();
+        check(!target.isHeld(action), 'release ' + action + ' on pad ' + gp.index);
+      }
+      gp.buttons[4].pressed = true; readGamepads();
+      check(target.pressed.size === 0 && target.held.size === 0, 'broken L1 is ignored on pad ' + gp.index);
+      gp.buttons[4].pressed = false; readGamepads();
+    }
+    check(document.querySelector('[data-act="attack"]').dataset.pad === 'X □' && document.querySelector('[data-act="defend"]').dataset.pad === 'RB / R1', 'HUD matches remapped attack and defense');
     setGamepadMode('keyboard'); window.testPads = [null, a]; readGamepads();
     input.keys.add('KeyD');
     check(input.move().x === 1 && input2.move().x === -1, 'keyboard plus one pad stays independent');

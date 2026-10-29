@@ -50,7 +50,7 @@ canvas#cv { position: fixed; inset: 0; display: block; touch-action: none; }
 #screens, #hud, #actions, #chat, #toasts, #banner, #overlay, #rotate { zoom: calc(var(--uiz, 1) * var(--ui-esc, 1)); }
 /* controle: as etiquetas da barra de ações mostram os botões do controle */
 body.pad #actions .act:not(#aInteract)::before { content: attr(data-pad) !important; }
-body.pad #aInteract span::before { content: "(A) " !important; }
+body.pad #aInteract span::before { content: "(Y / △) " !important; }
 .cfg-range { width: 150px; flex: none; accent-color: var(--gold); padding: 0; box-shadow: none; background: none; border: 0; }
 .fase-row > .cfg-opts { display: flex; flex-direction: row; gap: 4px; flex: none; }
 .cfg-opts .chip-btn { min-width: 46px; }

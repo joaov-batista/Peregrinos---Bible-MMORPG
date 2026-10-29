@@ -281,10 +281,10 @@ export function createHud(onExit) {
       linha([h('span', { class: 'ctl-i' }, '🗺'), h('span', { class: 'ctl-i' }, '☰')], 'mapa · menu (no canto de cima)'));
     const pd = h('div', { class: 'ctl-card' + (document.body.classList.contains('pad') ? ' atual' : '') }, h('h4', {}, '🎮 Controle', document.body.classList.contains('pad') ? h('em', {}, 'você está aqui') : ''),
       linha([k('Analógico esq.')], 'andar'), linha([k('Analógico dir.')], 'mirar'),
-      linha([k('RB / R1')], 'atacar (segurar: golpe forte)'), linha([k('RT / R2')], 'especial: ' + sk),
-      linha([k('LB / L1')], 'defender (no tempo certo: defesa perfeita)'), linha([k('B / ◯')], 'esquiva'),
-      linha([k('A / ✕')], 'falar, abrir, pescar, entrar'), linha([k('X / □')], 'beber da Botija da Viúva'),
-      linha([k('LT / L2'), k('R3')], 'travar / soltar o alvo'), linha([k('Y / △')], 'montar'),
+      linha([k('X / □')], 'atacar (segurar: golpe forte)'), linha([k('B / ◯')], 'especial: ' + sk),
+      linha([k('RB / R1')], 'defender (no tempo certo: defesa perfeita)'), linha([k('A / ✕')], 'esquiva'),
+      linha([k('Y / △')], 'falar, abrir, pescar, entrar'), linha([k('RT / R2')], 'beber da Botija da Viúva'),
+      linha([k('LT / L2'), k('R3')], 'travar / soltar o alvo'), linha([k('▼')], 'montar'),
       linha([k('◀'), k('▶')], 'atalhos de itens'), linha([k('Start'), k('Select / ▲')], 'menu · mapa'),
       linha([k('Nos menus')], 'direcional escolhe · A confirma · B volta'));
     p.append(h('div', { class: 'p-head' }, h('h3', {}, '🎮 Como jogar'), h('button', { class: 'x', onclick: () => close(), 'aria-label': 'Fechar' }, '✕')),

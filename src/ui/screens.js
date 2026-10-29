@@ -187,6 +187,6 @@ export function showLocalCoop(onPlay, onBack) {
     h('p', {}, 'Conecte os controles e aperte um botão em cada um para o navegador reconhecer. J1 fica à esquerda e conduz diálogos e portais. Start abre o menu.'),
     h('button', { class: 'btn gold wide', onclick: () => onPlay('pads') }, 'Começar com 2 controles'),
     h('button', { class: 'btn wide', onclick: () => onPlay('keyboard') }, 'Teclado + 1 controle'),
-    h('p', { class: 'muted' }, 'R1: atacar · R2: especial · L1: defender · ◯: esquivar. Teclado: WASD, J, K e Espaço. Quem cair volta em 5 segundos.'),
+    h('p', { class: 'muted' }, 'X/□: atacar · A/✕: esquivar · B/◯: especial · Y/△: interagir · R1: defender · R2: botija · ▼: montar. L1 sem função. Teclado: WASD, J, K e Espaço. Quem cair volta em 5 segundos.'),
     h('button', { class: 'btn link', onclick: onBack }, 'Voltar')));
 }
