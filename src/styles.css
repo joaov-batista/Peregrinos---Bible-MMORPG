@@ -617,3 +617,17 @@ body.tiny .stats { grid-template-columns: 1fr 1fr; }
 .cine-btns .btn { background: transparent !important; border: 1px solid rgba(244,238,226,.28) !important; box-shadow: none !important; color: rgba(244,238,226,.8) !important; font-family: Alegreya, serif; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; font-size: 11px; min-height: 30px; padding: 4px 12px; border-radius: 2px; opacity: .7; }
 .cine-btns .btn:hover, .cine-btns .btn:focus-visible { opacity: 1; border-color: rgba(244,238,226,.7) !important; }
 .cine-hint { font-family: Alegreya, serif; font-style: italic; letter-spacing: .06em; color: rgba(244,238,226,.4); }
+/* Dupla local: vida de cada jogador e a mesma aventura para os dois. */
+.coop-hud { position: absolute; inset: var(--safe-t) 12px auto; display: flex; justify-content: space-between; gap: 24px; }
+.coop-card { width: min(230px, 40vw); padding: 8px 10px; border: 1px solid var(--player-color); border-radius: 8px; background: rgba(18,14,28,.88); }
+.coop-card b { color: var(--player-color); margin-right: 8px; }
+.coop-card small { font-size: 12px; }
+.coop-card > div { height: 6px; margin-top: 5px; background: #352b3e; border-radius: 3px; overflow: hidden; }
+.coop-card span { display: block; height: 100%; }
+.coop-hp span { background: #E86C6C; }
+.coop-fe span { background: #79BFFF; }
+.coop-sta span { background: #8FD694; }
+body.local-coop .hud-l { top: 105px; }
+body.local-coop .hud-l .pf, body.local-coop #chat, body.local-coop #minimap { display: none; }
+body.local-coop .hud-r { top: 105px; }
+body.local-coop #zoneName { top: 105px; }

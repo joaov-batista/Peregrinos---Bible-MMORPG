@@ -5,7 +5,7 @@ const KEYMAP = {
 };
 const MOVE = { KeyW: [0, -1], ArrowUp: [0, -1], KeyS: [0, 1], ArrowDown: [0, 1], KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0] };
 
-export const input = {
+export function createInput() { return {
   keys: new Set(), pressed: new Set(), held: new Set(),
   mx: 0, my: 0, mouseAim: false, touch: false,
   stick: { id: null, ox: 0, oy: 0, x: 0, y: 0 },
@@ -21,8 +21,11 @@ export const input = {
     if (l > 1) { x /= l; y /= l; }
     return { x, y };
   },
-  clear() { this.pressed.clear(); this.held.clear(); this.keys.clear(); this.stick.id = null; this.stick.x = this.stick.y = 0; }
-};
+  clear() { this.pressed.clear(); this.held.clear(); this.keys.clear(); this.pad = null; this.padAim = null; this.stick.id = null; this.stick.x = this.stick.y = 0; }
+}; }
+
+export const input = createInput();
+export const input2 = createInput();
 
 function typing(e) { const t = e.target; return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable); }
 
@@ -37,7 +40,7 @@ export function initInput(canvas) {
     input.keys.delete(e.code);
     const a = KEYMAP[e.code]; if (a) input.held.delete(a);
   });
-  addEventListener('blur', () => input.clear());
+  addEventListener('blur', () => { input.clear(); input2.clear(); });
   canvas.addEventListener('mousemove', e => { input.mx = e.clientX; input.my = e.clientY; input.mouseAim = true; });
   canvas.addEventListener('mousedown', e => {
     input.mx = e.clientX; input.my = e.clientY; input.mouseAim = true;

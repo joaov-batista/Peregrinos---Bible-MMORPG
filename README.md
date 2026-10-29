@@ -16,6 +16,39 @@ npm run dev
 
 Abra http://localhost:5180
 
+## Dupla local no mesmo PC
+
+Na tela inicial, na seleção ou na criação de personagem, clique em **🎮 Dupla local — sem salvar**.
+Escolha **Começar com 2 controles** ou **Teclado + 1 controle**. Aperte um botão em cada controle
+para o navegador reconhecê-los; o primeiro controle reconhecido é J1 e o segundo é J2.
+Na opção com teclado, o controle fica com J2.
+
+- Dois guerreiros prontos, com cores e barras de vida diferentes, no mesmo mundo.
+- Perto um do outro, a câmera enquadra a dupla. Ao se afastarem, divide verticalmente (J1 à esquerda, J2 à direita).
+- Cada um anda, ataca, defende, esquiva, mira e usa especial de forma independente, com o mapeamento de controle que o jogo já usa.
+- Vida, Fé e fôlego são individuais. Nível, classe, equipamentos, mochila, botijas e progresso da aventura são compartilhados.
+- J1 conduz diálogos, baús, missões e portais. Trocar de mapa ou usar viagem rápida leva os dois juntos. Menus e diálogos pausam a dupla; qualquer controle pode navegar neles.
+- Quem cair volta após 5 segundos perto do companheiro. Se os dois caírem, a fase reinicia (no mundo, voltam ao ponto de descanso).
+- A partida é temporária: sem login, gravação de personagem, ranking ou conexão com o mundo online. Personagens já salvos permanecem intactos.
+- Para sair, abra o menu e escolha **Encerrar partida sem salvar**.
+
+O modo solo continua disponível normalmente. O modo local usa a Gamepad API já existente;
+o reconhecimento e o mapeamento de controles genéricos continuam dependendo do navegador.
+
+### Teste automatizado da dupla
+
+Com `npm run dev` aberto em outro terminal:
+
+```bash
+npx playwright install chromium
+npm run test:coop
+```
+
+Também é possível usar o Edge instalado: no PowerShell, `$env:COOP_TEST_BROWSER='msedge'; npm run test:coop`.
+O teste usa controles simulados no navegador e verifica entradas independentes, desconexão/reconexão,
+combate, dano em área, coleta, morte/retorno, transições de mapa, câmeras, pausa, saída e preservação dos saves.
+Não substitui testar os controles físicos no PC onde a dupla vai jogar.
+
 ## O que já existe (v0.1)
 
 | Sistema | Detalhes |

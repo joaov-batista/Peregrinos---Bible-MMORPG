@@ -463,7 +463,7 @@ export function createHud(onExit) {
   ui.openMenu = (tab = 'personagem') => modal((p, close) => {
     p.classList.add('menu');
     const c = game.char;
-    const tabs = [['personagem', '🎒', 'Personagem'], ['missoes', '📜', 'Missões'], ['biblia', '📖', 'Bíblia'], ['social', '👥', 'Social'], ['ranking', '🏆', 'Ranking'], ['ajustes', '⚙️', 'Ajustes'], ['ajuda', '❔', 'Ajuda']];
+    const tabs = [['personagem', '🎒', 'Personagem'], ['missoes', '📜', 'Missões'], ['biblia', '📖', 'Bíblia'], ['social', '👥', 'Social'], ['ranking', '🏆', 'Ranking'], ['ajustes', '⚙️', 'Ajustes'], ['ajuda', '❔', 'Ajuda']].filter(([key]) => !game.localCoop || !['social', 'ranking'].includes(key));
     const render = () => {
       p.innerHTML = '';
       // trilho de abas à esquerda (medalhões) + conteúdo
@@ -474,6 +474,7 @@ export function createHud(onExit) {
         h('div', { class: 'menu-title' }, h('h3', {}, label), h('small', {}, c.name + ' · ' + CLASSES[c.cls].nome + ' · nível ' + c.level)),
         h('button', { class: 'x', onclick: () => close(), 'aria-label': 'Fechar' }, '✕')));
       const body = h('div', { class: 'tab-body' }); main.append(body);
+      if (game.localCoop) main.append(h('button', { class: 'btn danger', onclick: () => { close(); onExit(); } }, 'Encerrar partida sem salvar'));
       p.append(h('div', { class: 'menu-layout' }, rail, main));
       ({ personagem: tabChar, missoes: tabQuests, biblia: tabBible, social: tabSocial, ranking: tabRanking, ajustes: tabConfig, ajuda: tabHelp })[tab](body, render, close);
     };
@@ -807,7 +808,7 @@ export function createHud(onExit) {
       h('button', { class: 'btn gold', onclick: () => ui.controles() }, '🎮 Ver tela de controles'),
       pwa.available ? h('button', { class: 'btn gold', onclick: () => pwa.install(ui.toast) }, '📲 Instalar app') : '',
       h('button', { class: 'btn', onclick: () => { setMuted(!audio.muted); $('bMute').textContent = audio.muted ? '🔇' : '🔊'; } }, 'Som liga/desliga'),
-      h('button', { class: 'btn danger', onclick: async () => { close(); await game.save(); onExit(); } }, 'Salvar e sair')));
+      h('button', { class: 'btn danger', onclick: async () => { close(); await game.save(); onExit(); } }, game.localCoop ? 'Encerrar partida sem salvar' : 'Salvar e sair')));
   }
 
   /* ---------- Minijogos ---------- */
@@ -824,7 +825,7 @@ export function createHud(onExit) {
     if (!game || e.target.tagName === 'INPUT') return;
     if (e.code === 'KeyI' || e.code === 'Tab') { if (!modals) ui.openMenu(); }
     if (e.code === 'KeyM') { if (!modals) ui.openMap(); else if (root.querySelector('.map-panel')) ui.closeAll(); }
-    if (e.code === 'Enter' && !modals) { e.preventDefault(); $('chat').classList.add('open'); chatIn.focus(); }
+    if (e.code === 'Enter' && !modals && !game.localCoop) { e.preventDefault(); $('chat').classList.add('open'); chatIn.focus(); }
   });
   return ui;
 }

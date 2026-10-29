@@ -40,7 +40,9 @@ const DIF_CHEFE = { hp: 1.5, atk: 1.32, ritmo: 0.78 };
 let WORLD = null; // gerado uma única vez
 
 export class Game {
-  constructor(canvas, char, ui) {
+  constructor(canvas, char, ui, options = {}) {
+    this.localCoop = !!options.localCoop;
+    this.controls = input;
     this.cv = canvas; this.ctx = canvas.getContext('2d'); this.char = char; this.ui = ui;
     this.T = 0; this.shakeA = 0; this.hitstop = 0; this.saveT = 0; this.netT = 0; this.mmT = 0;
     this.parts = []; this.texts = []; this.projs = []; this.tele = []; this.hazards = []; this.pickups = [];
@@ -68,7 +70,7 @@ export class Game {
     addEventListener('resize', this._rs); addEventListener('orientationchange', this._rs); document.addEventListener('fullscreenchange', this._rs);
     this.resize();
     this.enterWorld(true);
-    if (ONLINE) this.net = net.joinWorld({ id: char.id, name: char.name, cls: char.cls }, {
+    if (ONLINE && !this.localCoop) this.net = net.joinWorld({ id: char.id, name: char.name, cls: char.cls }, {
       pos: m => this.onNetPos(m), chat: m => this.onNetChat(m), ev: m => this.onNetEv(m), leave: k => this.others.delete(k), count: n => this.ui.online(n)
     });
     this.social = { clan: null, friends: new Set(), pedidos: 0 };
@@ -305,8 +307,29 @@ export class Game {
     this._gT = (this._gT || 0) - dt; if (this._gT <= 0) { this._gT = 0.5; this.grupoTick(); }
   }
 
+  // Escopo síncrono: cada jogador local tem entrada, alvo e animal próprios.
+  withPlayer(player, fn) {
+    const previous = this.p, controls = this.controls, lock = this.lock, pet = this.pet;
+    if (player === previous) return fn();
+    if (this.localCoop) { previous.lock = lock; previous.pet = pet; }
+    this.p = player;
+    if (this.localCoop) { this.controls = player.controls; this.lock = player.lock || null; this.pet = player.pet || null; }
+    try { return fn(); }
+    finally {
+      if (this.localCoop) { player.lock = this.lock; player.pet = this.pet; }
+      this.p = previous; this.controls = controls; this.lock = lock; this.pet = pet;
+    }
+  }
+
+  damageArea(amount, src, contains, opts = {}) {
+    for (const p of this.localPlayers || [this.p]) {
+      if (!p.dead && contains(p)) this.withPlayer(p, () => this.damagePlayer(amount, src, opts));
+    }
+  }
+
   /* ================= Jogador ================= */
   aimAngle() {
+    const input = this.controls;
     const p = this.p;
     if (this.lock) return Math.atan2(this.lock.y - p.y, this.lock.x - p.x);
     if (input.padAim != null) return input.padAim;
@@ -321,6 +344,7 @@ export class Game {
   }
 
   updatePlayer(dt) {
+    const input = this.controls;
     const p = this.p, st = this.st, m = this.cur.map;
     if (p.dead) return;
     for (const k in p.buffs) { p.buffs[k].t -= dt; if (p.buffs[k].t <= 0) delete p.buffs[k]; }
@@ -374,7 +398,8 @@ export class Game {
     p.staT -= dt; if (p.staT <= 0 && !p.guard) p.sta = Math.min(100, p.sta + 34 * dt);
     p.fe = Math.min(st.maxFe, p.fe + dt * (0.8 + st.maxFe * 0.01));
     const z = this.zone && ZONES[this.zone];
-    if ((this.scene === 'salao' || (this.scene === 'world' && z?.seguro)) && p.hp < st.maxHp) p.hp = Math.min(st.maxHp, p.hp + st.maxHp * 0.04 * dt);
+    const safe = this.localCoop ? ZONES[zoneAt(Math.floor(p.x / TS), Math.floor(p.y / TS))]?.seguro : z?.seguro;
+    if ((this.scene === 'salao' || (this.scene === 'world' && safe)) && p.hp < st.maxHp) p.hp = Math.min(st.maxHp, p.hp + st.maxHp * 0.04 * dt);
     // ações
     if (p.stun > 0 || p.dodgeT > 0) { p.holdT = 0; p.charging = false; return; }
     if (this.tickBotija(dt)) { input.pressed.delete('attack'); return; }
@@ -781,7 +806,7 @@ export class Game {
       const ang = Math.atan2(src.y - p.y, src.x - p.x), face = Math.atan2(p.fy, p.fx);
       if (Math.abs(angDiff(ang, face)) < 2.1) {
         if (p.guardT < PERFEITA) {
-          sfx('parry'); vibrar(70, 0.35); this.addText(p.x, p.y - 40, 'DEFESA PERFEITA!', '#FFFFFF', 15); this.burst(p.x + p.fx * 14, p.y + p.fy * 14, 16, '#FFFFFF', 220);
+          sfx('parry'); vibrar(70, 0.35, this.controls.padIndex); this.addText(p.x, p.y - 40, 'DEFESA PERFEITA!', '#FFFFFF', 15); this.burst(p.x + p.fx * 14, p.y + p.fy * 14, 16, '#FFFFFF', 220);
           this.hitstop = 0.08; p.fe = Math.min(this.st.maxFe, p.fe + 6);
           if (src.kind === 'enemy' || src.kind === 'boss') { src.stun = src.kind === 'boss' ? 0.8 : 1.4; src.kx -= Math.cos(ang) * 200; src.ky -= Math.sin(ang) * 200; }
           if (src.kind === 'boss') aoDefender(this, src);
@@ -796,7 +821,7 @@ export class Game {
       }
     }
     dmg = Math.max(1, Math.round(dmg));
-    p.hp -= dmg; p.inv = 0.45; sfx('hurt'); vibrar(dmg > this.st.maxHp * 0.2 ? 220 : 120, dmg > this.st.maxHp * 0.2 ? 1 : 0.55);
+    p.hp -= dmg; p.inv = 0.45; sfx('hurt'); vibrar(dmg > this.st.maxHp * 0.2 ? 220 : 120, dmg > this.st.maxHp * 0.2 ? 1 : 0.55, this.controls.padIndex);
     if (p.mounted && dmg >= 6) { this.dismount(); this.addText(p.x, p.y - 52, 'Caiu da montaria!', '#FFB3B3', 12); } this.shake(7); this.ui.hurt();
     this.addText(p.x, p.y - 30, '-' + dmg, '#FF5A5F', 15);
     if (src && !opts.noKnock) { const a = Math.atan2(p.y - src.y, p.x - src.x); this.moveEnt(p, Math.cos(a) * 14, Math.sin(a) * 14); }
@@ -805,6 +830,7 @@ export class Game {
   }
 
   playerDown() {
+    const input = this.controls;
     const p = this.p, c = this.char;
     if (this.st.reviver && this.fase && !this.fase.revived) {
       this.fase.revived = true; p.hp = this.st.maxHp * 0.4; p.inv = 2;
@@ -851,9 +877,10 @@ export class Game {
       // empurrão
       if (Math.abs(e.kx) + Math.abs(e.ky) > 1) { this.moveEnt(e, e.kx * dt, e.ky * dt); e.kx *= Math.pow(0.002, dt); e.ky *= Math.pow(0.002, dt); }
       if (e.stun > 0) continue;
-      this.p = alvo;
-      if (e.kind === 'boss') { this.updateBoss(e, dt, dist); continue; }
-      this.updateEnemy(e, dt, dist);
+      this.withPlayer(alvo, () => {
+        if (e.kind === 'boss') this.updateBoss(e, dt, dist);
+        else this.updateEnemy(e, dt, dist);
+      });
     } } finally { this.p = this.eu; }
     // ninguém fica em cima de ninguém
     const es = this.enemies;
@@ -1003,7 +1030,7 @@ export class Game {
 
   /* ================= Projéteis, áreas e efeitos ================= */
   updateProjectiles(dt) {
-    const p = this.p, m = this.cur.map;
+    const m = this.cur.map;
     for (let i = this.projs.length - 1; i >= 0; i--) {
       const q = this.projs[i];
       q.life -= dt;
@@ -1030,13 +1057,16 @@ export class Game {
           }
         }
       } else if (!dead && q.owner === 'e') {
-        if (Math.hypot(p.x - q.x, p.y - (q.y)) < p.r + q.r) {
-          const r = this.damagePlayer(q.dmg, q);
-          if (r === 'parry' && q.reflect) {
-            // devolve o projétil
-            q.owner = 'p'; q.vx *= -1.3; q.vy *= -1.3; q.mult = 2; q.kind = 'luz'; q.life = 1.5; q.hitSet = new Set(); q.pierce = 0;
-            this.addText(p.x, p.y - 56, 'Devolvido!', '#FFE38A', 13);
-          } else if (r !== 'miss') dead = true;
+        for (const p of this.localPlayers || [this.p]) {
+          if (!p.dead && Math.hypot(p.x - q.x, p.y - q.y) < p.r + q.r) {
+            const r = this.withPlayer(p, () => this.damagePlayer(q.dmg, q));
+            if (r === 'parry' && q.reflect) {
+              // devolve o projétil
+              q.owner = 'p'; q.vx *= -1.3; q.vy *= -1.3; q.mult = 2; q.kind = 'luz'; q.life = 1.5; q.hitSet = new Set(); q.pierce = 0;
+              this.addText(p.x, p.y - 56, 'Devolvido!', '#FFE38A', 13);
+            } else if (r !== 'miss') dead = true;
+            if (dead || q.owner === 'p') break;
+          }
         }
       }
       if (dead) this.projs.splice(i, 1);
@@ -1045,27 +1075,34 @@ export class Game {
 
   updateTele(dt) {
     for (let i = this.tele.length - 1; i >= 0; i--) { const t = this.tele[i]; t.t -= dt; if (t.t <= 0) { this.tele.splice(i, 1); t.onEnd?.(); } }
-    const p = this.p;
     for (let i = this.hazards.length - 1; i >= 0; i--) {
       const h = this.hazards[i];
       if (h.delay > 0) { h.delay -= dt; continue; }
       h.t -= dt;
       if (h.ring) {
         h.r += h.spd * dt;
-        const d = Math.hypot(p.x - h.x, p.y - h.y);
-        if (!h.hit && Math.abs(d - h.r) < 16) { h.hit = true; this.damagePlayer(h.dmg, h, { unblockable: true }); }
+        h.hitPlayers ||= new Set();
+        this.damageArea(h.dmg, h, p => {
+          if (h.hitPlayers.has(p) || Math.abs(Math.hypot(p.x - h.x, p.y - h.y) - h.r) >= 16) return false;
+          h.hitPlayers.add(p); return true;
+        }, { unblockable: true });
       } else {
         h.tick -= dt;
-        if (h.tick <= 0 && Math.hypot(p.x - h.x, p.y - h.y) < h.r) { h.tick = 0.5; this.damagePlayer(h.dmg, h, { unblockable: true, noKnock: true }); }
+        if (h.tick <= 0) {
+          this.damageArea(h.dmg, h, p => Math.hypot(p.x - h.x, p.y - h.y) < h.r, { unblockable: true, noKnock: true });
+          h.tick = 0.5;
+        }
       }
       if (h.t <= 0) this.hazards.splice(i, 1);
     }
   }
 
   updatePickups(dt) {
-    const p = this.p, c = this.char;
+    const c = this.char;
     for (let i = this.pickups.length - 1; i >= 0; i--) {
       const k = this.pickups[i]; k.t += dt;
+      const p = this.localPlayers ? this.localPlayers.filter(p => !p.dead).sort((a, b) => Math.hypot(a.x - k.x, a.y - k.y) - Math.hypot(b.x - k.x, b.y - k.y))[0] : this.p;
+      if (!p) continue;
       k.x += k.vx * dt; k.y += k.vy * dt; k.vx *= Math.pow(0.02, dt); k.vy *= Math.pow(0.02, dt);
       const d = Math.hypot(p.x - k.x, p.y - k.y);
       if (k.t > 0.4 && d < 90) { k.x += (p.x - k.x) * dt * 8; k.y += (p.y - k.y) * dt * 8; }
@@ -1097,8 +1134,8 @@ export class Game {
     if (z !== this.zone) { this.zone = z; this.ui.zone(ZONES[z].nome, ZONES[z].seguro); }
     // reaparecer inimigos longe do jogador
     if (this.souHost()) {
-      for (const s of this.spawns) if (!s.alive && this.T > s.at && Math.hypot(s.tx * TS - p.x, s.ty * TS - p.y) > 600) this.spawnFrom(s);
-      for (const wb of this.worldBosses) if (!wb.alive && this.T > wb.at && Math.hypot(wb.home.x - p.x, wb.home.y - p.y) > 900) this.spawnWorldBoss(wb);
+      for (const s of this.spawns) if (!s.alive && this.T > s.at && (this.localPlayers || [p]).every(p => Math.hypot(s.tx * TS - p.x, s.ty * TS - p.y) > 600)) this.spawnFrom(s);
+      for (const wb of this.worldBosses) if (!wb.alive && this.T > wb.at && (this.localPlayers || [p]).every(p => Math.hypot(wb.home.x - p.x, wb.home.y - p.y) > 900)) this.spawnWorldBoss(wb);
     }
     // o Pecado espreita os portões à noite (Gn 4:7)
     const night = this.darkness() > 0.35;
@@ -1515,6 +1552,7 @@ export class Game {
   }
   // Carrega o clã e os amigos (sigla em cima da cabeça, amigos com nome verde)
   async refreshSocial() {
+    if (this.localCoop) return;
     try {
       const [mc, fr] = await Promise.all([net.social.myClan(this.char), net.social.friends(this.char)]);
       this.social.clan = mc ? { id: mc.clan.id, tag: mc.clan.tag, name: mc.clan.name } : null;
@@ -1524,6 +1562,7 @@ export class Game {
   }
 
   save() {
+    if (this.localCoop) return;
     const c = this.char, p = this.p;
     c.data.hp = Math.round(p.hp); c.data.fe = Math.round(p.fe);
     if (this.scene === 'world') c.data.pos = { x: Math.round(p.x), y: Math.round(p.y) };
@@ -1678,7 +1717,8 @@ export class Game {
   render() {
     const g = this.ctx, p = this.p, m = this.cur.map, Z = this.Z;
     const vw = this.W / Z, vh = this.H / Z;
-    let camL = p.x - vw / 2, camT = p.y - 10 - vh / 2;
+    const camera = this.cameraTarget || p;
+    let camL = camera.x - vw / 2, camT = camera.y - 10 - vh / 2;
     if (!config.camCentro) {
       camL = clamp(camL, 0, Math.max(0, m.w * TS - vw)); camT = clamp(camT, 0, Math.max(0, m.h * TS - vh));
       if (m.w * TS < vw) camL = (m.w * TS - vw) / 2;
@@ -1759,7 +1799,7 @@ export class Game {
     }
     if (this.pecado) list.push({ y: this.pecado.y, d: () => drawBoss(g, { id: 'pecado', x: this.pecado.x, y: this.pecado.y, r: 22, alpha: Math.min(1, this.pecado.t * 0.5), flash: 0 }, T0) });
     if (this.pet && !p.mounted && !p.dead) { const a = this.pet; list.push({ y: a.y, d: () => drawAnimal(g, a.kind, a.x, a.y, { t: T0, fx: a.fx, moving: a.moving, walk: a.walk }) }); }
-    if (!p.dead) list.push({ y: p.y, d: () => this.drawPlayer(g) });
+    for (const player of this.localPlayers || [p]) if (!player.dead) list.push({ y: player.y, d: () => this.withPlayer(player, () => this.drawPlayer(g)) });
     list.sort((a, b) => a.y - b.y);
     for (const it of list) it.d();
     // projéteis e partículas
@@ -1843,7 +1883,7 @@ export class Game {
       const gr = lg.createRadialGradient(sx, sy, 0, sx, sy, sr); gr.addColorStop(0, 'rgba(0,0,0,' + a + ')'); gr.addColorStop(1, 'rgba(0,0,0,0)');
       lg.fillStyle = gr; lg.fillRect(sx - sr, sy - sr, sr * 2, sr * 2);
     };
-    hole(this.p.x, this.p.y, 190, 0.9);
+    for (const player of this.localPlayers || [this.p]) if (!player.dead) hole(player.x, player.y, 190, 0.9);
     for (const L of this.cur.lights) hole(L.x, L.y, L.r * (L.gate ? 1 + 0.08 * Math.sin(this.T * 3) : 1), 0.85);
     for (const o of this.others.values()) hole(o.x, o.y, 120, 0.6);
     for (const q of this.projs) if (q.kind === 'luz' || q.kind === 'palavra') hole(q.x, q.y, 60, 0.7);
@@ -1886,11 +1926,11 @@ export class Game {
     const ride = p.mounted && this.pet;
     if (ride) { drawAnimal(g, this.pet.kind, p.x, p.y, { t: T0, fx: p.fx, moving: p.moving, walk: p.walk }); g.save(); g.translate(0, -(RIDE_H[this.pet.kind] || 12)); }
     if (behind) drawW();
-    drawPerson(g, p.x, p.y, 1, c.look, { t: T0, fx: p.fx, fy: p.fy, walk: ride ? 0 : p.walk, moving: ride ? false : p.moving, guard: p.guard, guardPerfect: p.guard && p.guardT < PERFEITA, ...look });
+    drawPerson(g, p.x, p.y, 1, p.look || c.look, { t: T0, fx: p.fx, fy: p.fy, walk: ride ? 0 : p.walk, moving: ride ? false : p.moving, guard: p.guard, guardPerfect: p.guard && p.guardT < PERFEITA, ...look });
     if (!behind) drawW();
     if (ride) g.restore();
     g.globalAlpha = 1;
-    this.nameTag(g, p.x, p.y - 56 - (ride ? RIDE_H[this.pet.kind] || 12 : 0), c.name, c.level, '#FFE38A', this.social.clan?.tag);
+    this.nameTag(g, p.x, p.y - 56 - (ride ? RIDE_H[this.pet.kind] || 12 : 0), p.name || c.name, c.level, p.color || '#FFE38A', this.social.clan?.tag);
   }
 
   drawOther(g, o) {

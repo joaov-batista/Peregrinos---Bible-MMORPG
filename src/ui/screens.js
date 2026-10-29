@@ -16,7 +16,7 @@ function screen(...kids) {
 }
 const logo = () => h('div', { class: 'logo' }, h('span', { class: 'cross' }, '✝'), h('h1', {}, 'PEREGRINOS'), h('p', {}, 'RPG bíblico online'));
 
-export function showAuth(onDone) {
+export function showAuth(onDone, onCoop) {
   let mode = 'entrar';
   const msg = h('p', { class: 'form-msg', role: 'status' });
   const email = h('input', { type: 'email', placeholder: 'seu@email.com', autocomplete: 'email', 'aria-label': 'E-mail' });
@@ -45,6 +45,7 @@ export function showAuth(onDone) {
     h('button', { class: 'link', type: 'button', onclick: () => { net.user = null; initAudio(); onDone(); } }, 'Jogar sem conta (salva só neste aparelho, sem ranking mundial)'));
   else form.append(h('p', { class: 'muted' }, 'Modo offline: o progresso fica salvo neste navegador. Para contas, ranking mundial e jogadores online, configure o Supabase (veja o README).'),
     h('button', { class: 'btn gold wide', type: 'button', onclick: () => { initAudio(); onDone(); } }, 'Começar a jornada'));
+  if (onCoop) form.append(coopButton(onCoop));
   screen(logo(), h('p', { class: 'week' }, 'Estudo da semana: ', h('b', {}, SEMANA_ATUAL.titulo), ' · ' + SEMANA_ATUAL.estudo), form, installButton(msg));
 }
 
@@ -63,7 +64,7 @@ function miniPortrait(look, cls, size = 80) {
   return c;
 }
 
-export async function showSelect(onPlay, onNew, onLogout) {
+export async function showSelect(onPlay, onNew, onLogout, onCoop) {
   screen(logo(), h('p', { class: 'muted' }, 'Carregando personagens…'));
   let chars = [];
   try { chars = await net.listChars(); } catch (e) { screen(logo(), h('p', { class: 'form-msg err' }, 'Erro: ' + e.message), h('button', { class: 'btn', onclick: onLogout }, 'Voltar')); return; }
@@ -77,15 +78,15 @@ export async function showSelect(onPlay, onNew, onLogout) {
         h('button', { class: 'btn gold', onclick: () => { sfx('click'); onPlay(c); } }, 'Jogar'),
         h('button', { class: 'btn sm danger', onclick: async e => {
           const b = e.currentTarget;
-          if (b.dataset.sure) { await net.deleteChar(c.id); showSelect(onPlay, onNew, onLogout); }
+          if (b.dataset.sure) { await net.deleteChar(c.id); showSelect(onPlay, onNew, onLogout, onCoop); }
           else { b.dataset.sure = '1'; b.textContent = 'Tem certeza?'; setTimeout(() => { if (b.isConnected) { delete b.dataset.sure; b.textContent = 'Apagar'; } }, 3000); }
         } }, 'Apagar'))));
   }
-  screen(logo(), h('h2', { class: 'title' }, 'Escolha seu peregrino'), list,
+  screen(logo(), h('h2', { class: 'title' }, 'Escolha seu peregrino'), list, onCoop ? coopButton(onCoop) : '',
     h('div', { class: 'btn-row' }, chars.length < 3 ? h('button', { class: 'btn', onclick: onNew }, '+ Novo personagem') : '', h('button', { class: 'btn link', onclick: onLogout }, ONLINE && net.user ? 'Sair da conta' : 'Voltar')));
 }
 
-export function showCreator(onCreated, onBack) {
+export function showCreator(onCreated, onBack, onCoop) {
   const look = defaultLook();
   let cls = 'guerreiro', t = 0, raf, face = 0;
   const FACES = [[0, 1], [0.95, 0.3], [0, -1], [-0.95, 0.3]];
@@ -168,8 +169,24 @@ export function showCreator(onCreated, onBack) {
     h('h4', {}, 'Classe'), classBox,
     h('h4', {}, 'Aparência'), looks,
     msg, h('div', { class: 'btn-row' }, h('button', { class: 'btn', type: 'button', onclick: () => { cancelAnimationFrame(raf); onBack(); } }, 'Voltar'), create)));
-  screen(h('h2', { class: 'title' }, 'Crie seu peregrino'), form);
+  screen(h('h2', { class: 'title' }, 'Crie seu peregrino'), onCoop ? coopButton(() => { cancelAnimationFrame(raf); onCoop(); }) : '', form);
   draw();
 }
 
 export function hideScreens() { scr().hidden = true; scr().innerHTML = ''; desligarCeu(); }
+
+function coopButton(onCoop) {
+  return h('button', { class: 'btn gold wide', type: 'button', onclick: onCoop }, '🎮 Dupla local — sem salvar');
+}
+
+export function showLocalCoop(onPlay, onBack) {
+  screen(logo(), h('div', { class: 'card auth' },
+    h('h2', {}, 'Dupla local'),
+    h('p', {}, 'Dois peregrinos no mesmo PC. Perto: uma tela. Longe: tela dividida.'),
+    h('p', { class: 'muted' }, 'Partida rápida sem login e sem salvar. Dois guerreiros prontos; nível, equipamentos e mochila compartilhados. Vida, Fé e fôlego individuais.'),
+    h('p', {}, 'Conecte os controles e aperte um botão em cada um para o navegador reconhecer. J1 fica à esquerda e conduz diálogos e portais. Start abre o menu.'),
+    h('button', { class: 'btn gold wide', onclick: () => onPlay('pads') }, 'Começar com 2 controles'),
+    h('button', { class: 'btn wide', onclick: () => onPlay('keyboard') }, 'Teclado + 1 controle'),
+    h('p', { class: 'muted' }, 'R1: atacar · R2: especial · L1: defender · ◯: esquivar. Teclado: WASD, J, K e Espaço. Quem cair volta em 5 segundos.'),
+    h('button', { class: 'btn link', onclick: onBack }, 'Voltar')));
+}
