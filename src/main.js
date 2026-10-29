@@ -7,8 +7,9 @@ import { initAudio } from './audio.js';
 import { initGamepad } from './gamepad.js';
 import { net, ONLINE } from './net.js';
 import { Game } from './game/game.js';
+import { CoopGame } from './game/coop.js';
 import { createHud } from './ui/hud.js';
-import { showAuth, showSelect, showCreator, hideScreens } from './ui/screens.js';
+import { showAuth, showSelect, showCreator, showLocalCoop, hideScreens } from './ui/screens.js';
 
 const canvas = $('cv');
 initZoom();
@@ -41,18 +42,26 @@ function play(char) {
 }
 
 function exitToSelect() {
-  game?.destroy(); game = null; ui.show(false);
+  game?.destroy(); game = null; window.__game = null; ui.closeAll(); ui.show(false);
   start();
 }
 
+function localCoop() {
+  showLocalCoop(mode => {
+    hideScreens(); ui.show(true); initAudio();
+    game = new CoopGame(canvas, ui, mode);
+    ui.attach(game); ui.online(0); window.__game = game;
+  }, start);
+}
+
 function select() {
-  showSelect(play, () => showCreator(c => play(c), select), async () => { await net.signOut(); showAuth(select); });
+  showSelect(play, () => showCreator(c => play(c), select, localCoop), async () => { await net.signOut(); showAuth(select, localCoop); }, localCoop);
 }
 
 async function start() {
   if (ONLINE) await net.init().catch(() => null);
-  if (ONLINE && !net.user) showAuth(select);
-  else if (!ONLINE && !sessionStorage.getItem('peregrinos.started')) showAuth(() => { sessionStorage.setItem('peregrinos.started', '1'); select(); });
+  if (ONLINE && !net.user) showAuth(select, localCoop);
+  else if (!ONLINE && !sessionStorage.getItem('peregrinos.started')) showAuth(() => { sessionStorage.setItem('peregrinos.started', '1'); select(); }, localCoop);
   else select();
 }
 start();
