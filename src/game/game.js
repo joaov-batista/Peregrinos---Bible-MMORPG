@@ -1,3 +1,5 @@
+import { personMotion } from './sprite-motion.js';
+import { drawIcon, drawItemIcon } from '../ui/icons.js';
 // Núcleo do jogo: loop, câmera, combate, inimigos, chefes, fases e mundo compartilhado.
 import { TAU, rand, randi, clamp, lerp, pick, angDiff, ell, rr, shuffle, weekId, hash } from '../util.js';
 import { input } from '../input.js';
@@ -19,7 +21,7 @@ import { instalarDescanso } from './descanso.js';
 import { instalarCasa } from './casa.js';
 import { instalarGrupo } from './grupo.js';
 import { atmosfera } from './atmos.js';
-import { drawPerson, drawWeapon, drawEnemy, drawBoss, drawChest, drawPortal, drawSheep, drawProjectile, drawAnimal, shade } from './draw.js';
+import { drawPerson, drawEnemy, drawBoss, enemyArtTop, bossArtTop, drawChest, drawPortal, drawSheep, drawProjectile, drawAnimal, shade } from './draw.js';
 import { computeStats, xpNeed, addItem, removeItem, count, faseProg, arrumarArmas, MAX_LEVEL } from './player.js';
 
 const SPAWN = { x: 90 * TS + 16, y: 78 * TS + 8 };
@@ -1533,7 +1535,7 @@ export class Game {
 
   updateHud(dt) {
     const p = this.p, c = this.char;
-    this.ui.hud({ hp: p.hp, maxHp: this.st.maxHp, fe: p.fe, maxFe: this.st.maxFe, sta: p.sta, xp: c.data.xp, xpNeed: xpNeed(c.level), level: c.level, gold: c.data.gold, score: c.score, skillCd: Math.max(0, p.skillCd) / CLASSES[c.cls].skill.cd, skillOk: p.fe >= CLASSES[c.cls].skill.custo, escudo: !!c.data.eq.escudo, lock: !!this.lock, botija: this.botija(), atalhos: this.atalhos().map(id => id && ITEMS[id] ? { icon: ITEMS[id].icon, nome: ITEMS[id].nome, n: count(c, id) } : null) });
+    this.ui.hud({ weapon: this.st.weapon, hp: p.hp, maxHp: this.st.maxHp, fe: p.fe, maxFe: this.st.maxFe, sta: p.sta, xp: c.data.xp, xpNeed: xpNeed(c.level), level: c.level, gold: c.data.gold, score: c.score, skillCd: Math.max(0, p.skillCd) / CLASSES[c.cls].skill.cd, skillOk: p.fe >= CLASSES[c.cls].skill.custo, escudo: !!c.data.eq.escudo, lock: !!this.lock, botija: this.botija(), atalhos: this.atalhos().map(id => id && ITEMS[id] ? { id, icon: ITEMS[id].icon, nome: ITEMS[id].nome, n: count(c, id) } : null) });
     this.mmT -= dt;
     if (this.mmT <= 0) {
       this.mmT = 0.25;
@@ -1739,7 +1741,7 @@ export class Game {
       const y = k.y - 4 - Math.abs(Math.sin(k.t * 6)) * 4;
       if (k.kind === 'ouro') { g.fillStyle = '#B8791A'; ell(g, k.x, y, 5.5, 5.5); g.fill(); g.fillStyle = '#FFD23F'; ell(g, k.x - 0.5, y - 0.5, 4, 4); g.fill(); }
       else if (k.kind === 'cura') { g.fillStyle = '#FF5A5F'; g.font = '14px sans-serif'; g.textAlign = 'center'; g.fillText('❤', k.x, y + 4); }
-      else { g.font = '16px sans-serif'; g.textAlign = 'center'; g.fillText(ITEMS[k.id].icon, k.x, y + 5); }
+      else { drawItemIcon(g, ITEMS[k.id], k.id, k.x, y, 20); }
     }
     // entidades ordenadas por Y
     const list = [];
@@ -1867,27 +1869,16 @@ export class Game {
     if (st.armaduraCompleta) { g.strokeStyle = 'rgba(255,220,120,' + (0.3 + 0.2 * Math.sin(T0 * 3)) + ')'; g.lineWidth = 2; ell(g, p.x, p.y + 10, 20, 7); g.stroke(); }
     if (p.charm) { g.strokeStyle = 'rgba(255,120,170,.8)'; g.lineWidth = 2; g.setLineDash([6, 6]); g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.charm.src.x, p.charm.src.y); g.stroke(); g.setLineDash([]); }
     const look = this.equipLook(c.data.eq);
-    const behind = p.fy < -0.3;
-    const drawW = () => {
-      if (p.spin > 0 && w === 'espada') { g.save(); g.translate(p.x, p.y - 6); g.rotate(T0 * 26); drawWeapon(g, 'espada', 44, 16, legend); g.restore(); g.strokeStyle = 'rgba(255,230,150,.5)'; g.lineWidth = 14; ell(g, p.x, p.y - 4, 60, 48); g.stroke(); return; }
-      if (p.atkT > 0 && w === 'espada') {
-        const pr = 1 - p.atkT / 0.22, dir = p.combo === 2 ? -1 : 1, a0 = p.swingA - 1.3 * dir, ang = a0 + 2.6 * dir * (1 - Math.pow(1 - pr, 3));
-        g.save(); g.translate(p.x, p.y - 6); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
-        g.strokeStyle = 'rgba(255,205,90,' + (0.55 * (1 - pr) + 0.15) + ')'; g.lineWidth = p.combo === 3 ? 22 : 15;
-        g.beginPath(); g.arc(0, 0, p.combo === 3 ? 40 : 32, Math.min(a0, ang), Math.max(a0, ang)); g.stroke();
-        g.globalCompositeOperation = 'source-over'; g.rotate(ang); drawWeapon(g, 'espada', p.combo === 3 ? 50 : 42, 14, legend); g.restore();
-        return;
-      }
-      const a = p.atkT > 0 ? p.swingA : Math.atan2(p.fy, p.fx) + (p.fx < 0 ? -0.9 : 0.9) * (w === 'espada' ? 1 : 0.4);
-      g.save(); g.translate(p.x + p.fx * 8, p.y - 4); g.rotate(p.atkT > 0 ? a : (w === 'espada' ? (p.fx < -0.3 ? -Math.PI + 0.9 : -0.9) : a));
-      if (w === 'lanca' && p.atkT > 0) g.translate(16 * (p.atkT / 0.2), 0); // estocada
-      drawWeapon(g, w, { cajado: 30, lanca: 40, adaga: 15, chicote: 16 }[w] ?? 26, p.atkT > 0 ? 10 : 0, legend); g.restore();
-    };
+    if (p.atkT > 0 && (w === 'espada' || w === 'adaga') || p.spin > 0) {
+      const progress = Math.max(0, Math.min(1, 1 - p.atkT / .22));
+      const a = p.spin > 0 ? T0 * 26 : p.swingA;
+      g.save(); g.translate(p.x, p.y - 18);
+      g.strokeStyle = 'rgba(194,221,224,' + (1 - progress) * .42 + ')'; g.lineWidth = 3;
+      g.beginPath(); g.arc(0, 0, p.combo === 3 ? 42 : 35, a - 1.1, a + .7); g.stroke(); g.restore();
+    }
     const ride = p.mounted && this.pet;
     if (ride) { drawAnimal(g, this.pet.kind, p.x, p.y, { t: T0, fx: p.fx, moving: p.moving, walk: p.walk }); g.save(); g.translate(0, -(RIDE_H[this.pet.kind] || 12)); }
-    if (behind) drawW();
-    drawPerson(g, p.x, p.y, 1, c.look, { t: T0, fx: p.fx, fy: p.fy, walk: ride ? 0 : p.walk, moving: ride ? false : p.moving, guard: p.guard, guardPerfect: p.guard && p.guardT < PERFEITA, ...look });
-    if (!behind) drawW();
+    drawPerson(g, p.x, p.y, 1, c.look, personMotion(p, c.look, { t: T0, fx: p.fx, fy: p.fy, walk: ride ? 0 : p.walk, moving: ride ? false : p.moving, guard: p.guard, guardPerfect: p.guard && p.guardT < PERFEITA, cls: c.cls, weapon: w, weaponId: c.data.eq.arma, legendary: legend, shield: !!c.data.eq.escudo, atkT: p.atkT, swingA: p.swingA, combo: p.combo, spin: p.spin, ...look }));
     if (ride) g.restore();
     g.globalAlpha = 1;
     this.nameTag(g, p.x, p.y - 56 - (ride ? RIDE_H[this.pet.kind] || 12 : 0), c.name, c.level, '#FFE38A', this.social.clan?.tag);
@@ -1897,9 +1888,10 @@ export class Game {
     const ride = o.pet?.m;
     if (o.pet && !ride) drawAnimal(g, o.pet.k, o.x - (o.fx || 1) * 26, o.y + 2, { t: this.T, fx: o.fx || 1, moving: !!o.mv, walk: o.walk });
     if (ride) { drawAnimal(g, o.pet.k, o.x, o.y, { t: this.T, fx: o.fx, moving: !!o.mv, walk: o.walk }); g.save(); g.translate(0, -(RIDE_H[o.pet.k] || 12)); }
-    drawPerson(g, o.x, o.y, 1, o.look || {}, { t: this.T, fx: o.fx, fy: o.fy, walk: o.walk, moving: !!o.mv, ...this.equipLook(o.eq || {}) });
-    const kind = CLASSES[o.cls]?.arma || 'espada';
-    g.save(); g.translate(o.x + (o.fx || 0) * 8, o.y - 4); g.rotate(Math.atan2(o.fy || 1, o.fx || 0) + (o.atk ? 0 : 0.8)); drawWeapon(g, kind, 26, 0); g.restore();
+    const kind = ITEMS[o.eq?.arma]?.palavra ? 'espada' : CLASSES[o.cls]?.arma || 'espada';
+    drawPerson(g, o.x, o.y, 1, o.look || {}, personMotion(o, o.look || {}, { t: this.T, fx: o.fx, fy: o.fy, walk: o.walk, moving: !!o.mv,
+      cls: o.cls, weapon: kind, weaponId: o.eq?.arma, shield: !!o.eq?.escudo, attacking: !!o.atk,
+      ...this.equipLook(o.eq || {}) }));
     if (ride) g.restore();
     // amigos em verde, colegas de clã em dourado
     const mesmoCla = o.cla && o.cla === this.social.clan?.tag;
@@ -1915,24 +1907,23 @@ export class Game {
   drawNpc(g, n) {
     const p = this.p, dx = p.x - n.x, dy = p.y - n.y, d = Math.hypot(dx, dy) || 1;
     const near = d < 150;
-    drawPerson(g, n.x, n.y, 1, n.look, { t: this.T + n.x, fx: near ? dx / d : 0, fy: near ? dy / d : 1, walk: 0, moving: false });
+    drawPerson(g, n.x, n.y, 1, n.look, personMotion(n, n.look, { t: this.T + n.x, fx: near ? dx / d : 0, fy: near ? dy / d : 1, walk: 0, moving: false }));
     const hasQuest = n.missao && (!this.char.data.quests[n.missao] || this.char.data.quests[n.missao].st === 'pronta');
-    const icon = hasQuest ? (this.char.data.quests[n.missao]?.st === 'pronta' ? '🎁' : '❗') : n.loja ? '🛒' : n.minijogo ? '🎮' : n.ranking ? '🏆' : null;
+    const symbol = hasQuest ? (this.char.data.quests[n.missao]?.st === 'pronta' ? 'chest' : 'quest') : n.loja ? 'shop' : n.minijogo ? 'game' : n.ranking ? 'trophy' : null;
     this.nameTag(g, n.x, n.y - 56, n.nome, null, '#FFFFFF');
-    if (icon) { g.font = '15px sans-serif'; g.textAlign = 'center'; g.fillText(icon, n.x, n.y - 70 + Math.sin(this.T * 3) * 2); }
+    if (symbol) drawIcon(g, symbol, n.x, n.y - 74 + Math.sin(this.T * 3) * 1.2, 18, hasQuest ? '#D4C58F' : '#C7D3CE');
   }
 
   drawEnt(g, e) {
     if (e.kind === 'boss') {
-      if (e.clone) drawBoss(g, e, this.T); // cópias idênticas: só golpeando para saber qual é a verdadeira
-      else drawBoss(g, e, this.T);
-      if (e.stun > 0) { g.fillStyle = '#FFE38A'; g.font = '900 13px Nunito'; g.textAlign = 'center'; g.fillText('★ atordoado ★', e.x, e.y - e.r - 40); }
-      if (e.world && !e.engaged) this.nameTag(g, e.x, e.y - e.r - 30, e.d.nome, 'nv ' + e.d.lv, '#FF8A8A');
+      drawBoss(g, e, this.T); // Cópias usam o mesmo desenho; só golpeando para identificar.
+      if (e.stun > 0) { g.fillStyle = '#FFE38A'; g.font = '900 13px Nunito'; g.textAlign = 'center'; g.fillText('★ atordoado ★', e.x, e.y - bossArtTop(e.d?.desenho || e.id, e.r) - 16); }
+      if (e.world && !e.engaged) this.nameTag(g, e.x, e.y - bossArtTop(e.d?.desenho || e.id, e.r), e.d.nome, 'nv ' + e.d.lv, '#FF8A8A');
       return;
     }
     drawEnemy(g, e, e.d, this.T, this.p.x, this.p.y);
-    if (e.stun > 0) { g.fillStyle = '#FFE38A'; g.font = '900 10px Nunito'; g.textAlign = 'center'; g.fillText('★', e.x + Math.sin(this.T * 8) * 8, e.y - e.r - 26); }
-    const yTop = e.y - e.r - (e.type === 'distracao' || e.type === 'desanimo' ? 30 : 18);
+    const yTop = e.y - enemyArtTop(e.type, e.r);
+    if (e.stun > 0) { g.fillStyle = '#FFE38A'; g.font = '900 10px Nunito'; g.textAlign = 'center'; g.fillText('★', e.x + Math.sin(this.T * 8) * 8, yTop - 13); }
     g.font = '600 10px Alegreya, serif'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = 'rgba(4,4,10,.7)';
     const label = e.d.nome + ' ' + e.lv; g.strokeText(label, e.x, yTop); g.fillStyle = e.lv > this.char.level + 2 ? '#E8907E' : '#D8D4C8'; g.fillText(label, e.x, yTop);
     if (e.hp < e.max) { const w = 30; g.fillStyle = 'rgba(4,4,10,.6)'; g.fillRect(e.x - w / 2 - 1, e.y + e.r + 3, w + 2, 4); g.fillStyle = '#E0574F'; g.fillRect(e.x - w / 2, e.y + e.r + 4, w * Math.max(0, e.hp / e.max), 2); }

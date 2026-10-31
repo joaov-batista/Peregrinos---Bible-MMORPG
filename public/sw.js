@@ -1,6 +1,6 @@
 // Service worker do Peregrinos: guarda o jogo no aparelho para abrir rápido e funcionar sem internet.
 // Supabase (contas, ranking, online) nunca passa pelo cache.
-const CACHE = 'peregrinos-v3';
+const CACHE = 'peregrinos-v4-art';
 const CORE = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', e => {

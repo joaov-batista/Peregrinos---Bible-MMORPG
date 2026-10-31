@@ -1,0 +1,2409 @@
+{
+  "description": "Quadros de referência do renderizador procedural; a animação ao vivo é contínua. Raios normalizados: monstros 16, chefes 40.",
+  "columns": 10,
+  "rows": 16,
+  "cell": 192,
+  "frames": [
+    {
+      "name": "preguica/repouso/0",
+      "creature": "preguica",
+      "state": "repouso",
+      "time": 0,
+      "x": 0,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/repouso/0",
+      "creature": "distracao",
+      "state": "repouso",
+      "time": 0,
+      "x": 192,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/repouso/0",
+      "creature": "desanimo",
+      "state": "repouso",
+      "time": 0,
+      "x": 384,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/repouso/0",
+      "creature": "inveja",
+      "state": "repouso",
+      "time": 0,
+      "x": 576,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/repouso/0",
+      "creature": "ganancia",
+      "state": "repouso",
+      "time": 0,
+      "x": 768,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/repouso/0",
+      "creature": "duvida",
+      "state": "repouso",
+      "time": 0,
+      "x": 960,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/repouso/0",
+      "creature": "ira",
+      "state": "repouso",
+      "time": 0,
+      "x": 1152,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/repouso/0",
+      "creature": "medo",
+      "state": "repouso",
+      "time": 0,
+      "x": 1344,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/repouso/0",
+      "creature": "orgulho",
+      "state": "repouso",
+      "time": 0,
+      "x": 1536,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/repouso/0",
+      "creature": "vaidade",
+      "state": "repouso",
+      "time": 0,
+      "x": 1728,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/repouso/1",
+      "creature": "preguica",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 0,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/repouso/1",
+      "creature": "distracao",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 192,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/repouso/1",
+      "creature": "desanimo",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 384,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/repouso/1",
+      "creature": "inveja",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 576,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/repouso/1",
+      "creature": "ganancia",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 768,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/repouso/1",
+      "creature": "duvida",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 960,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/repouso/1",
+      "creature": "ira",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 1152,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/repouso/1",
+      "creature": "medo",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 1344,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/repouso/1",
+      "creature": "orgulho",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 1536,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/repouso/1",
+      "creature": "vaidade",
+      "state": "repouso",
+      "time": 0.45,
+      "x": 1728,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/repouso/2",
+      "creature": "preguica",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 0,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/repouso/2",
+      "creature": "distracao",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 192,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/repouso/2",
+      "creature": "desanimo",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 384,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/repouso/2",
+      "creature": "inveja",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 576,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/repouso/2",
+      "creature": "ganancia",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 768,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/repouso/2",
+      "creature": "duvida",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 960,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/repouso/2",
+      "creature": "ira",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 1152,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/repouso/2",
+      "creature": "medo",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 1344,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/repouso/2",
+      "creature": "orgulho",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 1536,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/repouso/2",
+      "creature": "vaidade",
+      "state": "repouso",
+      "time": 0.9,
+      "x": 1728,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/repouso/3",
+      "creature": "preguica",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 0,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/repouso/3",
+      "creature": "distracao",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 192,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/repouso/3",
+      "creature": "desanimo",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 384,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/repouso/3",
+      "creature": "inveja",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 576,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/repouso/3",
+      "creature": "ganancia",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 768,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/repouso/3",
+      "creature": "duvida",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 960,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/repouso/3",
+      "creature": "ira",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 1152,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/repouso/3",
+      "creature": "medo",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 1344,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/repouso/3",
+      "creature": "orgulho",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 1536,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/repouso/3",
+      "creature": "vaidade",
+      "state": "repouso",
+      "time": 1.35,
+      "x": 1728,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/4",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0,
+      "x": 0,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/4",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0,
+      "x": 192,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/4",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0,
+      "x": 384,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/4",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0,
+      "x": 576,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/4",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0,
+      "x": 768,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/4",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0,
+      "x": 960,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/4",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0,
+      "x": 1152,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/4",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0,
+      "x": 1344,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/4",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0,
+      "x": 1536,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/4",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0,
+      "x": 1728,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/5",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 0,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/5",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 192,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/5",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 384,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/5",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 576,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/5",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 768,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/5",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 960,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/5",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 1152,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/5",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 1344,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/5",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 1536,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/5",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0.09,
+      "x": 1728,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/6",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 0,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/6",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 192,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/6",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 384,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/6",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 576,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/6",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 768,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/6",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 960,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/6",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 1152,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/6",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 1344,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/6",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 1536,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/6",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0.18,
+      "x": 1728,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/7",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 0,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/7",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 192,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/7",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 384,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/7",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 576,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/7",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 768,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/7",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 960,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/7",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 1152,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/7",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 1344,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/7",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 1536,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/7",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0.27,
+      "x": 1728,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/8",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 0,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/8",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 192,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/8",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 384,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/8",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 576,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/8",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 768,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/8",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 960,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/8",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 1152,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/8",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 1344,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/8",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 1536,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/8",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0.36,
+      "x": 1728,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/9",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 0,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/9",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 192,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/9",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 384,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/9",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 576,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/9",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 768,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/9",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 960,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/9",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 1152,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/9",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 1344,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/9",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 1536,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/9",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0.44999999999999996,
+      "x": 1728,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/10",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 0,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/10",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 192,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/10",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 384,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/10",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 576,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/10",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 768,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/10",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 960,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/10",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 1152,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/10",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 1344,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/10",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 1536,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/10",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0.54,
+      "x": 1728,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/caminhada/11",
+      "creature": "preguica",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 0,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/caminhada/11",
+      "creature": "distracao",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 192,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/caminhada/11",
+      "creature": "desanimo",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 384,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/caminhada/11",
+      "creature": "inveja",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 576,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/caminhada/11",
+      "creature": "ganancia",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 768,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/caminhada/11",
+      "creature": "duvida",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 960,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/caminhada/11",
+      "creature": "ira",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 1152,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/caminhada/11",
+      "creature": "medo",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 1344,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/caminhada/11",
+      "creature": "orgulho",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 1536,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/caminhada/11",
+      "creature": "vaidade",
+      "state": "caminhada",
+      "time": 0.63,
+      "x": 1728,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/preparacao/12",
+      "creature": "preguica",
+      "state": "preparacao",
+      "time": 1,
+      "x": 0,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/preparacao/12",
+      "creature": "distracao",
+      "state": "preparacao",
+      "time": 1,
+      "x": 192,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/preparacao/12",
+      "creature": "desanimo",
+      "state": "preparacao",
+      "time": 1,
+      "x": 384,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/preparacao/12",
+      "creature": "inveja",
+      "state": "preparacao",
+      "time": 1,
+      "x": 576,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/preparacao/12",
+      "creature": "ganancia",
+      "state": "preparacao",
+      "time": 1,
+      "x": 768,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/preparacao/12",
+      "creature": "duvida",
+      "state": "preparacao",
+      "time": 1,
+      "x": 960,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/preparacao/12",
+      "creature": "ira",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1152,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/preparacao/12",
+      "creature": "medo",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1344,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/preparacao/12",
+      "creature": "orgulho",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1536,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/preparacao/12",
+      "creature": "vaidade",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1728,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/preparacao/13",
+      "creature": "preguica",
+      "state": "preparacao",
+      "time": 1,
+      "x": 0,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/preparacao/13",
+      "creature": "distracao",
+      "state": "preparacao",
+      "time": 1,
+      "x": 192,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/preparacao/13",
+      "creature": "desanimo",
+      "state": "preparacao",
+      "time": 1,
+      "x": 384,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/preparacao/13",
+      "creature": "inveja",
+      "state": "preparacao",
+      "time": 1,
+      "x": 576,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/preparacao/13",
+      "creature": "ganancia",
+      "state": "preparacao",
+      "time": 1,
+      "x": 768,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/preparacao/13",
+      "creature": "duvida",
+      "state": "preparacao",
+      "time": 1,
+      "x": 960,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/preparacao/13",
+      "creature": "ira",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1152,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/preparacao/13",
+      "creature": "medo",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1344,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/preparacao/13",
+      "creature": "orgulho",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1536,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/preparacao/13",
+      "creature": "vaidade",
+      "state": "preparacao",
+      "time": 1,
+      "x": 1728,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/golpe/14",
+      "creature": "preguica",
+      "state": "golpe",
+      "time": 1,
+      "x": 0,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/golpe/14",
+      "creature": "distracao",
+      "state": "golpe",
+      "time": 1,
+      "x": 192,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/golpe/14",
+      "creature": "desanimo",
+      "state": "golpe",
+      "time": 1,
+      "x": 384,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/golpe/14",
+      "creature": "inveja",
+      "state": "golpe",
+      "time": 1,
+      "x": 576,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/golpe/14",
+      "creature": "ganancia",
+      "state": "golpe",
+      "time": 1,
+      "x": 768,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/golpe/14",
+      "creature": "duvida",
+      "state": "golpe",
+      "time": 1,
+      "x": 960,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/golpe/14",
+      "creature": "ira",
+      "state": "golpe",
+      "time": 1,
+      "x": 1152,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/golpe/14",
+      "creature": "medo",
+      "state": "golpe",
+      "time": 1,
+      "x": 1344,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/golpe/14",
+      "creature": "orgulho",
+      "state": "golpe",
+      "time": 1,
+      "x": 1536,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/golpe/14",
+      "creature": "vaidade",
+      "state": "golpe",
+      "time": 1,
+      "x": 1728,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "preguica/dano/15",
+      "creature": "preguica",
+      "state": "dano",
+      "time": 1,
+      "x": 0,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "distracao/dano/15",
+      "creature": "distracao",
+      "state": "dano",
+      "time": 1,
+      "x": 192,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "desanimo/dano/15",
+      "creature": "desanimo",
+      "state": "dano",
+      "time": 1,
+      "x": 384,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "inveja/dano/15",
+      "creature": "inveja",
+      "state": "dano",
+      "time": 1,
+      "x": 576,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ganancia/dano/15",
+      "creature": "ganancia",
+      "state": "dano",
+      "time": 1,
+      "x": 768,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "duvida/dano/15",
+      "creature": "duvida",
+      "state": "dano",
+      "time": 1,
+      "x": 960,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "ira/dano/15",
+      "creature": "ira",
+      "state": "dano",
+      "time": 1,
+      "x": 1152,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "medo/dano/15",
+      "creature": "medo",
+      "state": "dano",
+      "time": 1,
+      "x": 1344,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "orgulho/dano/15",
+      "creature": "orgulho",
+      "state": "dano",
+      "time": 1,
+      "x": 1536,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    },
+    {
+      "name": "vaidade/dano/15",
+      "creature": "vaidade",
+      "state": "dano",
+      "time": 1,
+      "x": 1728,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 112
+      },
+      "scale": 1.6
+    }
+  ],
+  "image": "monstros-atlas.png"
+}

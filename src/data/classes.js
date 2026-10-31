@@ -58,18 +58,29 @@ export const CLASSES = {
   }
 };
 
+// Initial cloth palettes; player choices and existing saves always take precedence.
+export const CLASS_ATTIRE = {
+  guerreiro: { tunic: '#526C78', cape: '#394F62' },
+  pastor: { tunic: '#4C665E', cape: '#877451' },
+  profeta: { tunic: '#D2CFBB', cape: '#55516D' },
+  levita: { tunic: '#497A80', cape: '#C8C9BC' },
+  zelote: { tunic: '#343F51', cape: '#713E49' },
+  valente: { tunic: '#874D4C', cape: '#394F62' },
+  juiz: { tunic: '#A18C61', cape: '#40594F' }
+};
+
 export const LOOK_OPTIONS = {
   skin: ['#F2D0B0', '#E3B48C', '#C68B59', '#A0673E', '#6E4428'],
   hair: ['#1C120A', '#3A2314', '#6B4423', '#B8863B', '#E8C77A', '#D9D2C5', '#8E2F1F', '#C85A2A'],
-  tunic: ['#3B4CCA', '#C0392B', '#2E8B57', '#8E44AD', '#D98E04', '#2C3E50', '#ECE3CF', '#1F8A9E'],
-  cape: ['#E0483A', '#F2C14E', '#3B4CCA', '#6B3FA0', '#2E8B57', '#ECE3CF', 'none'],
+  tunic: ['#526C78', '#874D4C', '#4C665E', '#686078', '#A18C61', '#343F51', '#D2CFBB', '#497A80'],
+  cape: ['#394F62', '#877451', '#713E49', '#55516D', '#40594F', '#C8C9BC', 'none'],
   style: [
     { id: 'curto', nome: 'Curto' }, { id: 'longo', nome: 'Longo' }, { id: 'coque', nome: 'Coque' },
     { id: 'veu', nome: 'Véu' }, { id: 'careca', nome: 'Careca' }, { id: 'turbante', nome: 'Turbante' },
     { id: 'cacheado', nome: 'Cacheado' }, { id: 'black', nome: 'Black power' }, { id: 'trancas', nome: 'Tranças' },
     { id: 'rabo', nome: 'Rabo de cavalo' }, { id: 'espetado', nome: 'Espetado' }, { id: 'franja', nome: 'Franja' }
   ],
-  // formato do corpo (largura do tronco e altura das pernas; ver BODY em game/draw.js)
+  // formato do corpo (largura do tronco e altura das pernas; ver BODY em game/character-art.js)
   body: [
     { id: 'medio', nome: 'Médio' }, { id: 'magro', nome: 'Magro' }, { id: 'forte', nome: 'Forte' },
     { id: 'robusto', nome: 'Robusto' }, { id: 'baixo', nome: 'Baixo' }, { id: 'alto', nome: 'Alto' }
@@ -78,5 +89,5 @@ export const LOOK_OPTIONS = {
 };
 
 export function defaultLook() {
-  return { skin: '#C68B59', hair: '#3A2314', tunic: '#3B4CCA', cape: '#E0483A', style: 'curto', body: 'medio', beard: false };
+  return { skin: '#C68B59', hair: '#3A2314', tunic: '#526C78', cape: '#394F62', style: 'curto', body: 'medio', beard: false };
 }

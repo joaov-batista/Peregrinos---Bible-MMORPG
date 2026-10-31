@@ -1,0 +1,1305 @@
+{
+  "description": "Exportação de referência do renderizador procedural do jogo. Cada célula é um quadro; pivô no centro lógico do personagem.",
+  "image": "peregrinos-atlas.png",
+  "columns": 7,
+  "rows": 16,
+  "frames": [
+    {
+      "name": "guerreiro/frente/repouso",
+      "x": 0,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/frente/repouso",
+      "x": 192,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/frente/repouso",
+      "x": 384,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/frente/repouso",
+      "x": 576,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/frente/repouso",
+      "x": 768,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/frente/repouso",
+      "x": 960,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/frente/repouso",
+      "x": 1152,
+      "y": 0,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/direita/repouso",
+      "x": 0,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/direita/repouso",
+      "x": 192,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/direita/repouso",
+      "x": 384,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/direita/repouso",
+      "x": 576,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/direita/repouso",
+      "x": 768,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/direita/repouso",
+      "x": 960,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/direita/repouso",
+      "x": 1152,
+      "y": 192,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/costas/repouso",
+      "x": 0,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/costas/repouso",
+      "x": 192,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/costas/repouso",
+      "x": 384,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/costas/repouso",
+      "x": 576,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/costas/repouso",
+      "x": 768,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/costas/repouso",
+      "x": 960,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/costas/repouso",
+      "x": 1152,
+      "y": 384,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/esquerda/repouso",
+      "x": 0,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/esquerda/repouso",
+      "x": 192,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/esquerda/repouso",
+      "x": 384,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/esquerda/repouso",
+      "x": 576,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/esquerda/repouso",
+      "x": 768,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/esquerda/repouso",
+      "x": 960,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/esquerda/repouso",
+      "x": 1152,
+      "y": 576,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/frente/passo-a",
+      "x": 0,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/frente/passo-a",
+      "x": 192,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/frente/passo-a",
+      "x": 384,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/frente/passo-a",
+      "x": 576,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/frente/passo-a",
+      "x": 768,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/frente/passo-a",
+      "x": 960,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/frente/passo-a",
+      "x": 1152,
+      "y": 768,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/direita/passo-a",
+      "x": 0,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/direita/passo-a",
+      "x": 192,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/direita/passo-a",
+      "x": 384,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/direita/passo-a",
+      "x": 576,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/direita/passo-a",
+      "x": 768,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/direita/passo-a",
+      "x": 960,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/direita/passo-a",
+      "x": 1152,
+      "y": 960,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/costas/passo-a",
+      "x": 0,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/costas/passo-a",
+      "x": 192,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/costas/passo-a",
+      "x": 384,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/costas/passo-a",
+      "x": 576,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/costas/passo-a",
+      "x": 768,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/costas/passo-a",
+      "x": 960,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/costas/passo-a",
+      "x": 1152,
+      "y": 1152,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/esquerda/passo-a",
+      "x": 0,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/esquerda/passo-a",
+      "x": 192,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/esquerda/passo-a",
+      "x": 384,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/esquerda/passo-a",
+      "x": 576,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/esquerda/passo-a",
+      "x": 768,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/esquerda/passo-a",
+      "x": 960,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/esquerda/passo-a",
+      "x": 1152,
+      "y": 1344,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/frente/passo-b",
+      "x": 0,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/frente/passo-b",
+      "x": 192,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/frente/passo-b",
+      "x": 384,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/frente/passo-b",
+      "x": 576,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/frente/passo-b",
+      "x": 768,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/frente/passo-b",
+      "x": 960,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/frente/passo-b",
+      "x": 1152,
+      "y": 1536,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/direita/passo-b",
+      "x": 0,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/direita/passo-b",
+      "x": 192,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/direita/passo-b",
+      "x": 384,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/direita/passo-b",
+      "x": 576,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/direita/passo-b",
+      "x": 768,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/direita/passo-b",
+      "x": 960,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/direita/passo-b",
+      "x": 1152,
+      "y": 1728,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/costas/passo-b",
+      "x": 0,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/costas/passo-b",
+      "x": 192,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/costas/passo-b",
+      "x": 384,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/costas/passo-b",
+      "x": 576,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/costas/passo-b",
+      "x": 768,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/costas/passo-b",
+      "x": 960,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/costas/passo-b",
+      "x": 1152,
+      "y": 1920,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/esquerda/passo-b",
+      "x": 0,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/esquerda/passo-b",
+      "x": 192,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/esquerda/passo-b",
+      "x": 384,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/esquerda/passo-b",
+      "x": 576,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/esquerda/passo-b",
+      "x": 768,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/esquerda/passo-b",
+      "x": 960,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/esquerda/passo-b",
+      "x": 1152,
+      "y": 2112,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/frente/ataque",
+      "x": 0,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/frente/ataque",
+      "x": 192,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/frente/ataque",
+      "x": 384,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/frente/ataque",
+      "x": 576,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/frente/ataque",
+      "x": 768,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/frente/ataque",
+      "x": 960,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/frente/ataque",
+      "x": 1152,
+      "y": 2304,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/direita/ataque",
+      "x": 0,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/direita/ataque",
+      "x": 192,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/direita/ataque",
+      "x": 384,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/direita/ataque",
+      "x": 576,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/direita/ataque",
+      "x": 768,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/direita/ataque",
+      "x": 960,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/direita/ataque",
+      "x": 1152,
+      "y": 2496,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/costas/ataque",
+      "x": 0,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/costas/ataque",
+      "x": 192,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/costas/ataque",
+      "x": 384,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/costas/ataque",
+      "x": 576,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/costas/ataque",
+      "x": 768,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/costas/ataque",
+      "x": 960,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/costas/ataque",
+      "x": 1152,
+      "y": 2688,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "guerreiro/esquerda/ataque",
+      "x": 0,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "pastor/esquerda/ataque",
+      "x": 192,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "profeta/esquerda/ataque",
+      "x": 384,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "levita/esquerda/ataque",
+      "x": 576,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "zelote/esquerda/ataque",
+      "x": 768,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "valente/esquerda/ataque",
+      "x": 960,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    },
+    {
+      "name": "juiz/esquerda/ataque",
+      "x": 1152,
+      "y": 2880,
+      "width": 192,
+      "height": 192,
+      "pivot": {
+        "x": 96,
+        "y": 140
+      }
+    }
+  ],
+  "looks": {
+    "guerreiro": {
+      "skin": "#E3B48C",
+      "hair": "#3A2314",
+      "tunic": "#526C78",
+      "cape": "#394F62",
+      "style": "curto",
+      "body": "forte",
+      "beard": false
+    },
+    "pastor": {
+      "skin": "#C68B59",
+      "hair": "#1C120A",
+      "tunic": "#4C665E",
+      "cape": "#877451",
+      "style": "cacheado",
+      "body": "magro",
+      "beard": false
+    },
+    "profeta": {
+      "skin": "#E3B48C",
+      "hair": "#D9D2C5",
+      "tunic": "#D2CFBB",
+      "cape": "#55516D",
+      "style": "longo",
+      "body": "alto",
+      "beard": true
+    },
+    "levita": {
+      "skin": "#6E4428",
+      "hair": "#1C120A",
+      "tunic": "#497A80",
+      "cape": "#C8C9BC",
+      "style": "turbante",
+      "body": "medio",
+      "beard": false
+    },
+    "zelote": {
+      "skin": "#A0673E",
+      "hair": "#1C120A",
+      "tunic": "#343F51",
+      "cape": "#713E49",
+      "style": "veu",
+      "body": "magro",
+      "beard": false
+    },
+    "valente": {
+      "skin": "#C68B59",
+      "hair": "#3A2314",
+      "tunic": "#874D4C",
+      "cape": "#394F62",
+      "style": "trancas",
+      "body": "forte",
+      "beard": false
+    },
+    "juiz": {
+      "skin": "#E3B48C",
+      "hair": "#D9D2C5",
+      "tunic": "#A18C61",
+      "cape": "#40594F",
+      "style": "careca",
+      "body": "robusto",
+      "beard": true
+    }
+  }
+}

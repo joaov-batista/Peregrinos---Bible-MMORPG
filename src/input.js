@@ -28,7 +28,7 @@ function typing(e) { const t = e.target; return t && (t.tagName === 'INPUT' || t
 
 export function initInput(canvas) {
   addEventListener('keydown', e => {
-    if (typing(e)) return;
+    if (typing(e) || !document.body.classList.contains('playing')) return;
     const a = KEYMAP[e.code];
     if (MOVE[e.code]) { input.keys.add(e.code); input.mouseAim = false; e.preventDefault(); }
     if (a) { if (!e.repeat) input.pressed.add(a); input.held.add(a); e.preventDefault(); }

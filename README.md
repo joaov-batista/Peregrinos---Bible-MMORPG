@@ -1,5 +1,7 @@
 # Peregrinos — RPG bíblico online
 
+> **Revisão visual:** personagens articulados, 10 monstros e 9 chefes redesenhados, movimentos mais fluidos, novas armas e ícones e criação em três etapas. Veja [LEIA-ME-REDESIGN.md](LEIA-ME-REDESIGN.md), as pranchas em `art/` e a prévia `art/movimento-fluido.mp4`.
+
 Um jogo de ação e aventura (estilo MMORPG) focado na Bíblia. Toda semana os **5 Portões** do mundo abrem 5 fases novas baseadas num estudo bíblico.
 
 - Jogue no **PC** (teclado + mouse), com **controle** (Xbox, PlayStation e genéricos) e no **celular deitado** (joystick e botões na tela).

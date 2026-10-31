@@ -11,6 +11,7 @@ import { montarCinema } from './cinema.js';
 import { CINEMAS } from '../content/cinematicas.js';
 import { SEMANA_ATUAL } from '../content/index.js';
 import { drawPerson } from '../game/draw.js';
+import { icon, itemIcon } from './icons.js';
 import { count, addItem, removeItem, equip, unequip, canEquip, faseProg, computeStats } from '../game/player.js';
 import { playMinigame } from './minigames.js';
 import { TS, ZONES, ZONE_LABELS } from '../game/world.js';
@@ -20,11 +21,14 @@ import { config, setConfig } from '../config.js';
 export function createHud(onExit) {
   let modals = 0, game = null;
   const root = $('overlay');
+  for (const [id,art] of Object.entries({bMap:'map',bMenu:'menu',bMute:'sound',bFull:'fullscreen',aMount:'pet',aBotija:'flask',aLock:'target',aSkill:'spark',chatToggle:'chat'})) $(id)?.replaceChildren(icon(art));
+  for (const [act,art] of Object.entries({defend:'shield',dodge:'dodge',attack:'espada'})) document.querySelector('[data-act="'+act+'"]')?.replaceChildren(icon(art));
   const ui = {
     get blocking() { return modals > 0; },
     attach(g) {
       game = g;
       const sk = CLASSES[g.char.cls].skill, b = $('aSkill');
+      document.querySelector('[data-act="attack"]')?.replaceChildren(icon(g.st.weapon));
       b.dataset.name = sk.nome; b.title = sk.nome + ' — ' + sk.desc + ' (custa ' + sk.custo + ' Fé)';
       document.querySelectorAll('#actions [data-act]').forEach(x => { if (x !== b) x.title = x.dataset.name + ' (' + x.dataset.key + ')'; });
     },
@@ -57,7 +61,7 @@ export function createHud(onExit) {
 
   function portrait(look, size = 64) {
     const c = h('canvas', { class: 'portrait', width: size * 2, height: size * 2 });
-    if (look) { const g = c.getContext('2d'); g.scale(2, 2); drawPerson(g, size / 2, size * 1.12, size / 32, look, { t: 0, fx: 0, fy: 1, semLuz: true }); }
+    if (look) { const g = c.getContext('2d'); g.scale(2, 2); drawPerson(g, size / 2, size * 1.9, size / 28, look, { t: 0, fx: 0, fy: 1, semLuz: true }); }
     else { const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, size * 2, size * 2); g.fillStyle = '#FF2E4A'; g.fillRect(size * 0.8, size * 0.9, 10, 5); g.fillRect(size * 1.1, size * 0.9, 10, 5); }
     return c;
   }
@@ -69,19 +73,21 @@ export function createHud(onExit) {
     $('tHp').textContent = Math.ceil(s.hp) + '/' + s.maxHp; $('tFe').textContent = Math.floor(s.fe) + '/' + s.maxFe;
     $('hLvl').textContent = s.level; $('hGold').textContent = fmt(s.gold); $('hScore').textContent = fmt(s.score);
     $('hpWrap').classList.toggle('low', s.hp / s.maxHp < 0.3);
+    const attack = document.querySelector('[data-act="attack"]');
+    if (attack.dataset.weapon !== s.weapon) { attack.dataset.weapon = s.weapon; attack.replaceChildren(icon(s.weapon)); }
     const sk = $('aSkill'); sk.style.setProperty('--cd', (s.skillCd * 100) + '%'); sk.classList.toggle('nofe', !s.skillOk);
     $('aLock').classList.toggle('on', !!s.lock);
     const bb = $('aBotija'), nb = s.botija.n + '/' + s.botija.max; if (bb.dataset.n !== nb) { bb.dataset.n = nb; bb.classList.toggle('vazio', s.botija.n <= 0); }
     const bDef = document.querySelector('[data-act="defend"]'); if (bDef._e !== s.escudo) { bDef._e = s.escudo; bDef.classList.toggle('vazio', !s.escudo); bDef.title = s.escudo ? 'Defender (Shift)' : 'Sem escudo: equipe um no menu › Personagem'; }
     s.atalhos.forEach((a, i) => {
-      const b = $('aItem' + (i + 1)), key = a ? a.icon + a.n : '';
+      const b = $('aItem' + (i + 1)), key = a ? a.id + ':' + a.n : '';
       if (b._k === key) return; b._k = key;
-      b.textContent = a ? a.icon : '＋'; b.dataset.n = a ? a.n : ''; b.classList.toggle('vazio', !a || !a.n);
+      b.replaceChildren(a ? itemIcon(ITEMS[a.id], a.id, 25) : icon('plus')); b.dataset.n = a ? a.n : ''; b.classList.toggle('vazio', !a || !a.n);
       b.dataset.name = a ? a.nome : 'Atalho ' + (i + 1); b.title = b.dataset.name + ' (' + b.dataset.key + ')';
     });
   };
   ui.hurt = () => { const v = $('vignette'); v.classList.remove('on'); void v.offsetWidth; v.classList.add('on'); };
-  ui.online = n => { $('hOnline').textContent = n ? '🟢 ' + n + ' online' : '📴 offline'; };
+  ui.online = n => { $('hOnline').replaceChildren(icon(n ? 'users' : 'offline', 13), n ? ' ' + n + ' online' : ' offline'); };
   ui.zone = (name, safe) => {
     const z = $('zoneName'); z.innerHTML = ''; z.append(h('b', {}, name), h('small', {}, safe ? 'Área segura' : 'Cuidado: vícios à solta'));
     z.classList.remove('on'); void z.offsetWidth; z.classList.add('on');
@@ -375,8 +381,8 @@ export function createHud(onExit) {
         h('div', {}, h('b', {}, mm), h('small', {}, 'tempo')), h('div', {}, h('b', {}, d.ok + '/' + (d.ok + d.err)), h('small', {}, 'quiz')),
         h('div', {}, h('b', {}, d.kills), h('small', {}, 'vícios')), h('div', {}, h('b', {}, '+' + fmt(d.pts)), h('small', {}, 'pontos'))),
       h('p', { class: 'rewards' }, '+' + d.xp + ' XP · +' + d.gold + ' denários' + (d.first ? '' : ' · (replay: 30% dos pontos)')));
-    if (d.item) p.append(h('div', { class: 'loot' }, h('span', { class: 'big' }, ITEMS[d.item].icon), h('div', {}, h('b', { style: 'color:' + itemCor(d.item) }, ITEMS[d.item].nome), h('small', {}, ITEMS[d.item].desc))));
-    if (d.semana) p.append(h('div', { class: 'loot legendary' }, h('span', { class: 'big' }, ITEMS[d.semana].icon), h('div', {}, h('b', {}, 'SEMANA COMPLETA! ' + ITEMS[d.semana].nome), h('small', {}, ITEMS[d.semana].desc))));
+    if (d.item) p.append(h('div', { class: 'loot' }, h('span', { class: 'big' }, itemIcon(ITEMS[d.item], d.item, 48)), h('div', {}, h('b', { style: 'color:' + itemCor(d.item) }, ITEMS[d.item].nome), h('small', {}, ITEMS[d.item].desc))));
+    if (d.semana) p.append(h('div', { class: 'loot legendary' }, h('span', { class: 'big' }, itemIcon(ITEMS[d.semana], d.semana, 48)), h('div', {}, h('b', {}, 'SEMANA COMPLETA! ' + ITEMS[d.semana].nome), h('small', {}, ITEMS[d.semana].desc))));
     if (d.semPremio) p.append(h('p', { class: 'hint' }, 'O prêmio ' + ITEMS[d.fase.recompensa].icon + ' ' + ITEMS[d.fase.recompensa].nome + ' não caiu desta vez. Jogue de novo: ele pode sair nos baús do tesouro ou no fim da fase!'));
     if (d.item || d.semana) p.append(h('p', { class: 'hint' }, 'Equipe no menu ☰ › Personagem.'));
     p.append(h('div', { class: 'btn-row' }, h('button', { class: 'btn gold', onclick: () => close() }, 'Voltar ao mundo')));
@@ -453,7 +459,7 @@ export function createHud(onExit) {
   function row(iid, action, qty, comparar) {
     const it = ITEMS[iid];
     return h('div', { class: 'item-row' },
-      h('span', { class: 'ico', style: '--c:' + itemCor(iid) }, it.icon),
+      h('span', { class: 'ico', style: '--c:' + itemCor(iid) }, itemIcon(it, iid)),
       h('div', { class: 'info' }, h('b', { style: 'color:' + itemCor(iid) }, it.nome + (qty > 1 ? ' x' + qty : ''), h('small', { class: 'rar' }, ' · ' + RARIDADE[it.raridade || 'comum'].nome + (it.slot ? ' · ' + SLOT_NOMES[it.slot] : ''))),
         statChips(iid, comparar), requisito(it), h('small', { class: 'desc' }, it.desc)),
       action);
@@ -463,12 +469,12 @@ export function createHud(onExit) {
   ui.openMenu = (tab = 'personagem') => modal((p, close) => {
     p.classList.add('menu');
     const c = game.char;
-    const tabs = [['personagem', '🎒', 'Personagem'], ['missoes', '📜', 'Missões'], ['biblia', '📖', 'Bíblia'], ['social', '👥', 'Social'], ['ranking', '🏆', 'Ranking'], ['ajustes', '⚙️', 'Ajustes'], ['ajuda', '❔', 'Ajuda']];
+    const tabs = [['personagem', 'bag', 'Personagem'], ['missoes', 'scroll', 'Missões'], ['biblia', 'book', 'Bíblia'], ['social', 'users', 'Social'], ['ranking', 'trophy', 'Ranking'], ['ajustes', 'settings', 'Ajustes'], ['ajuda', 'help', 'Ajuda']];
     const render = () => {
       p.innerHTML = '';
       // trilho de abas à esquerda (medalhões) + conteúdo
       const rail = h('nav', { class: 'rail' }, tabs.map(([k, ico, l]) => h('button', { class: 'rail-btn' + (k === tab ? ' on' : ''), title: l, 'aria-label': l, onclick: () => { sfx('click'); tab = k; render(); } },
-        h('span', { class: 'ri' }, ico), h('small', {}, l), k === 'social' && game.social.pedidos ? h('em', {}, game.social.pedidos) : '')));
+        h('span', { class: 'ri' }, icon(ico, 23)), h('small', {}, l), k === 'social' && game.social.pedidos ? h('em', {}, game.social.pedidos) : '')));
       const label = tabs.find(t => t[0] === tab)[2];
       const main = h('div', { class: 'menu-main' }, h('div', { class: 'p-head' },
         h('div', { class: 'menu-title' }, h('h3', {}, label), h('small', {}, c.name + ' · ' + CLASSES[c.cls].nome + ' · nível ' + c.level)),
@@ -599,7 +605,6 @@ export function createHud(onExit) {
 
   // Personagem: equipamento e atributos à esquerda, bolsa (grade de espaços) no meio, detalhe do item à direita.
   // A seleção e o filtro da bolsa ficam guardados entre um redesenho e outro.
-  const SLOT_ICONE = { arma: '⚔️', escudo: '🛡️', cabeca: '⛑️', corpo: '🥋', cinto: '🎗️', pes: '🥾', reliquia: '💍', pet: '🐾' };
   let invSel = null, invFiltro = 'todas';
   function tabChar(body, render) {
     const c = game.char, st = computeStats(c);
@@ -610,13 +615,13 @@ export function createHud(onExit) {
     const side = h('div', { class: 'inv-side' });
     const cv = h('canvas', { width: 392, height: 300, class: 'char-preview' });
     const g = cv.getContext('2d'); g.scale(2, 2);
-    drawPerson(g, 98, 110, 2.35, c.look, { t: 0, fx: 0, fy: 1, ...game.equipLook(c.data.eq) });
+    drawPerson(g, 98, 119, 1.65, c.look, { t: 0, fx: 0, fy: 1, cls: c.cls, weapon: st.weapon, weaponId: c.data.eq.arma, shield: !!c.data.eq.escudo, ...game.equipLook(c.data.eq) });
     const equipGrid = h('div', { class: 'equip' });
     for (const s of SLOTS) {
       const id = c.data.eq[s], on = invSel?.eq && invSel.slot === s;
       equipGrid.append(h('button', { class: 'slot' + (id ? ' has' : '') + (on ? ' sel' : ''), style: id ? '--c:' + itemCor(id) : '', title: id ? ITEMS[id].nome : SLOT_NOMES[s] + ' (vazio)',
         onclick: () => { if (!id) return; sfx('click'); invSel = { id, eq: true, slot: s }; popup ? detail() : render(); } },
-        h('span', {}, id ? ITEMS[id].icon : SLOT_ICONE[s]), h('small', {}, SLOT_NOMES[s])));
+        h('span', {}, id ? itemIcon(ITEMS[id], id, 32) : icon(({arma:'espada',escudo:'shield',cabeca:'helmet',corpo:'armor',cinto:'belt',pes:'boots',reliquia:'relic',pet:'pet'})[s], 28)), h('small', {}, SLOT_NOMES[s])));
     }
     side.append(cv, equipGrid, h('div', { class: 'statgrid' },
       ...[['❤ Vida', st.maxHp], ['✨ Fé', st.maxFe], ['⚔ Ataque', st.atk], ['🛡 Defesa', st.def], ['👟 Veloc.', st.spd], ['🔰 Bloqueio', Math.round(st.block * 100) + '%']]
@@ -635,14 +640,14 @@ export function createHud(onExit) {
       const on = invSel && !invSel.eq && invSel.id === id;
       bag.append(h('button', { class: 'cell' + (on ? ' sel' : ''), style: '--c:' + itemCor(id), title: ITEMS[id].nome,
         onclick: () => { sfx('click'); invSel = { id, eq: false }; popup ? detail() : render(); } },
-        h('span', {}, ITEMS[id].icon), c.data.inv[id] > 1 ? h('em', {}, 'x' + c.data.inv[id]) : ''));
+        h('span', {}, itemIcon(ITEMS[id], id, 32)), c.data.inv[id] > 1 ? h('em', {}, 'x' + c.data.inv[id]) : ''));
     }
     // completa a grade com espaços vazios (no mínimo 4 fileiras)
     const vazios = Math.max(20, Math.ceil((shown.length + 1) / 5) * 5) - shown.length;
     for (let i = 0; i < vazios; i++) bag.append(h('div', { class: 'cell vazio' }));
     const center = h('div', { class: 'inv-center' },
       h('div', { class: 'bag-head' }, h('h4', {}, 'Bolsa · ' + (filtros.find(f => f.k === invFiltro)?.nome || 'Tudo')), h('small', {}, ids.length + ' tipos de item')),
-      h('div', { class: 'bag-tabs' }, filtros.map(f => h('button', { class: f.k === invFiltro ? 'on' : '', title: f.nome, 'aria-label': f.nome, onclick: () => { sfx('click'); invFiltro = f.k; render(); } }, f.ico))),
+      h('div', { class: 'bag-tabs' }, filtros.map(f => h('button', { class: f.k === invFiltro ? 'on' : '', title: f.nome, 'aria-label': f.nome, onclick: () => { sfx('click'); invFiltro = f.k; render(); } }, icon(({todas:'bag',consumivel:'bread',arma:'espada',escudo:'shield',armadura:'armor',reliquia:'relic',pet:'pet',semente:'seed',especial:'scroll'})[f.k], 19)))),
       bag,
       h('div', { class: 'bag-foot' }, h('span', { class: 'chip' }, '🪙 ', h('b', {}, fmt(c.data.gold)), ' denários'),
         c.data.eq.pet ? h('button', { class: 'btn sm', onclick: () => { unequip(c, 'pet'); game.refreshStats(); sfx('click'); game.save(); render(); } }, '🐾 Guardar ' + ITEMS[c.data.eq.pet].nome) : ''));
@@ -657,7 +662,7 @@ export function createHud(onExit) {
       if (!invSel) { box.append(h('p', { class: 'det-empty' }, 'Escolha um item da bolsa ou do equipamento para ver os detalhes.')); return; }
       const { id, eq } = invSel, it = ITEMS[id];
       const feito = () => { fechar(); render(); };
-      box.append(h('div', { class: 'det-art', style: '--c:' + itemCor(id) }, h('span', {}, it.icon)),
+      box.append(h('div', { class: 'det-art', style: '--c:' + itemCor(id) }, h('span', {}, itemIcon(it, id, 56))),
         h('h3', { style: 'color:' + itemCor(id) }, it.nome),
         h('small', { class: 'rar' }, RARIDADE[it.raridade || 'comum'].nome + (it.slot ? ' · ' + SLOT_NOMES[it.slot] : '') + (!eq && c.data.inv[id] > 1 ? ' · x' + c.data.inv[id] : '')),
         statChips(id, !eq), requisito(it), h('p', {}, it.desc));
@@ -774,7 +779,7 @@ export function createHud(onExit) {
     for (const [k, nome, desc] of opcoes) list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, nome), h('small', {}, desc)),
       h('button', { class: 'toggle' + (config[k] ? ' on' : ''), role: 'switch', 'aria-checked': String(!!config[k]), 'aria-label': nome, onclick: () => { setConfig(k, !config[k]); sfx('click'); game.mmT = 0; render(); } }, h('i'))));
     list.append(h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, '🔊 Som'), h('small', {}, 'Música e efeitos.')),
-      h('button', { class: 'toggle' + (audio.muted ? '' : ' on'), role: 'switch', 'aria-checked': String(!audio.muted), 'aria-label': 'Som', onclick: () => { initAudio(); setMuted(!audio.muted); $('bMute').textContent = audio.muted ? '🔇' : '🔊'; render(); } }, h('i'))));
+      h('button', { class: 'toggle' + (audio.muted ? '' : ' on'), role: 'switch', 'aria-checked': String(!audio.muted), 'aria-label': 'Som', onclick: () => { initAudio(); setMuted(!audio.muted); $('bMute').replaceChildren(icon(audio.muted ? 'muted' : 'sound')); render(); } }, h('i'))));
     const faixa = (k, nome, desc) => h('div', { class: 'fase-row cfg' }, h('div', {}, h('b', {}, nome), h('small', {}, desc)),
       h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round((config[k] ?? 1) * 100), class: 'cfg-range', 'aria-label': nome, oninput: e => { setConfig(k, +e.target.value / 100); initAudio(); setVolumes(); }, onchange: () => sfx('click') }));
     list.append(faixa('volMusica', '🎵 Volume da música', 'A lira do mundo e a música dos chefes.'), faixa('volEfeitos', '🔔 Volume dos efeitos', 'Golpes, moedas, passos e avisos.'), faixa('volVoz', '🎙 Volume da narração', 'A voz do narrador e dos chefes nas cutscenes.'));
@@ -806,7 +811,7 @@ export function createHud(onExit) {
     ), h('div', { class: 'btn-row' },
       h('button', { class: 'btn gold', onclick: () => ui.controles() }, '🎮 Ver tela de controles'),
       pwa.available ? h('button', { class: 'btn gold', onclick: () => pwa.install(ui.toast) }, '📲 Instalar app') : '',
-      h('button', { class: 'btn', onclick: () => { setMuted(!audio.muted); $('bMute').textContent = audio.muted ? '🔇' : '🔊'; } }, 'Som liga/desliga'),
+      h('button', { class: 'btn', onclick: () => { setMuted(!audio.muted); $('bMute').replaceChildren(icon(audio.muted ? 'muted' : 'sound')); } }, 'Som liga/desliga'),
       h('button', { class: 'btn danger', onclick: async () => { close(); await game.save(); onExit(); } }, 'Salvar e sair')));
   }
 
@@ -815,8 +820,8 @@ export function createHud(onExit) {
 
   /* ---------- Botões fixos ---------- */
   $('bMenu').addEventListener('click', () => { sfx('click'); if (!modals) ui.openMenu(); });
-  $('bMute').textContent = audio.muted ? '🔇' : '🔊';
-  $('bMute').addEventListener('click', () => { initAudio(); setMuted(!audio.muted); $('bMute').textContent = audio.muted ? '🔇' : '🔊'; });
+  $('bMute').replaceChildren(icon(audio.muted ? 'muted' : 'sound'));
+  $('bMute').addEventListener('click', () => { initAudio(); setMuted(!audio.muted); $('bMute').replaceChildren(icon(audio.muted ? 'muted' : 'sound')); });
   $('bFull').addEventListener('click', () => toggleFull(ui));
   if (pwa.installed) $('bFull').hidden = true; // o app instalado já abre em tela cheia
   $('bMap').addEventListener('click', () => { sfx('click'); if (!modals && game) ui.openMap(); });
